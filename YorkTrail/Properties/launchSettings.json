@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "YorkTrail": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

@@ -1,0 +1,62 @@
+﻿<Window x:Class="YorkTrail.TempoCalcWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:YorkTrail"
+        mc:Ignorable="d"
+        x:Name="tempoCalcWindow"
+        Title="テンポ計算機" Height="180" Width="360" ResizeMode="NoResize"
+        Background="WhiteSmoke"
+        Topmost="{Binding MainWindowViewModel.Settings.AlwaysOnTop}"
+        >
+    <Window.Resources>
+        <local:TimeToStringConverter x:Key="TimeToStringConverter"/>
+        <local:TimeValidationRule x:Key="TimeValidationRule"/>
+    </Window.Resources>
+    <Window.DataContext>
+        <local:TempoCalcWindowViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <ComboBox SelectedValue="{Binding TimeSignature}" SelectionChanged="ComboBox_SelectionChanged" SelectedValuePath="Content" HorizontalAlignment="Left" Margin="194,10,0,0" VerticalAlignment="Top" Width="80" Height="20">
+            <ComboBoxItem Content="2"/>
+            <ComboBoxItem Content="3"/>
+            <ComboBoxItem Content="4"/>
+            <ComboBoxItem Content="6"/>
+        </ComboBox>
+        <TextBox x:Name="TempoOutput" HorizontalAlignment="Left" Margin="55,10,0,0" Text="{Binding Tempo, Mode=OneWay}" TextWrapping="Wrap" VerticalAlignment="Top" Width="80" Height="20"/>
+        <TextBox x:Name="BarInput" HorizontalAlignment="Left" Margin="194,41,0,0" Text="{Binding Bar, UpdateSourceTrigger=PropertyChanged}" TextChanged="TextBox_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" Width="80" Height="20"/>
+        <TextBox x:Name="StartTimeInput" HorizontalAlignment="Left" Margin="194,72,0,0" TextChanged="TextBox_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" Width="80" Height="20">
+            <TextBox.Text>
+                <Binding Path="StartTime" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.Converter>
+                        <local:TimeToStringConverter/>
+                    </Binding.Converter>
+                    <Binding.ValidationRules>
+                        <local:TimeValidationRule/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+        <TextBox x:Name="EndTimeInput" HorizontalAlignment="Left" Margin="194,103,0,0" TextChanged="TextBox_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" Width="80" Height="20">
+            <TextBox.Text>
+                <Binding Path="EndTime" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.Converter>
+                        <local:TimeToStringConverter/>
+                    </Binding.Converter>
+                    <Binding.ValidationRules>
+                        <local:TimeValidationRule/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+        <Button Content="入力" Command="{Binding InputStartTimeButtonCommand}" CommandParameter="{Binding ElementName=tempoCalcWindow}" HorizontalAlignment="Left" Margin="279,72,0,0" VerticalAlignment="Top" Width="40" Height="20" ToolTip="現在位置を入力"/>
+        <Button Content="入力" Command="{Binding InputEndTimeButtonCommand}" CommandParameter="{Binding ElementName=tempoCalcWindow}" HorizontalAlignment="Left" Margin="279,103,0,0" VerticalAlignment="Top" Width="40" Height="20" ToolTip="現在位置を入力"/>
+        <Label Content="テンポ" HorizontalAlignment="Left" Margin="12,7,0,0" VerticalAlignment="Top" Height="26"/>
+        <Label Content="拍子" HorizontalAlignment="Left" Margin="155,7,0,0" VerticalAlignment="Top" Height="26"/>
+        <Label Content="小節数" HorizontalAlignment="Left" Margin="143,38,0,0" VerticalAlignment="Top" Height="26"/>
+        <Label Content="始点" HorizontalAlignment="Left" Margin="155,68,0,0" VerticalAlignment="Top" Height="26"/>
+        <Label Content="終点" HorizontalAlignment="Left" Margin="155,100,0,0" VerticalAlignment="Top" Height="26"/>
+
+    </Grid>
+</Window>

@@ -1,0 +1,77 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>YorkTrail.ico</ApplicationIcon>
+    <Platforms>AnyCPU;x64;x86</Platforms>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <PlatformTarget>AnyCPU</PlatformTarget>
+	  <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+	  <Prefer32Bit>true</Prefer32Bit>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+	  <PlatformTarget>x86</PlatformTarget>
+	  <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+	  <PlatformTarget>x64</PlatformTarget>
+	  <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="end.png" />
+    <None Remove="ff.png" />
+    <None Remove="fr.png" />
+    <None Remove="image\end.png" />
+    <None Remove="image\ff.png" />
+    <None Remove="image\fr.png" />
+    <None Remove="image\pause.png" />
+    <None Remove="image\play.png" />
+    <None Remove="image\start.png" />
+    <None Remove="image\stop.png" />
+    <None Remove="pause.png" />
+    <None Remove="play.png" />
+    <None Remove="start.png" />
+    <None Remove="stop.png" />
+    <None Remove="YorkTrail.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\YorkTrailCore\YorkTrailCore.vcxproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="image\end.png" />
+    <Resource Include="image\ff.png" />
+    <Resource Include="image\fr.png" />
+    <Resource Include="image\pause.png" />
+    <Resource Include="image\play.png" />
+    <Resource Include="image\start.png" />
+    <Resource Include="image\stop.png" />
+    <Resource Include="YorkTrail.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+</Project>
