@@ -41,13 +41,6 @@
     <None Remove="end.png" />
     <None Remove="ff.png" />
     <None Remove="fr.png" />
-    <None Remove="image\end.png" />
-    <None Remove="image\ff.png" />
-    <None Remove="image\fr.png" />
-    <None Remove="image\pause.png" />
-    <None Remove="image\play.png" />
-    <None Remove="image\start.png" />
-    <None Remove="image\stop.png" />
     <None Remove="pause.png" />
     <None Remove="play.png" />
     <None Remove="start.png" />
@@ -60,13 +53,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="image\end.png" />
-    <Resource Include="image\ff.png" />
-    <Resource Include="image\fr.png" />
-    <Resource Include="image\pause.png" />
-    <Resource Include="image\play.png" />
-    <Resource Include="image\start.png" />
-    <Resource Include="image\stop.png" />
     <Resource Include="YorkTrail.ico" />
   </ItemGroup>
 
