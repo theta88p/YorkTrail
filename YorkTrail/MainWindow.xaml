@@ -15,6 +15,7 @@
     >
     <Window.Resources>
         <ResourceDictionary>
+            <local:DictionaryToKeyConverter x:Key="DictionaryToKeyConverter"/>
             <local:PathShortenConverter x:Key="PathShortenConverter"/>
             <local:SelectedDeviceConverter x:Key="SelectedDeviceConverter"/>
             <local:TimeToStringConverter x:Key="TimeToStringConverter"/>
@@ -442,6 +443,15 @@
     <Window.DataContext>
         <local:MainWindowViewModel/>
     </Window.DataContext>
+    <Window.InputBindings>
+        <KeyBinding Modifiers="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=Play}" Key="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=Play}" Command="{Binding PlayCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
+        <KeyBinding Modifiers="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=Pause}" Key="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=Pause}" Command="{Binding PauseCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
+        <KeyBinding Modifiers="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=Stop}" Key="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=Stop}" Command="{Binding PauseCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
+        <KeyBinding Modifiers="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=FF}" Key="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=FF}" Command="{Binding FFCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
+        <KeyBinding Modifiers="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=FR}" Key="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=FR}" Command="{Binding FRCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
+        <KeyBinding Modifiers="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=ToStart}" Key="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=ToStart}" Command="{Binding ToStartCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
+        <KeyBinding Modifiers="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=ToEnd}" Key="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=ToEnd}" Command="{Binding ToEndCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
+    </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
