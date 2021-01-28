@@ -47,6 +47,11 @@ namespace YorkTrail
         public Dictionary<string, KeyGesture> KeyBinds { get; set; }
         [DataMember]
         public Dictionary<string, string> keyBindsSerializeable;
+        [DataMember]
+        public double WindowTop { get; set; }
+        [DataMember]
+        public double WindowLeft { get; set; }
+
 
         [DataMember]
         private bool _alwaysOnTop = false;

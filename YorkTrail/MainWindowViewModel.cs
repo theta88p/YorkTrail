@@ -245,6 +245,8 @@ namespace YorkTrail
 
         public void CollectWindowSettings()
         {
+            Settings.WindowTop = Window.Top;
+            Settings.WindowLeft = Window.Left;
             Settings.WindowHeight = Window.ActualHeight;
             Settings.MenuToolBarBand = Window.MenuToolBar.Band;
             Settings.MenuToolBarBandIndex = Window.MenuToolBar.BandIndex;
@@ -258,6 +260,8 @@ namespace YorkTrail
         {
             if (Settings != null)
             {
+                Window.Top = Settings.WindowTop;
+                Window.Left = Settings.WindowLeft;
                 Window.Height = Settings.WindowHeight;
                 Window.MenuToolBar.Band = Settings.MenuToolBarBand;
                 Window.MenuToolBar.BandIndex = Settings.MenuToolBarBandIndex;

@@ -11,6 +11,7 @@
     x:Name="mainWindow"
     Loaded="mainWindow_Loaded"
     Closing="mainWindow_Closing"
+    WindowStartupLocation="Manual"
     Topmost="{Binding Settings.AlwaysOnTop}"
     >
     <Window.Resources>
