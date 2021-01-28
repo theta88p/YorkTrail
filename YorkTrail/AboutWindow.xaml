@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:YorkTrail"
         mc:Ignorable="d"
         Name="aboutWindow"
+        WindowStartupLocation="CenterOwner"
         Title="YorkTrailについて" Height="130" Width="300" ResizeMode="NoResize">
     <Grid Background="WhiteSmoke">
         <Grid.ColumnDefinitions>

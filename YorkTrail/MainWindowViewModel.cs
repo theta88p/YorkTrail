@@ -232,6 +232,8 @@ namespace YorkTrail
         public ExitCommand ExitCommand { get; private set; } = new ExitCommand();
         public SelectionResetCommand SelectionResetCommand { get; private set; } = new SelectionResetCommand();
         public ShowAboutCommand ShowAboutCommand { get; private set; } = new ShowAboutCommand();
+        public CurrentToStartPositionCommand CurrentToStartPositionCommand { get; private set; } = new CurrentToStartPositionCommand();
+        public CurrentToEndPositionCommand CurrentToEndPositionCommand { get; private set; } = new CurrentToEndPositionCommand();
 
         public void DisplayUpdate()
         {

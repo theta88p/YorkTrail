@@ -158,11 +158,23 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            window.ProgressBar.Minimum = vm.StartPosition;
-            window.ProgressBar.Maximum = vm.EndPosition;
-            window.RangeSlider.Minimum = vm.StartPosition;
-            window.RangeSlider.Maximum = vm.EndPosition;
-            vm.IsZooming = true;
+
+            if (vm.IsZooming)
+            {
+                window.ProgressBar.Minimum = 0.0f;
+                window.ProgressBar.Maximum = 1.0f;
+                window.RangeSlider.Minimum = 0.0f;
+                window.RangeSlider.Maximum = 1.0f;
+                vm.IsZooming = false;
+            }
+            else
+            {
+                window.ProgressBar.Minimum = vm.StartPosition;
+                window.ProgressBar.Maximum = vm.EndPosition;
+                window.RangeSlider.Minimum = vm.StartPosition;
+                window.RangeSlider.Maximum = vm.EndPosition;
+                vm.IsZooming = true;
+            }
         }
     }
     public class ZoomResetCommand : ICommand
@@ -372,6 +384,40 @@ namespace YorkTrail
             window.RangeSlider.Dispatcher.Invoke(() => { window.RangeSlider.LowerValue = 0.0f; });
             window.RangeSlider.Dispatcher.Invoke(() => { window.RangeSlider.UpperValue = 1.0f; });
 
+        }
+    }
+
+    public class CurrentToStartPositionCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.StartPosition = vm.Position;
+            // Dependency PropertyだとNotifyPropertyChanged呼ばれないので無理やり動かす
+            window.RangeSlider.Dispatcher.Invoke(() => { window.RangeSlider.LowerValue = vm.StartPosition; });
+        }
+    }
+
+    public class CurrentToEndPositionCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.EndPosition = vm.Position;
+            // Dependency PropertyだとNotifyPropertyChanged呼ばれないので無理やり動かす
+            window.RangeSlider.Dispatcher.Invoke(() => { window.RangeSlider.UpperValue = vm.EndPosition; });
         }
     }
 }
