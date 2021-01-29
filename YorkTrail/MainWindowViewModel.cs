@@ -213,6 +213,7 @@ namespace YorkTrail
 
         public MainWindow Window { get; set; }
         public TempoCalcWindow TempoCalcWindow { get; set; }
+
         public PlayCommand PlayCommand { get; private set; } = new PlayCommand();
         public StopCommand StopCommand { get; private set; } = new StopCommand();
         public PauseCommand PauseCommand { get; private set; } = new PauseCommand();
@@ -234,6 +235,22 @@ namespace YorkTrail
         public ShowAboutCommand ShowAboutCommand { get; private set; } = new ShowAboutCommand();
         public CurrentToStartPositionCommand CurrentToStartPositionCommand { get; private set; } = new CurrentToStartPositionCommand();
         public CurrentToEndPositionCommand CurrentToEndPositionCommand { get; private set; } = new CurrentToEndPositionCommand();
+        public StereoCommand StereoCommand { get; private set; } = new StereoCommand();
+        public MonoCommand MonoCommand { get; private set; } = new MonoCommand();
+        public LOnlyCommand LOnlyCommand { get; private set; } = new LOnlyCommand();
+        public ROnlyCommand ROnlyCommand { get; private set; } = new ROnlyCommand();
+        public LMinusRCommand LMinusRCommand { get; private set; } = new LMinusRCommand();
+        public PitchQuadCommand PitchQuadCommand { get; private set; } = new PitchQuadCommand();
+        public PitchDoubleCommand PitchDoubleCommand { get; private set; } = new PitchDoubleCommand();
+        public PitchNormalCommand PitchNormalCommand { get; private set; } = new PitchNormalCommand();
+        public PitchHalfCommand PitchHalfCommand { get; private set; } = new PitchHalfCommand();
+        public TempoDoubleCommand TempoDoubleCommand { get; private set; } = new TempoDoubleCommand();
+        public TempoNormalCommand TempoNormalCommand { get; private set; } = new TempoNormalCommand();
+        public TempoHalfCommand TempoHalfCommand { get; private set; } = new TempoHalfCommand();
+        public TempoOneThirdCommand TempoOneThirdCommand { get; private set; } = new TempoOneThirdCommand();
+        public TempoQuarterCommand TempoQuarterCommand { get; private set; } = new TempoQuarterCommand();
+        public LoopCommand LoopCommand { get; private set; } = new LoopCommand();
+        public AlwaysOnTopCommand AlwaysOnTopCommand { get; private set; } = new AlwaysOnTopCommand();
 
         public void DisplayUpdate()
         {

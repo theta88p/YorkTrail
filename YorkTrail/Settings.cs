@@ -44,14 +44,13 @@ namespace YorkTrail
         public int IconToolBarBandIndex { get; set; }
         [DataMember]
         public double IconToolBarWidth { get; set; }
-        public Dictionary<string, KeyGesture> KeyBinds { get; set; }
+        public Dictionary<string, ShortCutKey> KeyBinds { get; set; }
         [DataMember]
-        public Dictionary<string, string> keyBindsSerializeable;
+        public Dictionary<string, string> KeyBindsSerializeable { get; set; }
         [DataMember]
         public double WindowTop { get; set; }
         [DataMember]
         public double WindowLeft { get; set; }
-
 
         [DataMember]
         private bool _alwaysOnTop = false;
@@ -94,18 +93,14 @@ namespace YorkTrail
 
                 if (settings != null)
                 {
-                    var kgvs = new KeyGestureValueSerializer();
                     settings.SetDefaultKeyBinds();
 
-                    foreach (var kb in settings.keyBindsSerializeable)
+                    foreach (var kb in settings.KeyBindsSerializeable)
                     {
-                        if (kgvs.CanConvertFromString(kb.Value, null))
-                        {
                             if (settings.KeyBinds.ContainsKey(kb.Key))
                             {
-                                settings.KeyBinds[kb.Key] = (KeyGesture)kgvs.ConvertFromString(kb.Value, null);
+                                settings.KeyBinds[kb.Key] = ShortCutKey.ConvertFromString(kb.Value);
                             }
-                        }
                     }
                 }
             }
@@ -118,16 +113,8 @@ namespace YorkTrail
 
         public static void WriteSettingsToFile(Settings settings)
         {
-            var kgvs = new KeyGestureValueSerializer();
-            settings.keyBindsSerializeable = new Dictionary<string, string>();
+            settings.KeyBindsSerializeable = KeyBindsToSerializeable(settings.KeyBinds);
 
-            foreach(var kb in settings.KeyBinds)
-            {
-                if (kgvs.CanConvertToString(kb.Value, null))
-                {
-                    settings.keyBindsSerializeable.Add(kb.Key, kgvs.ConvertToString(kb.Value, null));
-                }
-            }
             // シリアライズする
             var serializer = new DataContractSerializer(typeof(Settings));
             var set = new XmlWriterSettings();
@@ -151,17 +138,57 @@ namespace YorkTrail
 
         private void SetDefaultKeyBinds()
         {
-            var dic = new Dictionary<string, KeyGesture>() {
-                { "Play", new KeyGesture(Key.Space, ModifierKeys.None) },
-                { "Pause", new KeyGesture(Key.Enter, ModifierKeys.None) },
-                { "Stop", new KeyGesture(Key.Escape, ModifierKeys.None) },
-                { "FF", new KeyGesture(Key.Right, ModifierKeys.None) },
-                { "FR", new KeyGesture(Key.Left, ModifierKeys.None) },
-                { "ToStart", new KeyGesture(Key.Left, ModifierKeys.Shift) },
-                { "ToEnd", new KeyGesture(Key.Right, ModifierKeys.Shift) }
+            var dic = new Dictionary<string, ShortCutKey>() {
+                { "Play",  new ShortCutKey(Key.Space, ModifierKeys.None) },
+                { "Pause", new ShortCutKey(Key.Enter, ModifierKeys.None) },
+                { "Stop", new ShortCutKey(Key.Escape, ModifierKeys.None) },
+                { "FF", new ShortCutKey(Key.Right, ModifierKeys.None) },
+                { "FR", new ShortCutKey(Key.Left, ModifierKeys.None) },
+                { "ToStart", new ShortCutKey(Key.Left, ModifierKeys.Shift) },
+                { "ToEnd", new ShortCutKey(Key.Right, ModifierKeys.Shift) },
+                { "CurrentToStartPosition", new ShortCutKey(Key.F9, ModifierKeys.None) },
+                { "CurrentToEndPosition", new ShortCutKey(Key.F10, ModifierKeys.None) },
+                { "S", new ShortCutKey(Key.S, ModifierKeys.None) },
+                { "L+R", new ShortCutKey(Key.M, ModifierKeys.None) },
+                { "L", new ShortCutKey(Key.L, ModifierKeys.None) },
+                { "R", new ShortCutKey(Key.R, ModifierKeys.None) },
+                { "L-R", new ShortCutKey(Key.M, ModifierKeys.Shift) },
+                { "LPFOn", new ShortCutKey(Key.D0, ModifierKeys.None) },
+                { "HPFOn", new ShortCutKey(Key.D1, ModifierKeys.None) },
+                { "BPFOn", new ShortCutKey(Key.D2, ModifierKeys.None) },
+                { "PitchQuad", new ShortCutKey(Key.F2, ModifierKeys.Shift) },
+                { "PitchDouble", new ShortCutKey(Key.F2, ModifierKeys.None) },
+                { "PitchNormal", new ShortCutKey(Key.F3, ModifierKeys.None) },
+                { "PitchHalf", new ShortCutKey(Key.F4, ModifierKeys.None) },
+                { "TempoDouble", new ShortCutKey(Key.F5, ModifierKeys.None) },
+                { "TempoNormal", new ShortCutKey(Key.F6, ModifierKeys.None) },
+                { "TempoHalf", new ShortCutKey(Key.F7, ModifierKeys.None) },
+                { "TempoOneThird", new ShortCutKey(Key.F8, ModifierKeys.None) },
+                { "TempoQuarter", new ShortCutKey(Key.F8, ModifierKeys.Shift) },
+                { "Bypass", new ShortCutKey(Key.B, ModifierKeys.None) },
+                { "FileOpen", new ShortCutKey(Key.O, ModifierKeys.Control) },
+                { "FileClose", new ShortCutKey(Key.None, ModifierKeys.None) },
+                { "Loop", new ShortCutKey(Key.L, ModifierKeys.Control) },
+                { "SelectionReset", new ShortCutKey(Key.I, ModifierKeys.Control) },
+                { "Zoom", new ShortCutKey(Key.X, ModifierKeys.Control) },
+                { "TempoCalc", new ShortCutKey(Key.T, ModifierKeys.Alt) },
+                { "AlwaysOnTop", new ShortCutKey(Key.T, ModifierKeys.Control) },
+                { "Exit", new ShortCutKey(Key.Q, ModifierKeys.Control) },
             };
 
             this.KeyBinds = dic;
+            this.KeyBindsSerializeable = KeyBindsToSerializeable(dic);
+        }
+
+        private static Dictionary<string, string> KeyBindsToSerializeable(Dictionary<string, ShortCutKey> dic)
+        {
+            var ret = new Dictionary<string, string>();
+
+            foreach (var kb in dic)
+            {
+                    ret.Add(kb.Key, ShortCutKey.ConvertToString(kb.Value));
+            }
+            return ret;
         }
     }
 }

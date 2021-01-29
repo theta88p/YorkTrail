@@ -135,6 +135,203 @@ namespace YorkTrail
             vm.Core.SetPosition(1.0f);
         }
     }
+    public class StereoCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.Channels = Channels.Stereo;
+        }
+    }
+    public class MonoCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.Channels = Channels.LPlusR;
+        }
+    }
+    public class LOnlyCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.Channels = Channels.L;
+        }
+    }
+    public class ROnlyCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.Channels = Channels.R;
+        }
+    }
+    public class LMinusRCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.Channels = Channels.LMinusR;
+        }
+    }
+    public class PitchQuadCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.Pitch = 4.0f;
+        }
+    }
+    public class PitchDoubleCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.Pitch = 2.0f;
+        }
+    }
+    public class PitchNormalCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.Pitch = 1.0f;
+        }
+    }
+    public class PitchHalfCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.Pitch = 0.5f;
+        }
+    }
+    public class TempoDoubleCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.Rate = 2.0f;
+        }
+    }
+    public class TempoNormalCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.Rate = 1.0f;
+        }
+    }
+    public class TempoHalfCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.Rate = 0.5f;
+        }
+    }
+    public class TempoOneThirdCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.Rate = 0.33f;
+        }
+    }
+    public class TempoQuarterCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.Rate = 0.25f;
+        }
+    }
+
     public class ZoomCommand : ICommand
     {
         public event EventHandler CanExecuteChanged;
@@ -248,8 +445,35 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            bool check = window?.BypassButton.IsChecked ?? false;
-            vm.Core.SetBypass(check);
+            vm.IsBypass = !vm.IsBypass;
+        }
+    }
+    public class LoopCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.IsLoop = !vm.IsLoop;
+        }
+    }
+    public class AlwaysOnTopCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.Settings.AlwaysOnTop = !vm.Settings.AlwaysOnTop;
         }
     }
     public class OpenTempoCalcWindowCommand : ICommand
