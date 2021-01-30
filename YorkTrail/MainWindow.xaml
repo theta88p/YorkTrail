@@ -588,6 +588,7 @@
                                 </Style>
                             </MenuItem.ItemContainerStyle>
                         </MenuItem>
+                        <MenuItem Header="キーカスタマイズ(_K)" Template="{DynamicResource MenuItemTemplate}" Command="{Binding OpenKeyCustomizeCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
                     </MenuItem>
                     <MenuItem Height="20" Width="56" Header="ヘルプ(_H)" Padding="4,2,0,2">
                         <MenuItem Header="YorkTrailについて(_A)" Command="{Binding ShowAboutCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>

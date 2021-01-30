@@ -13,15 +13,18 @@ namespace YorkTrail
         {
 
         }
+
         public ShortCutKey(Key key)
         {
             this.Key = key;
         }
+
         public ShortCutKey(Key key, ModifierKeys mod)
         {
             this.Key = key;
             this.Modifiers = mod;
         }
+
         public Key Key { get; set; } = Key.None;
         public ModifierKeys Modifiers { get; set; } = ModifierKeys.None;
 

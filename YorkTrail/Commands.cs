@@ -579,6 +579,24 @@ namespace YorkTrail
         }
     }
 
+    public class OpenKeyCustomizeCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            var kcwindow = new KeyCustomizeWindow(vm);
+            kcwindow.ShowActivated = true;
+            kcwindow.Owner = window;
+            kcwindow.ShowDialog();
+        }
+    }
+
     public class SelectionResetCommand : ICommand
     {
         public event EventHandler CanExecuteChanged;
@@ -602,12 +620,18 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
+            // ズーム解除
+            window.ProgressBar.Minimum = 0.0f;
+            window.ProgressBar.Maximum = 1.0f;
+            window.RangeSlider.Minimum = 0.0f;
+            window.RangeSlider.Maximum = 1.0f;
+            vm.IsZooming = false;
+
             vm.StartPosition = 0.0f;
             vm.EndPosition = 1.0f;
             // Dependency PropertyだとNotifyPropertyChanged呼ばれないので無理やり動かす
             window.RangeSlider.Dispatcher.Invoke(() => { window.RangeSlider.LowerValue = 0.0f; });
             window.RangeSlider.Dispatcher.Invoke(() => { window.RangeSlider.UpperValue = 1.0f; });
-
         }
     }
 

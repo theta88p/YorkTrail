@@ -1,0 +1,40 @@
+﻿<Window x:Class="YorkTrail.KeyCustomizeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:YorkTrail"
+        mc:Ignorable="d"
+        Title="キーカスタマイズ" Height="390" Width="490"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        Background="WhiteSmoke"
+        Topmost="{Binding MainWindowViewModel.Settings.AlwaysOnTop}"
+        >
+    <Window.Resources>
+        <ResourceDictionary>
+            <local:EnglishToJapaneseConverter x:Key="EnglishToJapaneseConverter"/>
+            <local:ModifiersToBooleanConverter x:Key="ModifiersToBooleanConverter"/>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Window.DataContext>
+        <local:KeyCustomizeWindowViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <ListBox Name="KeyBinds" ItemsSource="{Binding MainWindowViewModel.Settings.KeyBinds}" SelectedValuePath="Value" Width="150" Height="300" HorizontalAlignment="Left" Margin="30,30,0,0" VerticalAlignment="Top">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Key, Converter={StaticResource EnglishToJapaneseConverter}}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <ListBox ItemsSource="{Binding KeyList}" SelectedItem="{Binding ElementName=KeyBinds, Path=SelectedValue.Key}" Width="150" Height="300" HorizontalAlignment="Left" Margin="200,30,0,0" SelectionChanged="ListBox_SelectionChanged" VerticalAlignment="Top"/>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="380,40,0,0">
+            <CheckBox Content="Ctrl" IsChecked="{Binding ElementName=KeyBinds, Path=SelectedValue.Modifiers, Converter={StaticResource ModifiersToBooleanConverter}, ConverterParameter=Ctrl}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top"/>
+            <CheckBox Content="Alt" IsChecked="{Binding ElementName=KeyBinds, Path=SelectedValue.Modifiers, Converter={StaticResource ModifiersToBooleanConverter}, ConverterParameter=Alt}" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top"/>
+            <CheckBox Content="Shift" IsChecked="{Binding ElementName=KeyBinds, Path=SelectedValue.Modifiers, Converter={StaticResource ModifiersToBooleanConverter}, ConverterParameter=Shift}" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top"/>
+            <CheckBox Content="Windows" IsChecked="{Binding ElementName=KeyBinds, Path=SelectedValue.Modifiers, Converter={StaticResource ModifiersToBooleanConverter}, ConverterParameter=Windows}" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top"/>
+        </StackPanel>
+        <Button Content="閉じる" HorizontalAlignment="Right" Margin="0,0,26,24" VerticalAlignment="Bottom" Width="60" Height="20" Click="Button_Click"/>
+    </Grid>
+</Window>

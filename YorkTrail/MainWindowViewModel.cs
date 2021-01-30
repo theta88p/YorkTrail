@@ -251,6 +251,7 @@ namespace YorkTrail
         public TempoQuarterCommand TempoQuarterCommand { get; private set; } = new TempoQuarterCommand();
         public LoopCommand LoopCommand { get; private set; } = new LoopCommand();
         public AlwaysOnTopCommand AlwaysOnTopCommand { get; private set; } = new AlwaysOnTopCommand();
+        public OpenKeyCustomizeCommand OpenKeyCustomizeCommand { get; private set; } = new OpenKeyCustomizeCommand();
 
         public void DisplayUpdate()
         {
@@ -324,9 +325,10 @@ namespace YorkTrail
 
         public void FileClose()
         {
-            Window.Title = applicationName;
             StopCommand.Execute(Window);
             Core.FileClose();
+            SelectionResetCommand.Execute(Window);
+            Window.Title = applicationName;
             this.StatusText = "";
         }
 
