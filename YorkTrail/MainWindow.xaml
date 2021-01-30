@@ -16,6 +16,21 @@
     >
     <Window.Resources>
         <ResourceDictionary>
+            <Style TargetType="Button">
+                <Setter Property="Focusable" Value="False"/>
+            </Style>
+            <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                <Setter Property="Focusable" Value="False"/>
+            </Style>
+            <Style TargetType="Slider">
+                <Setter Property="Focusable" Value="False"/>
+            </Style>
+            <Style TargetType="ProgressBar">
+                <Setter Property="Focusable" Value="False"/>
+            </Style>
+            <Style TargetType="local:RangeSlider">
+                <Setter Property="Focusable" Value="False"/>
+            </Style>
             <local:DictionaryToKeyConverter x:Key="DictionaryToKeyConverter"/>
             <local:PathShortenConverter x:Key="PathShortenConverter"/>
             <local:SelectedDeviceConverter x:Key="SelectedDeviceConverter"/>
@@ -179,6 +194,7 @@
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="BorderBrush" Value="Transparent"/>
                 <Setter Property="Foreground" Value="{StaticResource SliderThumb.Static.Foreground}"/>
+                <Setter Property="Focusable" Value="False"/>
                 <Setter Property="Template" Value="{StaticResource SliderVertical}"/>
             </Style>
             <!--#endregion-->
@@ -430,6 +446,7 @@
             <!--アイコンボタン-->
             <!--#region -->
             <Style x:Key="PathButton" TargetType="{x:Type Path}">
+                <Setter Property="Focusable" Value="False"/>
                 <Style.Triggers>
                     <Trigger Property="IsEnabled" Value="True">
                         <Setter Property="Fill" Value="Black"/>
@@ -448,7 +465,7 @@
     <Window.InputBindings>
         <KeyBinding Modifiers="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=Play}" Key="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=Play}" Command="{Binding PlayCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
         <KeyBinding Modifiers="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=Pause}" Key="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=Pause}" Command="{Binding PauseCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
-        <KeyBinding Modifiers="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=Stop}" Key="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=Stop}" Command="{Binding PauseCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
+        <KeyBinding Modifiers="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=Stop}" Key="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=Stop}" Command="{Binding StopCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
         <KeyBinding Modifiers="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=FF}" Key="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=FF}" Command="{Binding FFCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
         <KeyBinding Modifiers="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=FR}" Key="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=FR}" Command="{Binding FRCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
         <KeyBinding Modifiers="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=ToStart}" Key="{Binding Settings.KeyBinds, Converter={StaticResource DictionaryToKeyConverter}, ConverterParameter=ToStart}" Command="{Binding ToStartCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
