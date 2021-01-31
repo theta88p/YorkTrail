@@ -423,6 +423,16 @@ namespace YorkTrail
         }
         public void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (this.Core.GetState() == State.Playing)
+            {
+                this.Core.Stop();
+            }
+
+            if (BlinkTimer.Enabled)
+            {
+                BlinkTimer.Stop();
+            }
+
             CollectWindowSettings();
             Settings.WriteSettingsToFile(Settings);
         }
