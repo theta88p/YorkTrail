@@ -345,6 +345,12 @@ namespace YorkTrail
         {
             if (Core.IsFileLoaded())
             {
+                if (this.Core.GetState() == State.Pausing)
+                {
+                    this.BlinkTimer.Stop();
+                    Window.TimeDisplay.Opacity = 1.0;
+                    this.Core.Start();
+                }
                 RangeSlider rs = (RangeSlider)sender;
                 Point p = e.GetPosition(rs);
                 //double pos = (p.X / rs.Width * (1.0 - rs.Minimum) + rs.Minimum) * rs.Maximum;
@@ -352,6 +358,7 @@ namespace YorkTrail
                 rs.LowerValue = pos;
                 this.Position = (float)pos;
                 this.StartPosition = (float)pos;
+
             }
         }
         public void RangeSlider_LowerValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -375,6 +382,12 @@ namespace YorkTrail
             }
             else
             {
+                if (this.Core.GetState() == State.Pausing)
+                {
+                    this.BlinkTimer.Stop();
+                    Window.TimeDisplay.Opacity = 1.0;
+                    this.Core.Start();
+                }
                 Slider rs = (Slider)sender;
                 float value = (float)rs.Value;
                 this.Position = value;

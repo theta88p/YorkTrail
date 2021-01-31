@@ -90,6 +90,12 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
+            if (vm.Core.GetState() == State.Pausing)
+            {
+                vm.BlinkTimer.Stop();
+                window.TimeDisplay.Opacity = 1.0;
+                vm.Core.Start();
+            }
             vm.Core.SeekRelative(2000);
         }
     }
@@ -104,6 +110,12 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
+            if (vm.Core.GetState() == State.Pausing)
+            {
+                vm.BlinkTimer.Stop();
+                window.TimeDisplay.Opacity = 1.0;
+                vm.Core.Start();
+            }
             vm.Core.SeekRelative(-2000);
         }
     }
@@ -118,6 +130,12 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
+            if (vm.Core.GetState() == State.Pausing)
+            {
+                vm.BlinkTimer.Stop();
+                window.TimeDisplay.Opacity = 1.0;
+                vm.Core.Start();
+            }
             vm.Core.SetPosition(0.0f);
         }
     }
@@ -132,6 +150,12 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
+            if (vm.Core.GetState() == State.Pausing)
+            {
+                vm.BlinkTimer.Stop();
+                window.TimeDisplay.Opacity = 1.0;
+                vm.Core.Start();
+            }
             vm.Core.SetPosition(1.0f);
         }
     }
