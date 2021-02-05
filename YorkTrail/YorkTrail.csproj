@@ -6,9 +6,9 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>YorkTrail.ico</ApplicationIcon>
     <Platforms>AnyCPU;x64;x86</Platforms>
-    <Version>0.2.1</Version>
+    <Version>0.2.2</Version>
     <Authors>theta</Authors>
-    <AssemblyVersion>0.2.1.0</AssemblyVersion>
+    <AssemblyVersion>0.2.2.0</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

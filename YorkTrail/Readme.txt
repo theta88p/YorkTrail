@@ -19,7 +19,6 @@ Copylight(c) 2020 theta
 
 
 ・使用ライブラリ
-
   SoundTouch Audio Processing Library
   https://www.surina.net/soundtouch/
   
@@ -47,6 +46,7 @@ Copylight(c) 2020 theta
 　ver0.2.2　　2021/2/5
     速度変更のパラメータをスロー再生向けに変更
     ピッチとテンポのボタン配置を逆に
+    シークバー右クリックで終了位置を設定できるようにした
 
 　ver0.2.1　　2021/1/31
     一時停止中にシークしたとき即座に再生を開始するように変更
