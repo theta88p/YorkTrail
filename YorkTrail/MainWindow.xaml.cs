@@ -39,6 +39,10 @@ namespace YorkTrail
         {
             ((MainWindowViewModel)this.DataContext).RangeSlider_MouseLeftButtonDown(sender, e);
         }
+        private void RangeSlider_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            ((MainWindowViewModel)this.DataContext).RangeSlider_MouseRightButtonDown(sender, e);
+        }
         private void RangeSlider_LowerValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             ((MainWindowViewModel)this.DataContext).RangeSlider_LowerValueChanged(sender, e);
@@ -68,5 +72,6 @@ namespace YorkTrail
         {
             ((MainWindowViewModel)this.DataContext).MainWindow_Closing(sender, e);
         }
+
     }
 }

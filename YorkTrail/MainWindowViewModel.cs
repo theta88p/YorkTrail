@@ -100,6 +100,7 @@ namespace YorkTrail
             _timer.Start();
             */
         }
+
         private string applicationName = "YorkTrail";
 
 
@@ -341,6 +342,7 @@ namespace YorkTrail
             }
             e.Handled = true;
         }
+
         public void RangeSlider_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (Core.IsFileLoaded())
@@ -358,9 +360,18 @@ namespace YorkTrail
                 rs.LowerValue = pos;
                 this.Position = (float)pos;
                 this.StartPosition = (float)pos;
-
             }
         }
+
+        public void RangeSlider_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            RangeSlider rs = (RangeSlider)sender;
+            Point p = e.GetPosition(rs);
+            double pos = ((rs.Maximum - rs.Minimum) * p.X / rs.Width) + rs.Minimum;
+            rs.UpperValue = pos;
+            this.EndPosition = (float)pos;
+        }
+
         public void RangeSlider_LowerValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (!Core.IsFileLoaded())
@@ -368,10 +379,12 @@ namespace YorkTrail
                 ((RangeSlider)sender).LowerValue = 0;
             }
         }
+
         public void RangeSlider_UpperValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             this.EndPosition = (float)e.NewValue;
         }
+        
         public void RangeSlider_LowerSliderDragCompleted(object sender, DragCompletedEventArgs e)
         {
             if (!Core.IsFileLoaded())
@@ -394,17 +407,20 @@ namespace YorkTrail
                 this.StartPosition = value;
             }
         }
+        
         public void RangeSlider_UpperSliderDragCompleted(object sender, DragCompletedEventArgs e)
         {
             Slider rs = (Slider)sender;
             float value = (float)rs.Value;
             this.EndPosition = value;
         }
+        
         public void RecentFile_Clicked(object sender, ExecutedRoutedEventArgs e)
         {
             string path = (string)e.Parameter;
             SetPath(path);
         }
+        
         public void PlaybackDevice_Clicked(object sender, ExecutedRoutedEventArgs e)
         {
             string device = (string)e.Parameter;
@@ -416,11 +432,13 @@ namespace YorkTrail
                 }
             }
         }
+        
         public void mainWindow_Loaded(object sender, EventArgs e)
         {
             RestoreWindowSettings();
             this.Settings ??= new Settings();
         }
+        
         public void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (this.Core.GetState() == State.Playing)
