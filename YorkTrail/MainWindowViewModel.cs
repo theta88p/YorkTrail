@@ -293,37 +293,49 @@ namespace YorkTrail
 
         public void FileOpen(string path)
         {
-            string ext = System.IO.Path.GetExtension(path);
-            ext = ext.ToLower();
-            if (ext == ".wav" || ext == ".mp3" || ext == ".flac")
+            if (File.Exists(path))
             {
-                Window.Title = applicationName + " - " + Path.GetFileName(path);
-                ZoomResetCommand.Execute(null);
-                SelectionResetCommand.Execute(this.Window);
-                // 一時停止状態の解除
-                BlinkTimer.Stop();
-                Window.TimeDisplay.Opacity = 1.0;
+                string ext = Path.GetExtension(path);
+                ext = ext.ToLower();
+                if (ext == ".wav" || ext == ".mp3" || ext == ".flac")
+                {
+                    Window.Title = applicationName + " - " + Path.GetFileName(path);
+                    ZoomResetCommand.Execute(null);
+                    SelectionResetCommand.Execute(this.Window);
+                    // 一時停止状態の解除
+                    BlinkTimer.Stop();
+                    Window.TimeDisplay.Opacity = 1.0;
+
+                    if (Settings.RecentFiles.Contains(path))
+                    {
+                        Settings.RecentFiles.Remove(path);
+                        Settings.RecentFiles.Insert(0, path);
+                    }
+                    else
+                    {
+                        Settings.RecentFiles.Insert(0, path);
+                        if (Settings.RecentFiles.Count > 10)
+                        {
+                            Settings.RecentFiles.RemoveAt(10);
+                        }
+                    }
+                    Task.Run(() => { Core.SetPath(path); })
+                        .ContinueWith((task) => { this.StatusText = Core.GetFileInfo(); })
+                        .ContinueWith((task) => { Core.Start(); });
+                }
+                else
+                {
+                    MessageBox.Show("未対応のファイル形式です", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                }
+            }
+            else
+            {
+                MessageBox.Show("ファイルが存在しません", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 if (Settings.RecentFiles.Contains(path))
                 {
                     Settings.RecentFiles.Remove(path);
-                    Settings.RecentFiles.Insert(0, path);
                 }
-                else
-                {
-                    Settings.RecentFiles.Insert(0, path);
-                    if (Settings.RecentFiles.Count > 10)
-                    {
-                        Settings.RecentFiles.RemoveAt(10);
-                    }
-                }
-                Task.Run(() => { Core.SetPath(path); })
-                    .ContinueWith((task) => { this.StatusText = Core.GetFileInfo(); })
-                    .ContinueWith((task) => { Core.Start(); });
-            }
-            else
-            {
-                MessageBox.Show("未対応のファイル形式です", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
         }
 
