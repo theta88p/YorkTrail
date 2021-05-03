@@ -13,5 +13,10 @@ namespace YorkTrail
     /// </summary>
     public partial class App : Application
     {
+        private void Application_SessionEnding(object sender, SessionEndingCancelEventArgs e)
+        {
+            // 終了処理（キャッシュデータの保存など）
+            MainWindow.Close();
+        }
     }
 }

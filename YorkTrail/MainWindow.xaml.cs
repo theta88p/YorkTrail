@@ -25,11 +25,11 @@ namespace YorkTrail
         {
             InitializeComponent();
         }
-        private void mainWindow_Loaded(object sender, EventArgs e)
+        private void MainWindow_Loaded(object sender, EventArgs e)
         {
             var vm = (MainWindowViewModel)this.DataContext;
             vm.Window = this;
-            vm.mainWindow_Loaded(sender, e);
+            vm.MainWindow_Loaded(sender, e);
         }
         private void FileDrop(object sender, DragEventArgs e)
         {
@@ -68,7 +68,7 @@ namespace YorkTrail
             ((MainWindowViewModel)this.DataContext).PlaybackDevice_Clicked(sender, e);
         }
 
-        private void mainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             ((MainWindowViewModel)this.DataContext).MainWindow_Closing(sender, e);
         }

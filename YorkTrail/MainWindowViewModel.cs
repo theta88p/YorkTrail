@@ -433,7 +433,7 @@ namespace YorkTrail
             }
         }
         
-        public void mainWindow_Loaded(object sender, EventArgs e)
+        public void MainWindow_Loaded(object sender, EventArgs e)
         {
             RestoreWindowSettings();
             this.Settings ??= new Settings();
