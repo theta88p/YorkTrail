@@ -160,7 +160,7 @@
                 Maximum="{Binding ElementName=root, Path=Maximum}"
                 Style="{StaticResource TickOnly}" Foreground="Gray" Margin="0,-8,0,0"
         />
-        <Border BorderThickness="0,30,0,0" BorderBrush="Transparent" VerticalAlignment="Center" Height="30"/>
+        <Border BorderThickness="0,30,0,0" BorderBrush="Transparent" VerticalAlignment="Center" Height="30" Focusable="False"/>
         <Slider x:Name="LowerSlider"
                 Minimum="{Binding ElementName=root, Path=Minimum}"
                 Maximum="{Binding ElementName=root, Path=Maximum}"
