@@ -540,7 +540,7 @@ namespace YorkTrail
             ofd.Filter = "音声ファイル (*.wav;*.mp3;*.flac)|*.wav;*.mp3;*.flac";
             if (ofd.ShowDialog() == true)
             {
-                vm.SetPath(ofd.FileName);
+                vm.FileOpen(ofd.FileName);
             }
         }
     }

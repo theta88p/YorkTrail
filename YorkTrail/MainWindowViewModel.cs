@@ -291,15 +291,18 @@ namespace YorkTrail
             }
         }
 
-        public void SetPath(string path)
+        public void FileOpen(string path)
         {
             string ext = System.IO.Path.GetExtension(path);
             ext = ext.ToLower();
             if (ext == ".wav" || ext == ".mp3" || ext == ".flac")
             {
                 Window.Title = applicationName + " - " + Path.GetFileName(path);
-                this.ZoomResetCommand.Execute(null);
-                this.SelectionResetCommand.Execute(this.Window);
+                ZoomResetCommand.Execute(null);
+                SelectionResetCommand.Execute(this.Window);
+                // 一時停止状態の解除
+                BlinkTimer.Stop();
+                Window.TimeDisplay.Opacity = 1.0;
 
                 if (Settings.RecentFiles.Contains(path))
                 {
@@ -338,7 +341,7 @@ namespace YorkTrail
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                SetPath(files[0]);
+                FileOpen(files[0]);
             }
             e.Handled = true;
         }
@@ -418,7 +421,7 @@ namespace YorkTrail
         public void RecentFile_Clicked(object sender, ExecutedRoutedEventArgs e)
         {
             string path = (string)e.Parameter;
-            SetPath(path);
+            FileOpen(path);
         }
         
         public void PlaybackDevice_Clicked(object sender, ExecutedRoutedEventArgs e)
