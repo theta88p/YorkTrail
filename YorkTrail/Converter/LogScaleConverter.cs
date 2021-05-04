@@ -13,21 +13,21 @@ namespace YorkTrail
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string[] minmax = ((string)parameter).Split("-");
-            double min = double.Parse(minmax[0]);
-            double max = double.Parse(minmax[1]);
-            double x = (double)value;
+            float min = float.Parse(minmax[0]);
+            float max = float.Parse(minmax[1]);
+            float x = (float)value;
             double y = Math.Pow((x - min) / (max - min), 1.0 / 3.0);
             Debug.WriteLine(x + "/" + y);
-            return y;
+            return (float)y;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string[] minmax = ((string)parameter).Split("-");
-            double min = double.Parse(minmax[0]);
-            double max = double.Parse(minmax[1]);
-            double x = (double)value;
-            double y = (max - min) * Math.Pow(x, 3.0) + min;
+            float min = float.Parse(minmax[0]);
+            float max = float.Parse(minmax[1]);
+            float x = (float)(double)value;
+            float y = (float)((max - min) * Math.Pow(x, 3.0) + min);
             Debug.WriteLine(x + "/" + y);
             return y;
         }

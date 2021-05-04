@@ -540,7 +540,7 @@ namespace YorkTrail
             ofd.Filter = "音声ファイル (*.wav;*.mp3;*.flac)|*.wav;*.mp3;*.flac";
             if (ofd.ShowDialog() == true)
             {
-                vm.FileOpen(ofd.FileName);
+                vm.FileOpen(ofd.FileName, false);
             }
         }
     }
@@ -618,6 +618,24 @@ namespace YorkTrail
             kcwindow.ShowActivated = true;
             kcwindow.Owner = window;
             kcwindow.ShowDialog();
+        }
+    }
+
+    public class OpenSettingWindowCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            var sw = new SettingWindow(vm.Settings);
+            sw.ShowActivated = true;
+            sw.Owner = window;
+            sw.ShowDialog();
         }
     }
 

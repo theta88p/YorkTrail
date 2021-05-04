@@ -642,7 +642,7 @@
                     </Canvas>
                 </Button>
                 <Separator/>
-                <Button Width="24" Height="24" ToolTip="設定(工事中)" IsEnabled="False">
+                <Button Width="24" Height="24" Command="{Binding OpenSettingWindowCommand}" CommandParameter="{Binding ElementName=mainWindow}" ToolTip="設定">
                     <Canvas Width="16" Height="16" RenderTransformOrigin="0.5,0.5">
                         <Canvas.RenderTransform>
                             <TransformGroup>
@@ -700,20 +700,20 @@
         <StackPanel Orientation="Horizontal" Grid.Row="3" Width="430" Margin="0,-4,0,0">
             <GroupBox Header="LPF">
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                    <Slider Width="93" Value="{Binding LpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=10-22000, Delay=20, Mode=OneWayToSource}" Maximum="1" Minimum="0" VerticalAlignment="Top"/>
-                    <ToggleButton x:Name="LpfOnButton" Content="ON" Command="{Binding LpfOnCommand}" CommandParameter="{Binding ElementName=mainWindow}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="ローパスフィルタを有効にする"/>
+                    <Slider Width="93" Value="{Binding LpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=10-22000, Delay=20}" Maximum="1" Minimum="0" VerticalAlignment="Top"/>
+                    <ToggleButton x:Name="LpfOnButton" Content="ON" IsChecked="{Binding UseLpf}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="ローパスフィルタを有効にする"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="HPF">
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                    <Slider VerticalAlignment="Top" Width="93" Value="{Binding HpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=10-22000, Delay=20, Mode=OneWayToSource}" Maximum="1" Minimum="0"/>
-                    <ToggleButton x:Name="HpfOnButton" Content="ON" Command="{Binding HpfOnCommand}" CommandParameter="{Binding ElementName=mainWindow}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="ハイパスフィルタを有効にする"/>
+                    <Slider VerticalAlignment="Top" Width="93" Value="{Binding HpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=10-22000, Delay=20}" Maximum="1" Minimum="0"/>
+                    <ToggleButton x:Name="HpfOnButton" Content="ON" IsChecked="{Binding UseHpf}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="ハイパスフィルタを有効にする"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="BPF">
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                    <Slider VerticalAlignment="Top" Width="93" Value="{Binding BpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=50-20000, Delay=20, Mode=OneWayToSource}" Maximum="1" Minimum="0"/>
-                    <ToggleButton x:Name="BpfOnButton" Content="ON" Command="{Binding BpfOnCommand}" CommandParameter="{Binding ElementName=mainWindow}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="バンドパスフィルタを有効にする"/>
+                    <Slider VerticalAlignment="Top" Width="93" Value="{Binding BpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=50-20000, Delay=20}" Maximum="1" Minimum="0"/>
+                    <ToggleButton x:Name="BpfOnButton" Content="ON" IsChecked="{Binding UseBpf}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="バンドパスフィルタを有効にする"/>
                 </StackPanel>
             </GroupBox>
         </StackPanel>

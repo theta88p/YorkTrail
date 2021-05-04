@@ -22,6 +22,7 @@ namespace YorkTrail
         {
             SetDefaultKeyBinds();
         }
+
         [DataMember]
         public float Volume { get; set; } = 1.0f;
         [DataMember]
@@ -60,6 +61,43 @@ namespace YorkTrail
                 RaisePropertyChanged(nameof(AlwaysOnTop));
             }
         }
+
+        // 状態保存のためのプロパティ
+        [DataMember]
+        public bool RestoreLastState { get; set; } = false;
+        [DataMember]
+        public string FilePath { get; set; }
+        [DataMember]
+        public bool IsZooming { get; set; }
+        [DataMember]
+        public float Position { get; set; }
+        [DataMember]
+        public float StartPosition { get; set; }
+        [DataMember]
+        public float EndPosition { get; set; }
+        [DataMember]
+        public Channels Channels { get; set; }
+        [DataMember]
+        public float Pitch { get; set; }
+        [DataMember]
+        public float Rate { get; set; }
+        [DataMember]
+        public bool IsBypass { get; set; }
+        [DataMember]
+        public bool IsLoop { get; set; }
+        [DataMember]
+        public bool UseLpf { get; set; }
+        [DataMember]
+        public bool UseHpf { get; set; }
+        [DataMember]
+        public bool UseBpf { get; set; }
+        [DataMember]
+        public float LpfFreq { get; set; }
+        [DataMember]
+        public float HpfFreq { get; set; }
+        [DataMember]
+        public float BpfFreq { get; set; }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void RaisePropertyChanged([CallerMemberName] string propertyName = null)

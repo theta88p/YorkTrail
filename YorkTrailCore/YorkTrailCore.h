@@ -53,7 +53,7 @@ namespace YorkTrail
 		float rmsL = -100.0f;
 		float rmsR = -100.0f;
 		float lpfFreq = 22000.0f;
-		float hpfFreq = 0.0f;
+		float hpfFreq = 10.0f;
 		float bpfFreq = 400.0f;
 		bool useLpf = false;
 		bool useHpf = false;
@@ -65,7 +65,7 @@ namespace YorkTrail
 		~YorkTrailCore();
 		!YorkTrailCore();
 		String^ GetFileInfo();
-		void SetPath(String^ path);
+		void FileOpen(String^ path);
 		bool IsFileLoaded();
 		void FileClose();
 		void Start();

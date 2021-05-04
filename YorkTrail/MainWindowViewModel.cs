@@ -27,16 +27,21 @@ namespace YorkTrail
 
             if (Settings != null)
             {
+                // 無条件で復元する
                 this.Volume = Settings.Volume;
 
                 // デバイス構成が前回と違っていたら復元しない
                 if (Settings.DeviceName == DeviceList[Settings.DeviceIndex])
                 {
-                    PlaybackDevice = Settings.DeviceIndex;
+                    this.PlaybackDevice = Settings.DeviceIndex;
                 }
             }
+            else
+            {
+                this.Settings = new Settings();
+            }
 
-            //Positionはイベント駆動
+            // Positionはイベント駆動
             Core.NotifyTimeChanged += () => {
                 RaisePropertyChanged(nameof(Time));
                 RaisePropertyChanged(nameof(Position));
@@ -111,6 +116,7 @@ namespace YorkTrail
         private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
+        public string FilePath { get; set; }
         public bool IsZooming { get; set; }
         public ulong Time {
             get { return Core.GetTime(); }
@@ -203,12 +209,12 @@ namespace YorkTrail
         public YorkTrailCore Core { get; private set; } = YorkTrailHandleHolder.hYorkTrailCore;
         public float RMSL { get { return Core.rmsL; } }
         public float RMSR { get { return Core.rmsR; } }
-        public bool UseLpf { get { return Core.useLpf; } set { Core.useLpf = value; } }
-        public bool UseHpf { get { return Core.useHpf; } set { Core.useHpf = value; } }
-        public bool UseBpf { get { return Core.useBpf; } set { Core.useBpf = value; } }
-        public float LpfFreq { set { Core.SetLPF(value); } }
-        public float HpfFreq { set { Core.SetHPF(value); } }
-        public float BpfFreq { set { Core.SetBPF(value); } }
+        public bool UseLpf { get { return Core.useLpf; } set { Core.useLpf = value; RaisePropertyChanged(nameof(UseLpf)); } }
+        public bool UseHpf { get { return Core.useHpf; } set { Core.useHpf = value; RaisePropertyChanged(nameof(UseHpf)); } }
+        public bool UseBpf { get { return Core.useBpf; } set { Core.useBpf = value; RaisePropertyChanged(nameof(UseBpf)); } }
+        public float LpfFreq { get { return Core.lpfFreq; } set { Core.SetLPF((float)value); RaisePropertyChanged(nameof(LpfFreq)); } }
+        public float HpfFreq { get { return Core.hpfFreq; } set { Core.SetHPF(value); RaisePropertyChanged(nameof(HpfFreq)); } }
+        public float BpfFreq { get { return Core.bpfFreq; } set { Core.SetBPF(value); RaisePropertyChanged(nameof(BpfFreq)); } }
         public List<string> DeviceList { get; private set; }
         public Settings Settings { get; private set; }
 
@@ -253,6 +259,7 @@ namespace YorkTrail
         public LoopCommand LoopCommand { get; private set; } = new LoopCommand();
         public AlwaysOnTopCommand AlwaysOnTopCommand { get; private set; } = new AlwaysOnTopCommand();
         public OpenKeyCustomizeCommand OpenKeyCustomizeCommand { get; private set; } = new OpenKeyCustomizeCommand();
+        public OpenSettingWindowCommand OpenSettingWindowCommand { get; private set; } = new OpenSettingWindowCommand();
 
         public void DisplayUpdate()
         {
@@ -262,7 +269,7 @@ namespace YorkTrail
             RaisePropertyChanged(nameof(RMSR));
         }
 
-        public void CollectWindowSettings()
+        public void SaveWindowSettings()
         {
             Settings.WindowTop = Window.Top;
             Settings.WindowLeft = Window.Left;
@@ -291,10 +298,60 @@ namespace YorkTrail
             }
         }
 
-        public void FileOpen(string path)
+        public void SaveState()
+        {
+            Settings.FilePath = this.FilePath;
+            Settings.Position = this.Position;
+            Settings.StartPosition = this.StartPosition;
+            Settings.EndPosition = this.EndPosition;
+            Settings.Channels = this.Channels;
+            Settings.Pitch = this.Pitch;
+            Settings.Rate = this.Rate;
+            Settings.IsBypass = this.IsBypass;
+            Settings.IsLoop = this.IsLoop;
+            Settings.UseLpf = this.UseLpf;
+            Settings.UseHpf = this.UseHpf;
+            Settings.UseBpf = this.UseBpf;
+            Settings.LpfFreq = this.LpfFreq;
+            Settings.HpfFreq = this.HpfFreq;
+            Settings.BpfFreq = this.BpfFreq;
+            Settings.IsZooming = this.IsZooming;
+        }
+
+        public void ResotreState()
+        {
+            if (Settings.FilePath != null)
+            {
+                FileOpen(Settings.FilePath, true);
+            }
+            this.Position = Settings.Position;
+            this.StartPosition = Settings.StartPosition;
+            Window.RangeSlider.LowerValue = this.StartPosition;
+            this.EndPosition = Settings.EndPosition;
+            Window.RangeSlider.UpperValue = this.EndPosition;
+            this.Channels = Settings.Channels;
+            this.Pitch = Settings.Pitch;
+            this.Rate = Settings.Rate;
+            this.IsBypass = Settings.IsBypass;
+            this.IsLoop = Settings.IsLoop;
+            this.UseLpf = Settings.UseLpf;
+            this.UseHpf = Settings.UseHpf;
+            this.UseBpf = Settings.UseBpf;
+            this.LpfFreq = Settings.LpfFreq;
+            this.HpfFreq = Settings.HpfFreq;
+            this.BpfFreq = Settings.BpfFreq;
+
+            if (Settings.IsZooming)
+            {
+                ZoomCommand.Execute(this.Window);
+            }
+        }
+
+        public void FileOpen(string path, bool restored)
         {
             if (File.Exists(path))
             {
+                this.FilePath = path;
                 string ext = Path.GetExtension(path);
                 ext = ext.ToLower();
                 if (ext == ".wav" || ext == ".mp3" || ext == ".flac")
@@ -319,9 +376,15 @@ namespace YorkTrail
                             Settings.RecentFiles.RemoveAt(10);
                         }
                     }
-                    Task.Run(() => { Core.SetPath(path); })
-                        .ContinueWith((task) => { this.StatusText = Core.GetFileInfo(); })
-                        .ContinueWith((task) => { Core.Start(); });
+                    Task t = Task.Run(() => { Core.FileOpen(path); })
+                        .ContinueWith((task) => { this.StatusText = Core.GetFileInfo(); });
+
+                    t.Wait();
+
+                    if (!restored)
+                    {
+                        t.ContinueWith((task) => { Core.Start(); });
+                    }
                 }
                 else
                 {
@@ -343,6 +406,7 @@ namespace YorkTrail
         {
             StopCommand.Execute(Window);
             Core.FileClose();
+            this.FilePath = null;
             SelectionResetCommand.Execute(Window);
             Window.Title = applicationName;
             this.StatusText = "";
@@ -353,7 +417,7 @@ namespace YorkTrail
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                FileOpen(files[0]);
+                FileOpen(files[0], false);
             }
             e.Handled = true;
         }
@@ -433,7 +497,7 @@ namespace YorkTrail
         public void RecentFile_Clicked(object sender, ExecutedRoutedEventArgs e)
         {
             string path = (string)e.Parameter;
-            FileOpen(path);
+            FileOpen(path, false);
         }
         
         public void PlaybackDevice_Clicked(object sender, ExecutedRoutedEventArgs e)
@@ -451,9 +515,15 @@ namespace YorkTrail
         public void MainWindow_Loaded(object sender, EventArgs e)
         {
             RestoreWindowSettings();
-            this.Settings ??= new Settings();
+
+            // オプションで指定されていたら復元する
+            // ファイルを開く時ウィンドウタイトルを設定するためLoadedの後じゃないとダメ
+            if (Settings.RestoreLastState)
+            {
+                ResotreState();
+            }
         }
-        
+
         public void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (this.Core.GetState() == State.Playing)
@@ -466,7 +536,8 @@ namespace YorkTrail
                 BlinkTimer.Stop();
             }
 
-            CollectWindowSettings();
+            SaveState();
+            SaveWindowSettings();
             Settings.WriteSettingsToFile(Settings);
         }
     }

@@ -137,7 +137,7 @@ List<String^>^ YorkTrail::YorkTrailCore::GetPlaybackDeviceList()
     return deviceList;
 }
 
-void YorkTrail::YorkTrailCore::SetPath(String^ p)
+void YorkTrail::YorkTrailCore::FileOpen(String^ p)
 {
     if (playerTask != nullptr && playerTask->Status == TaskStatus::Running)
     {
