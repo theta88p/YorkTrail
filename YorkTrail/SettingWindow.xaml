@@ -10,11 +10,23 @@
         Background="WhiteSmoke"
         Topmost="{Binding AlwaysOnTop}"
         Title="オプション設定" Height="300" Width="490">
+    <Window.Resources>
+        <ResourceDictionary>
+            <local:IntToStringConverter x:Key="IntToStringConverter"/>
+        </ResourceDictionary>
+    </Window.Resources>
     <Window.DataContext>
         <local:Settings/>
     </Window.DataContext>
     <Grid>
-        <CheckBox Content="起動時に前回終了時の状態を復元" HorizontalAlignment="Left" Margin="60,50,0,0" VerticalAlignment="Top" IsChecked="{Binding RestoreLastState}"/>
+        <StackPanel Width="360" Margin="0,40,0,0">
+            <CheckBox Content="起動時に前回終了時の状態を復元" IsChecked="{Binding RestoreLastState}" Height="30" VerticalAlignment="Center"/>
+            <Grid Height="30">
+                <Label Content="早送り・巻き戻しの秒数" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding SkipLengthMS, Converter={StaticResource IntToStringConverter}}" TextWrapping="NoWrap" VerticalAlignment="Center" Width="40" HorizontalAlignment="Right" Margin="0,0,40,0"/>
+                <Label Content="ミリ秒" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+            </Grid>
+        </StackPanel>
         <Button Content="閉じる" HorizontalAlignment="Right" Margin="0,0,26,24" VerticalAlignment="Bottom" Width="60" Height="20" Click="CloseButton_Click"/>
     </Grid>
 </Window>

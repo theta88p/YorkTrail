@@ -96,7 +96,7 @@ namespace YorkTrail
                 window.TimeDisplay.Opacity = 1.0;
                 vm.Core.Start();
             }
-            vm.Core.SeekRelative(2000);
+            vm.Core.SeekRelative(vm.Settings.SkipLengthMS);
         }
     }
     public class FRCommand : ICommand
@@ -116,7 +116,7 @@ namespace YorkTrail
                 window.TimeDisplay.Opacity = 1.0;
                 vm.Core.Start();
             }
-            vm.Core.SeekRelative(-2000);
+            vm.Core.SeekRelative(-1 * vm.Settings.SkipLengthMS);
         }
     }
     public class ToStartCommand : ICommand

@@ -62,6 +62,9 @@ namespace YorkTrail
             }
         }
 
+        [DataMember]
+        public int SkipLengthMS { get; set; } = 2000;
+
         // 状態保存のためのプロパティ
         [DataMember]
         public bool RestoreLastState { get; set; } = false;
