@@ -27,7 +27,7 @@ namespace YorkTrail
 
         public string Version { get {
                 var v = Assembly.GetExecutingAssembly().GetName().Version;
-                return string.Format("v{0}.{1}.{2}", v.Major, v.Minor, v.Revision);
+                return string.Format("v{0}.{1}.{2}", v.Major, v.Minor, v.Build);
             }
         }
 
