@@ -29,6 +29,7 @@ namespace YorkTrail
             {
                 // 無条件で復元する
                 this.Volume = Settings.Volume;
+                Core.SetSoundTouchParam(Settings.SoundTouchSequenceMS, Settings.SoundTouchSeekWindowMS, Settings.SoundTouchOverlapMS);
 
                 // デバイス構成が前回と違っていたら復元しない
                 if (Settings.DeviceName == DeviceList[Settings.DeviceIndex])

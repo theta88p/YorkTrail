@@ -632,7 +632,7 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            var sw = new SettingWindow(vm.Settings);
+            var sw = new SettingWindow(vm);
             sw.ShowActivated = true;
             sw.Owner = window;
             sw.ShowDialog();

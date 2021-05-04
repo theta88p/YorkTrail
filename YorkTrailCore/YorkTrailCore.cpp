@@ -11,9 +11,7 @@ YorkTrail::YorkTrailCore::YorkTrailCore()
     pMutex = new ma_mutex();
     ma_mutex_init(pMutex);
     hSoundTouch = soundtouch_createInstance();
-    soundtouch_setSetting(hSoundTouch, 3, 80);// SETTING_SEQUENCE_MS default 40
-    soundtouch_setSetting(hSoundTouch, 4, 30);// SETTING_SEEKWINDOW_MS default 15
-    soundtouch_setSetting(hSoundTouch, 5, 8);// SETTING_OVERLAP_MS default 8
+    SetSoundTouchParam(80, 30, 8);
 }
 
 YorkTrail::YorkTrailCore::~YorkTrailCore()
@@ -597,6 +595,13 @@ void YorkTrail::YorkTrailCore::SetChannels(Channels ch)
 YorkTrail::Channels YorkTrail::YorkTrailCore::GetChannels()
 {
     return channels;
+}
+
+void YorkTrail::YorkTrailCore::SetSoundTouchParam(int seq, int window, int overlap)
+{
+    soundtouch_setSetting(hSoundTouch, 3, seq);// SETTING_SEQUENCE_MS default 40
+    soundtouch_setSetting(hSoundTouch, 4, window);// SETTING_SEEKWINDOW_MS default 15
+    soundtouch_setSetting(hSoundTouch, 5, overlap);// SETTING_OVERLAP_MS default 8
 }
 
 void YorkTrail::YorkTrailCore::Play()

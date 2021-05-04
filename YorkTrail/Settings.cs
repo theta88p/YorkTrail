@@ -64,6 +64,12 @@ namespace YorkTrail
 
         [DataMember]
         public int SkipLengthMS { get; set; } = 2000;
+        [DataMember]
+        public int SoundTouchSequenceMS { get; set; } = 80;
+        [DataMember]
+        public int SoundTouchSeekWindowMS { get; set; } = 30;
+        [DataMember]
+        public int SoundTouchOverlapMS { get; set; } = 8;
 
         // 状態保存のためのプロパティ
         [DataMember]

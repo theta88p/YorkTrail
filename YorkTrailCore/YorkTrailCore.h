@@ -92,6 +92,7 @@ namespace YorkTrail
 		void SetChannels(Channels ch);
 		Channels GetChannels();
 		List<String^>^ GetPlaybackDeviceList();
+		void SetSoundTouchParam(int seq, int window, int overlap);
 		void miniaudioStartCallback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
 
 		delegate void NotifyTimeChangedEventHandler();

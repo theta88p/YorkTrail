@@ -19,15 +19,21 @@ namespace YorkTrail
     /// </summary>
     public partial class SettingWindow : Window
     {
-        public SettingWindow(Settings set)
+        public SettingWindow(MainWindowViewModel vm)
         {
             InitializeComponent();
-            this.DataContext = set;
+            this.DataContext = vm;
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void SoundTouchSettings_SourceUpdated(object sender, RoutedEventArgs e)
+        {
+            var vm = (MainWindowViewModel)this.DataContext;
+            vm.Core.SetSoundTouchParam(vm.Settings.SoundTouchSequenceMS, vm.Settings.SoundTouchSeekWindowMS, vm.Settings.SoundTouchOverlapMS);
         }
     }
 }
