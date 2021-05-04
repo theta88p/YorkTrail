@@ -29,15 +29,15 @@
             <GroupBox Header="SoundTouchの設定" Height="120" Margin="0,20,0,0">
                 <StackPanel Margin="0,10,0,0">
                     <Grid>
-                        <Label Content="SETTING__SEQUENCE__MS (初期値:80)" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                        <Label Content="SEQUENCE__MS (初期値:80)" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0"/>
                         <TextBox Text="{Binding Settings.SoundTouchSequenceMS, Converter={StaticResource IntToStringConverter}, NotifyOnSourceUpdated=True}" TextWrapping="NoWrap" VerticalAlignment="Center" Width="40" HorizontalAlignment="Right" Margin="0,0,10,0" SourceUpdated="SoundTouchSettings_SourceUpdated"/>
                     </Grid>
                     <Grid>
-                        <Label Content="SETTING__SEEKWINDOW__MS (初期値:30)" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                        <Label Content="SEEKWINDOW__MS (初期値:30)" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0"/>
                         <TextBox Text="{Binding Settings.SoundTouchSeekWindowMS, Converter={StaticResource IntToStringConverter}, NotifyOnSourceUpdated=True}" TextWrapping="NoWrap" VerticalAlignment="Center" Width="40" HorizontalAlignment="Right" Margin="0,0,10,0" SourceUpdated="SoundTouchSettings_SourceUpdated"/>
                     </Grid>
                     <Grid>
-                        <Label Content="SETTING__OVERLAP__MS (初期値:8)" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                        <Label Content="OVERLAP__MS (初期値:8)" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0"/>
                         <TextBox Text="{Binding Settings.SoundTouchOverlapMS, Converter={StaticResource IntToStringConverter}, NotifyOnSourceUpdated=True}" TextWrapping="NoWrap" VerticalAlignment="Center" Width="40" HorizontalAlignment="Right" Margin="0,0,10,0" SourceUpdated="SoundTouchSettings_SourceUpdated"/>
                     </Grid>
                 </StackPanel>
