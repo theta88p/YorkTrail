@@ -37,10 +37,6 @@ namespace YorkTrail
                     this.PlaybackDevice = Settings.DeviceIndex;
                 }
             }
-            else
-            {
-                this.Settings = new Settings();
-            }
 
             // Positionはイベント駆動
             Core.NotifyTimeChanged += () => {
@@ -513,16 +509,24 @@ namespace YorkTrail
                 }
             }
         }
-        
+
         public void MainWindow_Loaded(object sender, EventArgs e)
         {
-            RestoreWindowSettings();
-
-            // オプションで指定されていたら復元する
-            // ファイルを開く時ウィンドウタイトルを設定するためLoadedの後じゃないとダメ
-            if (Settings.RestoreLastState)
+            if (Settings != null)
             {
-                ResotreState();
+                RestoreWindowSettings();
+
+                // オプションで指定されていたら復元する
+                // ファイルを開く時ウィンドウタイトルを設定するためLoadedの後じゃないとダメ
+                if (Settings.RestoreLastState)
+                {
+                    ResotreState();
+                }
+            }
+            else
+            {
+                // null判定するから全部終わった後じゃないとダメ
+                this.Settings = new Settings();
             }
         }
 
