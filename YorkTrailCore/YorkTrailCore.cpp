@@ -387,9 +387,9 @@ void YorkTrail::YorkTrailCore::Stop()
     {
         playerTask->Wait();
     }
-    seek(0);
-    curPos = 0.0f;
-    curFrame = 0.0f;
+    //seek(0);
+    //curPos = 0.0f;
+    //curFrame = 0.0f;
     rmsL = -100.0f;
     rmsR = -100.0f;
     NotifyTimeChanged();

@@ -325,6 +325,7 @@ namespace YorkTrail
                 FileOpen(Settings.FilePath, true);
             }
             this.Position = Settings.Position;
+            RaisePropertyChanged(nameof(Time));
             this.StartPosition = Settings.StartPosition;
             Window.RangeSlider.LowerValue = this.StartPosition;
             this.EndPosition = Settings.EndPosition;
