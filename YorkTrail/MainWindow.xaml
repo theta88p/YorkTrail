@@ -589,6 +589,7 @@
                             </MenuItem.ItemContainerStyle>
                         </MenuItem>
                         <MenuItem Header="キーカスタマイズ(_K)" Template="{DynamicResource MenuItemTemplate}" Command="{Binding OpenKeyCustomizeCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
+                        <MenuItem Header="オプション(_O)" Template="{DynamicResource MenuItemTemplate}" Command="{Binding OpenSettingWindowCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
                     </MenuItem>
                     <MenuItem Height="20" Width="56" Header="ヘルプ(_H)" Padding="4,2,0,2">
                         <MenuItem Header="YorkTrailについて(_A)" Command="{Binding ShowAboutCommand}" CommandParameter="{Binding ElementName=mainWindow}"/>
@@ -642,7 +643,7 @@
                     </Canvas>
                 </Button>
                 <Separator/>
-                <Button Width="24" Height="24" Command="{Binding OpenSettingWindowCommand}" CommandParameter="{Binding ElementName=mainWindow}" ToolTip="設定">
+                <Button Width="24" Height="24" Command="{Binding OpenSettingWindowCommand}" CommandParameter="{Binding ElementName=mainWindow}" ToolTip="オプション">
                     <Canvas Width="16" Height="16" RenderTransformOrigin="0.5,0.5">
                         <Canvas.RenderTransform>
                             <TransformGroup>
