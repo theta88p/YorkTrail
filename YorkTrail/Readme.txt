@@ -17,6 +17,21 @@ Copylight(c) 2020 theta
 ・使い方
   いじってればだいたいわかると思います。ほぼWPAK32なので。
 
+・SoundTouchの設定について
+  値を変更することで、速度やピッチ変更時の品質を調整することができます。
+  基本的に値を大きくするとスロー再生向けに、小さくすると早送り向けになりますが
+  極端な値にすると逆効果です。
+
+  SEQUENCE_MS … 波形を切り刻む長さ
+  SEEKWINDOW_MS … ミキシング位置の検索範囲
+  OVERLAP_MS … 波形同士のオーバーラップ長
+
+  詳しくはここら辺を参照のこと
+  3.4 Tuning the algorithm parameters
+  https://www.surina.net/soundtouch/README.html
+  タイムストレッチ、ピッチシフトのアルゴリズム
+  http://ackiesound.ifdef.jp/tech/timestretch.html
+
 
 ・使用ライブラリ
   SoundTouch Audio Processing Library
@@ -43,6 +58,16 @@ Copylight(c) 2020 theta
 
 
 ・更新履歴
+　ver0.3.0　　2021/5/5
+    オプションウィンドウを追加
+    前回終了時の状態を保存する機能を追加
+    早送り・巻き戻しの秒数をオプションに追加
+    SoundTouchのパラメータをオプションに追加
+    停止したときの挙動をWPAK32と同じにした
+    開こうとしたファイルが存在しなかった場合エラーが出ていたのを修正
+    一時停止中にファイルを開くと一時停止状態のまま再生されるのを修正
+    その他細かい修正
+
 　ver0.2.2　　2021/2/5
     速度変更のパラメータをスロー再生向けに変更
     ピッチとテンポのボタン配置を逆に
