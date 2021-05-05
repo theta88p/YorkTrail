@@ -116,6 +116,7 @@ namespace YorkTrail
         public static Settings ReadSettingsFromFile()
         {
             Settings settings = null;
+
             if (File.Exists(xmlPath))
             {
                 // デシリアライズする
@@ -138,23 +139,22 @@ namespace YorkTrail
                     MessageBox.Show("設定ファイルの読み込みに失敗しました\n\n" + e.Message, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
 
-                if (settings != null)
-                {
-                    settings.SetDefaultKeyBinds();
+                settings.SetDefaultKeyBinds();
 
-                    foreach (var kb in settings.KeyBindsSerializeable)
-                    {
-                            if (settings.KeyBinds.ContainsKey(kb.Key))
-                            {
-                                settings.KeyBinds[kb.Key] = ShortCutKey.ConvertFromString(kb.Value);
-                            }
-                    }
+                foreach (var kb in settings.KeyBindsSerializeable)
+                {
+                        if (settings.KeyBinds.ContainsKey(kb.Key))
+                        {
+                            settings.KeyBinds[kb.Key] = ShortCutKey.ConvertFromString(kb.Value);
+                        }
                 }
+
             }
             else
             {
                 settings = null;
             }
+
             return settings;
         }
 
@@ -224,7 +224,6 @@ namespace YorkTrail
             };
 
             this.KeyBinds = dic;
-            this.KeyBindsSerializeable = KeyBindsToSerializeable(dic);
         }
 
         private static Dictionary<string, string> KeyBindsToSerializeable(Dictionary<string, ShortCutKey> dic)
