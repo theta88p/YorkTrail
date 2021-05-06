@@ -31,19 +31,7 @@ namespace YorkTrail
 
         public void Window_Closed(object sender, EventArgs e)
         {
-            var vm = MainWindowViewModel;
-
-            foreach (InputBinding ib in vm.Window.InputBindings)
-            {
-                foreach(var kb in vm.Settings.KeyBinds)
-                {
-                    if (ib.Command.ToString() == kb.Key)
-                    {
-                        vm.Window.InputBindings.Remove(ib);
-                        vm.Window.InputBindings.Add(new KeyBinding(ib.Command, kb.Value.Key, kb.Value.Modifiers));
-                    }
-                }
-            }
+            MainWindowViewModel.SetKeyBinds();
         }
     }
 }

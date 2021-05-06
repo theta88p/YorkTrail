@@ -143,12 +143,11 @@ namespace YorkTrail
 
                 foreach (var kb in settings.KeyBindsSerializeable)
                 {
-                        if (settings.KeyBinds.ContainsKey(kb.Key))
-                        {
-                            settings.KeyBinds[kb.Key] = ShortCutKey.ConvertFromString(kb.Value);
-                        }
+                    if (settings.KeyBinds.ContainsKey(kb.Key))
+                    {
+                        settings.KeyBinds[kb.Key] = ShortCutKey.ConvertFromString(kb.Value);
+                    }
                 }
-
             }
             else
             {
@@ -195,14 +194,14 @@ namespace YorkTrail
                 { "ToEnd", new ShortCutKey(Key.Right, ModifierKeys.Shift) },
                 { "CurrentToStartPosition", new ShortCutKey(Key.F9, ModifierKeys.None) },
                 { "CurrentToEndPosition", new ShortCutKey(Key.F10, ModifierKeys.None) },
-                { "S", new ShortCutKey(Key.S, ModifierKeys.None) },
-                { "L+R", new ShortCutKey(Key.M, ModifierKeys.None) },
-                { "L", new ShortCutKey(Key.L, ModifierKeys.None) },
-                { "R", new ShortCutKey(Key.R, ModifierKeys.None) },
-                { "L-R", new ShortCutKey(Key.M, ModifierKeys.Shift) },
-                { "LPFOn", new ShortCutKey(Key.D0, ModifierKeys.None) },
-                { "HPFOn", new ShortCutKey(Key.D1, ModifierKeys.None) },
-                { "BPFOn", new ShortCutKey(Key.D2, ModifierKeys.None) },
+                { "Stereo", new ShortCutKey(Key.S, ModifierKeys.None) },
+                { "Mono", new ShortCutKey(Key.M, ModifierKeys.None) },
+                { "LOnly", new ShortCutKey(Key.L, ModifierKeys.None) },
+                { "ROnly", new ShortCutKey(Key.R, ModifierKeys.None) },
+                { "LMinusR", new ShortCutKey(Key.M, ModifierKeys.Shift) },
+                { "LpfOn", new ShortCutKey(Key.D0, ModifierKeys.None) },
+                { "HpfOn", new ShortCutKey(Key.D1, ModifierKeys.None) },
+                { "BpfOn", new ShortCutKey(Key.D2, ModifierKeys.None) },
                 { "PitchQuad", new ShortCutKey(Key.F2, ModifierKeys.Shift) },
                 { "PitchDouble", new ShortCutKey(Key.F2, ModifierKeys.None) },
                 { "PitchNormal", new ShortCutKey(Key.F3, ModifierKeys.None) },
@@ -218,7 +217,7 @@ namespace YorkTrail
                 { "Loop", new ShortCutKey(Key.L, ModifierKeys.Control) },
                 { "SelectionReset", new ShortCutKey(Key.I, ModifierKeys.Control) },
                 { "Zoom", new ShortCutKey(Key.X, ModifierKeys.Control) },
-                { "TempoCalc", new ShortCutKey(Key.T, ModifierKeys.Alt) },
+                { "OpenTempoCalcWindow", new ShortCutKey(Key.T, ModifierKeys.Alt) },
                 { "AlwaysOnTop", new ShortCutKey(Key.T, ModifierKeys.Control) },
                 { "Exit", new ShortCutKey(Key.Q, ModifierKeys.Control) },
             };

@@ -266,6 +266,47 @@ namespace YorkTrail
             RaisePropertyChanged(nameof(RMSR));
         }
 
+        public void SetKeyBinds()
+        {
+            Window.InputBindings.Clear();
+
+            Window.InputBindings.Add(new KeyBinding() { Command = PlayCommand, CommandParameter = Window, Key = Settings.KeyBinds["Play"].Key, Modifiers = Settings.KeyBinds["Play"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = PauseCommand, CommandParameter = Window, Key = Settings.KeyBinds["Pause"].Key, Modifiers = Settings.KeyBinds["Pause"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = StopCommand, CommandParameter = Window, Key = Settings.KeyBinds["Stop"].Key, Modifiers = Settings.KeyBinds["Stop"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = FFCommand, CommandParameter = Window, Key = Settings.KeyBinds["FF"].Key, Modifiers = Settings.KeyBinds["FF"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = FRCommand, CommandParameter = Window, Key = Settings.KeyBinds["FR"].Key, Modifiers = Settings.KeyBinds["FR"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = ToStartCommand, CommandParameter = Window, Key = Settings.KeyBinds["ToStart"].Key, Modifiers = Settings.KeyBinds["ToStart"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = ToEndCommand, CommandParameter = Window, Key = Settings.KeyBinds["ToEnd"].Key, Modifiers = Settings.KeyBinds["ToEnd"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = CurrentToStartPositionCommand, CommandParameter = Window, Key = Settings.KeyBinds["CurrentToStartPosition"].Key, Modifiers = Settings.KeyBinds["CurrentToStartPosition"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = CurrentToEndPositionCommand, CommandParameter = Window, Key = Settings.KeyBinds["CurrentToEndPosition"].Key, Modifiers = Settings.KeyBinds["CurrentToEndPosition"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = PlayCommand, CommandParameter = Window, Key = Settings.KeyBinds["CurrentToStartPosition"].Key, Modifiers = Settings.KeyBinds["CurrentToStartPosition"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = StereoCommand, CommandParameter = Window, Key = Settings.KeyBinds["Stereo"].Key, Modifiers = Settings.KeyBinds["Stereo"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = MonoCommand, CommandParameter = Window, Key = Settings.KeyBinds["Mono"].Key, Modifiers = Settings.KeyBinds["Mono"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = LOnlyCommand, CommandParameter = Window, Key = Settings.KeyBinds["LOnly"].Key, Modifiers = Settings.KeyBinds["LOnly"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = ROnlyCommand, CommandParameter = Window, Key = Settings.KeyBinds["ROnly"].Key, Modifiers = Settings.KeyBinds["ROnly"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = LMinusRCommand, CommandParameter = Window, Key = Settings.KeyBinds["LMinusR"].Key, Modifiers = Settings.KeyBinds["LMinusR"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = LpfOnCommand, CommandParameter = Window, Key = Settings.KeyBinds["LpfOn"].Key, Modifiers = Settings.KeyBinds["LpfOn"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = HpfOnCommand, CommandParameter = Window, Key = Settings.KeyBinds["HpfOn"].Key, Modifiers = Settings.KeyBinds["HpfOn"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = BpfOnCommand, CommandParameter = Window, Key = Settings.KeyBinds["BpfOn"].Key, Modifiers = Settings.KeyBinds["BpfOn"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = PitchQuadCommand, CommandParameter = Window, Key = Settings.KeyBinds["PitchQuad"].Key, Modifiers = Settings.KeyBinds["PitchQuad"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = PitchDoubleCommand, CommandParameter = Window, Key = Settings.KeyBinds["PitchDouble"].Key, Modifiers = Settings.KeyBinds["PitchDouble"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = PitchNormalCommand, CommandParameter = Window, Key = Settings.KeyBinds["PitchNormal"].Key, Modifiers = Settings.KeyBinds["PitchNormal"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = PitchHalfCommand, CommandParameter = Window, Key = Settings.KeyBinds["PitchHalf"].Key, Modifiers = Settings.KeyBinds["PitchHalf"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = TempoDoubleCommand, CommandParameter = Window, Key = Settings.KeyBinds["TempoDouble"].Key, Modifiers = Settings.KeyBinds["TempoDouble"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = TempoNormalCommand, CommandParameter = Window, Key = Settings.KeyBinds["TempoNormal"].Key, Modifiers = Settings.KeyBinds["TempoNormal"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = TempoHalfCommand, CommandParameter = Window, Key = Settings.KeyBinds["TempoHalf"].Key, Modifiers = Settings.KeyBinds["TempoHalf"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = TempoOneThirdCommand, CommandParameter = Window, Key = Settings.KeyBinds["TempoOneThird"].Key, Modifiers = Settings.KeyBinds["TempoOneThird"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = TempoQuarterCommand, CommandParameter = Window, Key = Settings.KeyBinds["TempoQuarter"].Key, Modifiers = Settings.KeyBinds["TempoQuarter"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = BypassCommand, CommandParameter = Window, Key = Settings.KeyBinds["Bypass"].Key, Modifiers = Settings.KeyBinds["Bypass"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = FileOpenCommand, CommandParameter = Window, Key = Settings.KeyBinds["FileOpen"].Key, Modifiers = Settings.KeyBinds["FileOpen"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = LoopCommand, CommandParameter = Window, Key = Settings.KeyBinds["Loop"].Key, Modifiers = Settings.KeyBinds["Loop"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = SelectionResetCommand, CommandParameter = Window, Key = Settings.KeyBinds["SelectionReset"].Key, Modifiers = Settings.KeyBinds["SelectionReset"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = ZoomCommand, CommandParameter = Window, Key = Settings.KeyBinds["Zoom"].Key, Modifiers = Settings.KeyBinds["Zoom"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = OpenTempoCalcWindowCommand, CommandParameter = Window, Key = Settings.KeyBinds["OpenTempoCalcWindow"].Key, Modifiers = Settings.KeyBinds["OpenTempoCalcWindow"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = AlwaysOnTopCommand, CommandParameter = Window, Key = Settings.KeyBinds["AlwaysOnTop"].Key, Modifiers = Settings.KeyBinds["AlwaysOnTop"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = ExitCommand, CommandParameter = Window, Key = Settings.KeyBinds["Exit"].Key, Modifiers = Settings.KeyBinds["Exit"].Modifiers });
+        }
+
         public void SaveWindowSettings()
         {
             Settings.WindowTop = Window.Top;
@@ -528,6 +569,8 @@ namespace YorkTrail
                 // null判定するから全部終わった後じゃないとダメ
                 this.Settings = new Settings();
             }
+
+            SetKeyBinds();
         }
 
         public void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
