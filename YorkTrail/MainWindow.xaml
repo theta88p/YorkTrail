@@ -675,46 +675,46 @@
         <StackPanel Grid.Row="2" Orientation="Horizontal" Width="430" Height="44">
             <GroupBox Header="Channels" Margin="0,-5,0,-2" Width="170" IsEnabled="{Binding IsBypass, Converter={StaticResource BooleanNegativeConverter}}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <RadioButton Content="S" IsChecked="{Binding Channels, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=0}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="ステレオ"/>
-                    <RadioButton Content="L" IsChecked="{Binding Channels, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=1}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="左chのみ"/>
-                    <RadioButton Content="R"  IsChecked="{Binding Channels, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=2}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="右chのみ"/>
-                    <RadioButton Content="L+R" IsChecked="{Binding Channels, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=3}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="左ch + 右ch"/>
-                    <RadioButton Content="L-R"  IsChecked="{Binding Channels, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=4}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="左ch - 右ch"/>
+                    <RadioButton Content="S" IsChecked="{Binding Channels, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=0}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="ステレオ" Focusable="False"/>
+                    <RadioButton Content="L" IsChecked="{Binding Channels, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=1}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="左chのみ" Focusable="False"/>
+                    <RadioButton Content="R"  IsChecked="{Binding Channels, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=2}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="右chのみ" Focusable="False"/>
+                    <RadioButton Content="L+R" IsChecked="{Binding Channels, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=3}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="左ch + 右ch" Focusable="False"/>
+                    <RadioButton Content="L-R"  IsChecked="{Binding Channels, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=4}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="左ch - 右ch" Focusable="False"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Pitch" Width="110" Margin="0,-5,0,-2" IsEnabled="{Binding IsBypass, Converter={StaticResource BooleanNegativeConverter}}">
                 <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <RadioButton Content="x2" IsChecked="{Binding Pitch, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=2.0}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="1オクターブ上"/>
-                    <RadioButton Content="x1" IsChecked="{Binding Pitch, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=1.0}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20"  ToolTip="通常"/>
-                    <RadioButton Content="1/2" IsChecked="{Binding Pitch, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=0.5}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="1オクターブ下"/>
+                    <RadioButton Content="x2" IsChecked="{Binding Pitch, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=2.0}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="1オクターブ上" Focusable="False"/>
+                    <RadioButton Content="x1" IsChecked="{Binding Pitch, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=1.0}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20"  ToolTip="通常" Focusable="False"/>
+                    <RadioButton Content="1/2" IsChecked="{Binding Pitch, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=0.5}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="1オクターブ下" Focusable="False"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Tempo" Width="110" Margin="0,-5,0,-2" IsEnabled="{Binding IsBypass, Converter={StaticResource BooleanNegativeConverter}}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <RadioButton Content="x2" IsChecked="{Binding Rate, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=2.0}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="2倍速"/>
-                    <RadioButton Content="x1" IsChecked="{Binding Rate, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=1.0}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="通常"/>
-                    <RadioButton Content="1/2" IsChecked="{Binding Rate, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=0.5}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="1/2倍速"/>
+                    <RadioButton Content="x2" IsChecked="{Binding Rate, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=2.0}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="2倍速" Focusable="False"/>
+                    <RadioButton Content="x1" IsChecked="{Binding Rate, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=1.0}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="通常" Focusable="False"/>
+                    <RadioButton Content="1/2" IsChecked="{Binding Rate, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=0.5}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="1/2倍速" Focusable="False"/>
                 </StackPanel>
             </GroupBox>
-            <ToggleButton x:Name="BypassButton" Content="Byp" IsChecked="{Binding IsBypass}" Width="30" Height="20" Margin="8,8,0,0" ToolTip="バイパス"/>
+            <ToggleButton x:Name="BypassButton" Content="Byp" IsChecked="{Binding IsBypass}" Width="30" Height="20" Margin="8,8,0,0" ToolTip="バイパス" Focusable="False"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="3" Width="430" Margin="0,-4,0,0">
             <GroupBox Header="LPF">
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
                     <Slider Width="93" Value="{Binding LpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=10-22000, Delay=20}" Maximum="1" Minimum="0" VerticalAlignment="Top"/>
-                    <ToggleButton x:Name="LpfOnButton" Content="ON" IsChecked="{Binding UseLpf}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="ローパスフィルタを有効にする"/>
+                    <ToggleButton x:Name="LpfOnButton" Content="ON" IsChecked="{Binding UseLpf}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="ローパスフィルタを有効にする" Focusable="False"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="HPF">
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
                     <Slider VerticalAlignment="Top" Width="93" Value="{Binding HpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=10-22000, Delay=20}" Maximum="1" Minimum="0"/>
-                    <ToggleButton x:Name="HpfOnButton" Content="ON" IsChecked="{Binding UseHpf}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="ハイパスフィルタを有効にする"/>
+                    <ToggleButton x:Name="HpfOnButton" Content="ON" IsChecked="{Binding UseHpf}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="ハイパスフィルタを有効にする" Focusable="False"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="BPF">
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
                     <Slider VerticalAlignment="Top" Width="93" Value="{Binding BpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=50-20000, Delay=20}" Maximum="1" Minimum="0"/>
-                    <ToggleButton x:Name="BpfOnButton" Content="ON" IsChecked="{Binding UseBpf}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="バンドパスフィルタを有効にする"/>
+                    <ToggleButton x:Name="BpfOnButton" Content="ON" IsChecked="{Binding UseBpf}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="バンドパスフィルタを有効にする" Focusable="False"/>
                 </StackPanel>
             </GroupBox>
         </StackPanel>

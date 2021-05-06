@@ -10,6 +10,7 @@
         WindowStartupLocation="CenterOwner"
         Background="WhiteSmoke"
         Topmost="{Binding MainWindowViewModel.Settings.AlwaysOnTop}"
+        Closed="Window_Closed"
         >
     <Window.Resources>
         <ResourceDictionary>

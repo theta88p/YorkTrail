@@ -36,5 +36,10 @@ namespace YorkTrail
         {
             this.Close();
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            ((KeyCustomizeWindowViewModel)this.DataContext).Window_Closed(sender, e);
+        }
     }
 }
