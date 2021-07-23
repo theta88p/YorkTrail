@@ -399,8 +399,9 @@ namespace YorkTrail
                     ZoomResetCommand.Execute(null);
                     SelectionResetCommand.Execute(this.Window);
                     // 一時停止状態の解除
-                    BlinkTimer.Stop();
-                    Window.TimeDisplay.Opacity = 1.0;
+                    StopCommand.Execute(Window);
+                    //BlinkTimer.Stop();
+                    //Window.TimeDisplay.Opacity = 1.0;
 
                     if (Settings.RecentFiles.Contains(path))
                     {
