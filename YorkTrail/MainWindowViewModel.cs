@@ -476,7 +476,7 @@ namespace YorkTrail
                 Point p = e.GetPosition(rs);
                 //double pos = (p.X / rs.Width * (1.0 - rs.Minimum) + rs.Minimum) * rs.Maximum;
                 double pos = ((rs.Maximum - rs.Minimum) * p.X / rs.Width) + rs.Minimum;
-                rs.LowerValue = pos;
+                //rs.LowerValue = pos;
                 this.Position = (float)pos;
                 this.StartPosition = (float)pos;
             }
@@ -487,7 +487,7 @@ namespace YorkTrail
             RangeSlider rs = (RangeSlider)sender;
             Point p = e.GetPosition(rs);
             double pos = ((rs.Maximum - rs.Minimum) * p.X / rs.Width) + rs.Minimum;
-            rs.UpperValue = pos;
+            //rs.UpperValue = pos;
             this.EndPosition = (float)pos;
         }
 
@@ -497,11 +497,6 @@ namespace YorkTrail
             {
                 ((RangeSlider)sender).LowerValue = 0;
             }
-        }
-
-        public void RangeSlider_UpperValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            this.EndPosition = (float)e.NewValue;
         }
         
         public void RangeSlider_LowerSliderDragCompleted(object sender, DragCompletedEventArgs e)

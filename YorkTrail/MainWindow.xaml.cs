@@ -47,10 +47,6 @@ namespace YorkTrail
         {
             ((MainWindowViewModel)this.DataContext).RangeSlider_LowerValueChanged(sender, e);
         }
-        private void RangeSlider_UpperValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            ((MainWindowViewModel)this.DataContext).RangeSlider_UpperValueChanged(sender, e);
-        }
         private void RangeSlider_LowerSliderDragCompleted(object sender, DragCompletedEventArgs e)
         {
             ((MainWindowViewModel)this.DataContext).RangeSlider_LowerSliderDragCompleted(sender, e);

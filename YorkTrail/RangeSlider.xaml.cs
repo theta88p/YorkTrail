@@ -21,7 +21,7 @@ namespace YorkTrail
     /// <summary>
     /// RangeSlider.xaml の相互作用ロジック
     /// </summary>
-    public partial class RangeSlider : UserControl, INotifyPropertyChanged
+    public partial class RangeSlider : UserControl
     {
         public RangeSlider()
         {
@@ -29,11 +29,11 @@ namespace YorkTrail
 
             this.Loaded += Slider_Loaded;
         }
-
+        /*
         public event PropertyChangedEventHandler PropertyChanged;
         private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
+        */
         void Slider_Loaded(object sender, RoutedEventArgs e)
         {
             LowerSlider.ValueChanged += LowerSlider_ValueChanged;

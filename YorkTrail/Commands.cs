@@ -671,9 +671,6 @@ namespace YorkTrail
 
             vm.StartPosition = 0.0f;
             vm.EndPosition = 1.0f;
-            // Dependency PropertyだとNotifyPropertyChanged呼ばれないので無理やり動かす
-            window.RangeSlider.Dispatcher.Invoke(() => { window.RangeSlider.LowerValue = 0.0f; });
-            window.RangeSlider.Dispatcher.Invoke(() => { window.RangeSlider.UpperValue = 1.0f; });
         }
     }
 
@@ -689,8 +686,6 @@ namespace YorkTrail
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
             vm.StartPosition = vm.Position;
-            // Dependency PropertyだとNotifyPropertyChanged呼ばれないので無理やり動かす
-            window.RangeSlider.Dispatcher.Invoke(() => { window.RangeSlider.LowerValue = vm.StartPosition; });
         }
     }
 
@@ -706,8 +701,6 @@ namespace YorkTrail
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
             vm.EndPosition = vm.Position;
-            // Dependency PropertyだとNotifyPropertyChanged呼ばれないので無理やり動かす
-            window.RangeSlider.Dispatcher.Invoke(() => { window.RangeSlider.UpperValue = vm.EndPosition; });
         }
     }
 }

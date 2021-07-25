@@ -684,7 +684,7 @@
         </StackPanel>
         <Grid Grid.Row="4">
             <ProgressBar x:Name="ProgressBar" HorizontalAlignment="Stretch" Height="30" VerticalAlignment="Bottom" Width="430" Value="{Binding Position}" Maximum="1" Foreground="#FF066AB0"/>
-            <local:RangeSlider x:Name="RangeSlider" Width="430" Height="30" VerticalAlignment="Bottom" LowerValueChanged="RangeSlider_LowerValueChanged" MouseLeftButtonDown="RangeSlider_MouseLeftButtonDown" MouseRightButtonDown="RangeSlider_MouseRightButtonDown" LowerSliderDragCompleted="RangeSlider_LowerSliderDragCompleted" UpperSliderDragCompleted="RangeSlider_UpperSliderDragCompleted" LowerValue="0" UpperValue="1" Margin="0,-8,0,0"/>
+            <local:RangeSlider x:Name="RangeSlider" Width="430" Height="30" VerticalAlignment="Bottom" LowerValue="{Binding StartPosition, Mode=TwoWay}" UpperValue="{Binding EndPosition, Mode=TwoWay}" LowerValueChanged="RangeSlider_LowerValueChanged" MouseLeftButtonDown="RangeSlider_MouseLeftButtonDown" MouseRightButtonDown="RangeSlider_MouseRightButtonDown" LowerSliderDragCompleted="RangeSlider_LowerSliderDragCompleted" UpperSliderDragCompleted="RangeSlider_UpperSliderDragCompleted" Margin="0,-8,0,0"/>
         </Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Row="5" Width="430">
             <Button Command="{Binding ToStartCommand}" CommandParameter="{Binding ElementName=mainWindow}" Width="58" Height="30" ToolTip="最初へ移動">

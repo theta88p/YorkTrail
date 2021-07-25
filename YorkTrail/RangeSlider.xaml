@@ -156,24 +156,24 @@
     </UserControl.Resources>
     <Grid VerticalAlignment="Top">
         <Slider TickFrequency="0.02" TickPlacement="TopLeft"
-                Minimum="{Binding ElementName=root, Path=Minimum}"
-                Maximum="{Binding ElementName=root, Path=Maximum}"
+                Minimum="{Binding Minimum, ElementName=root}"
+                Maximum="{Binding Maximum, ElementName=root}"
                 Style="{StaticResource TickOnly}" Foreground="Gray" Margin="0,-8,0,0"
         />
         <Border BorderThickness="0,30,0,0" BorderBrush="Transparent" VerticalAlignment="Center" Height="30" Focusable="False"/>
         <Slider x:Name="LowerSlider"
-                Minimum="{Binding ElementName=root, Path=Minimum}"
-                Maximum="{Binding ElementName=root, Path=Maximum}"
-                Value="{Binding ElementName=root, Path=LowerValue, Mode=TwoWay}"
+                Minimum="{Binding Minimum, ElementName=root}"
+                Maximum="{Binding Maximum, ElementName=root}"
+                Value="{Binding LowerValue, ElementName=root, Mode=TwoWay}"
                 Margin="-11,0,0,0"
                 Style="{StaticResource SliderStyleLeft}" VerticalAlignment="Center"
                 Thumb.DragCompleted="LowerSlider_DragCompleted" SmallChange="0"
                 />
 
         <Slider x:Name="UpperSlider"
-                Minimum="{Binding ElementName=root, Path=Minimum}"
-                Maximum="{Binding ElementName=root, Path=Maximum}"
-                Value="{Binding ElementName=root, Path=UpperValue, Mode=TwoWay}"
+                Minimum="{Binding Minimum, ElementName=root}"
+                Maximum="{Binding Maximum, ElementName=root}"
+                Value="{Binding UpperValue, ElementName=root, Mode=TwoWay}"
                 Margin="0,0,-11,0"
                 Style="{StaticResource SliderStyleRight}" VerticalAlignment="Center"
                 Thumb.DragCompleted="UpperSlider_DragCompleted"
