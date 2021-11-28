@@ -967,15 +967,15 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
             std::copy(decodedFrames.begin(), decodedFrames.end(), processdFrames.begin());
         }
 
-        if (useLpf)
+        if (LpfEnabled)
         {
             ma_lpf_process_pcm_frames(pLpf, processdFrames.data(), processdFrames.data(), frameCount);
         }
-        if (useHpf)
+        if (HpfEnabled)
         {
             ma_hpf_process_pcm_frames(pHpf, processdFrames.data(), processdFrames.data(), frameCount);
         }
-        if (useBpf)
+        if (BpfEnabled)
         {
             ma_bpf_process_pcm_frames(pBpf, processdFrames.data(), processdFrames.data(), frameCount);
         }

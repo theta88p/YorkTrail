@@ -69,5 +69,9 @@ namespace YorkTrail
             ((MainWindowViewModel)this.DataContext).MainWindow_Closing(sender, e);
         }
 
+        private void FilterPreset_Clicked(object sender, ExecutedRoutedEventArgs e)
+        {
+            ((MainWindowViewModel)this.DataContext).FilterPreset_Clicked(sender, e);
+        }
     }
 }

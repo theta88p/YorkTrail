@@ -206,9 +206,9 @@ namespace YorkTrail
         public YorkTrailCore Core { get; private set; } = YorkTrailHandleHolder.hYorkTrailCore;
         public float RMSL { get { return Core.rmsL; } }
         public float RMSR { get { return Core.rmsR; } }
-        public bool UseLpf { get { return Core.useLpf; } set { Core.useLpf = value; RaisePropertyChanged(nameof(UseLpf)); } }
-        public bool UseHpf { get { return Core.useHpf; } set { Core.useHpf = value; RaisePropertyChanged(nameof(UseHpf)); } }
-        public bool UseBpf { get { return Core.useBpf; } set { Core.useBpf = value; RaisePropertyChanged(nameof(UseBpf)); } }
+        public bool LpfEnabled { get { return Core.LpfEnabled; } set { Core.LpfEnabled = value; RaisePropertyChanged(nameof(LpfEnabled)); } }
+        public bool HpfEnabled { get { return Core.HpfEnabled; } set { Core.HpfEnabled = value; RaisePropertyChanged(nameof(HpfEnabled)); } }
+        public bool BpfEnabled { get { return Core.BpfEnabled; } set { Core.BpfEnabled = value; RaisePropertyChanged(nameof(BpfEnabled)); } }
         public float LpfFreq { get { return Core.lpfFreq; } set { Core.SetLPF((float)value); RaisePropertyChanged(nameof(LpfFreq)); } }
         public float HpfFreq { get { return Core.hpfFreq; } set { Core.SetHPF(value); RaisePropertyChanged(nameof(HpfFreq)); } }
         public float BpfFreq { get { return Core.bpfFreq; } set { Core.SetBPF(value); RaisePropertyChanged(nameof(BpfFreq)); } }
@@ -257,6 +257,11 @@ namespace YorkTrail
         public AlwaysOnTopCommand AlwaysOnTopCommand { get; private set; } = new AlwaysOnTopCommand();
         public OpenKeyCustomizeCommand OpenKeyCustomizeCommand { get; private set; } = new OpenKeyCustomizeCommand();
         public OpenSettingWindowCommand OpenSettingWindowCommand { get; private set; } = new OpenSettingWindowCommand();
+        public OpenAddFilterPresetWindowCommand OpenAddFilterPresetWindowCommand { get; private set; } = new OpenAddFilterPresetWindowCommand();
+        public FilterPresetDeleteCommand FilterPresetDeleteCommand { get; private set; } = new FilterPresetDeleteCommand();
+        public FilterPresetMoveUpCommand FilterPresetMoveUpCommand { get; private set; } = new FilterPresetMoveUpCommand();
+        public FilterPresetMoveDownCommand FilterPresetMoveDownCommand { get; private set; } = new FilterPresetMoveDownCommand();
+        public FilterPresetRenameCommand filterPresetRenameCommand { get; private set; } = new FilterPresetRenameCommand();
 
         public void DisplayUpdate()
         {
@@ -347,9 +352,9 @@ namespace YorkTrail
             Settings.Rate = this.Rate;
             Settings.IsBypass = this.IsBypass;
             Settings.IsLoop = this.IsLoop;
-            Settings.UseLpf = this.UseLpf;
-            Settings.UseHpf = this.UseHpf;
-            Settings.UseBpf = this.UseBpf;
+            Settings.LpfEnabled = this.LpfEnabled;
+            Settings.HpfEnabled = this.HpfEnabled;
+            Settings.BpfEnabled = this.BpfEnabled;
             Settings.LpfFreq = this.LpfFreq;
             Settings.HpfFreq = this.HpfFreq;
             Settings.BpfFreq = this.BpfFreq;
@@ -373,9 +378,9 @@ namespace YorkTrail
             this.Rate = Settings.Rate;
             this.IsBypass = Settings.IsBypass;
             this.IsLoop = Settings.IsLoop;
-            this.UseLpf = Settings.UseLpf;
-            this.UseHpf = Settings.UseHpf;
-            this.UseBpf = Settings.UseBpf;
+            this.LpfEnabled = Settings.LpfEnabled;
+            this.HpfEnabled = Settings.HpfEnabled;
+            this.BpfEnabled = Settings.BpfEnabled;
             this.LpfFreq = Settings.LpfFreq;
             this.HpfFreq = Settings.HpfFreq;
             this.BpfFreq = Settings.BpfFreq;
@@ -384,6 +389,12 @@ namespace YorkTrail
             {
                 ZoomCommand.Execute(this.Window);
             }
+        }
+
+        public void AddFilterPreset(string name)
+        {
+            var p = new FilterPreset(name, this.LpfEnabled, this.HpfEnabled, this.BpfEnabled, this.LpfFreq, this.HpfFreq, this.BpfFreq);
+            this.Settings.FilterPresets.Add(p);
         }
 
         public void FileOpen(string path, bool restored)
@@ -584,6 +595,17 @@ namespace YorkTrail
             SaveState();
             SaveWindowSettings();
             Settings.WriteSettingsToFile(Settings);
+        }
+
+        public void FilterPreset_Clicked(object sender, ExecutedRoutedEventArgs e)
+        {
+            FilterPreset fp = (FilterPreset)e.Parameter;
+            this.LpfEnabled = fp.LpfEnabled;
+            this.HpfEnabled = fp.HpfEnbled;
+            this.BpfEnabled = fp.BpfEnabled;
+            this.LpfFreq = fp.LpfFreq;
+            this.HpfFreq = fp.HpfFreq;
+            this.BpfFreq = fp.BpfFreq;
         }
     }
 }

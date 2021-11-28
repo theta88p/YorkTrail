@@ -159,6 +159,7 @@
                 Minimum="{Binding Minimum, ElementName=root}"
                 Maximum="{Binding Maximum, ElementName=root}"
                 Style="{StaticResource TickOnly}" Foreground="Gray" Margin="0,-8,0,0"
+                Focusable="False"
         />
         <Border BorderThickness="0,30,0,0" BorderBrush="Transparent" VerticalAlignment="Center" Height="30" Focusable="False"/>
         <Slider x:Name="LowerSlider"
@@ -168,6 +169,7 @@
                 Margin="-11,0,0,0"
                 Style="{StaticResource SliderStyleLeft}" VerticalAlignment="Center"
                 Thumb.DragCompleted="LowerSlider_DragCompleted" SmallChange="0"
+                Focusable="False"
                 />
 
         <Slider x:Name="UpperSlider"
@@ -177,6 +179,7 @@
                 Margin="0,0,-11,0"
                 Style="{StaticResource SliderStyleRight}" VerticalAlignment="Center"
                 Thumb.DragCompleted="UpperSlider_DragCompleted"
+                Focusable="False"
                 />
     </Grid>
 </UserControl>

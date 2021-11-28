@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows.Input;
 using System.Diagnostics;
+using System.Windows.Controls;
 
 namespace YorkTrail
 {
@@ -437,7 +438,7 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            vm.UseLpf = window?.LpfOnButton.IsChecked ?? false;
+            vm.LpfEnabled = window?.LpfOnButton.IsChecked ?? false;
         }
     }
     public class HpfOnCommand : EffectCommandBase
@@ -446,7 +447,7 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            vm.UseHpf = window?.HpfOnButton.IsChecked ?? false;
+            vm.HpfEnabled = window?.HpfOnButton.IsChecked ?? false;
         }
     }
     public class BpfOnCommand : EffectCommandBase
@@ -455,7 +456,7 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            vm.UseBpf = window?.BpfOnButton.IsChecked ?? false;
+            vm.BpfEnabled = window?.BpfOnButton.IsChecked ?? false;
         }
     }
     public class BypassCommand : ICommand
@@ -701,6 +702,113 @@ namespace YorkTrail
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
             vm.EndPosition = vm.Position;
+        }
+    }
+
+    public class OpenAddFilterPresetWindowCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            var afw = new PresetNameInputWindow(vm);
+            afw.ShowActivated = true;
+            afw.Owner = window;
+            bool dr = (bool)afw.ShowDialog();
+            if (dr)
+            {
+                string name = afw.PresetNameTextBox.Text;
+                vm.AddFilterPreset(name);
+            }
+        }
+    }
+
+    public class FilterPresetDeleteCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as SettingWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            var lb = (ListBox)window.FilterPresetsListBox;
+            var fp = (FilterPreset)lb.SelectedItem;
+            vm.Settings.FilterPresets.Remove(fp);
+        }
+    }
+
+    public class FilterPresetRenameCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as SettingWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            var lb = (ListBox)window.FilterPresetsListBox;
+            var fp = (FilterPreset)lb.SelectedItem;
+            var afw = new PresetNameInputWindow(vm);
+            afw.ShowActivated = true;
+            afw.Owner = window;
+            bool dr = (bool)afw.ShowDialog();
+            if (dr)
+            {
+                string name = afw.PresetNameTextBox.Text;
+                fp.Name = name;
+            }
+        }
+    }
+
+    public class FilterPresetMoveUpCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as SettingWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            var lb = (ListBox)window.FilterPresetsListBox;
+            var fp = (FilterPreset)lb.SelectedItem;
+            int i = vm.Settings.FilterPresets.IndexOf(fp);
+            if (i > 0)
+            {
+                vm.Settings.FilterPresets.Move(i, i - 1);
+            }
+        }
+    }
+
+    public class FilterPresetMoveDownCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as SettingWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            var lb = (ListBox)window.FilterPresetsListBox;
+            var fp = (FilterPreset)lb.SelectedItem;
+            int i = vm.Settings.FilterPresets.IndexOf(fp);
+            if (i < vm.Settings.FilterPresets.Count - 1)
+            {
+                vm.Settings.FilterPresets.Move(i, i + 1);
+            }
         }
     }
 }

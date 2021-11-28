@@ -55,9 +55,9 @@ namespace YorkTrail
 		float lpfFreq = 22000.0f;
 		float hpfFreq = 10.0f;
 		float bpfFreq = 400.0f;
-		bool useLpf = false;
-		bool useHpf = false;
-		bool useBpf = false;
+		bool LpfEnabled = false;
+		bool HpfEnabled = false;
+		bool BpfEnabled = false;
 		bool isLoop = false;
 		uint32_t displayUpdateCycle = 2;// 画面更新の頻度 (値xレイテンシ)
 

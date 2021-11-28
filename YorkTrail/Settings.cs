@@ -32,6 +32,8 @@ namespace YorkTrail
         [DataMember]
         public ObservableCollection<string> RecentFiles { get; set; } = new ObservableCollection<string>();
         [DataMember]
+        public ObservableCollection<FilterPreset> FilterPresets { get; set; } = new ObservableCollection<FilterPreset>();
+        [DataMember]
         public double WindowHeight { get; set; }
         [DataMember]
         public int MenuToolBarBand { get; set; }
@@ -95,11 +97,11 @@ namespace YorkTrail
         [DataMember]
         public bool IsLoop { get; set; }
         [DataMember]
-        public bool UseLpf { get; set; }
+        public bool LpfEnabled { get; set; }
         [DataMember]
-        public bool UseHpf { get; set; }
+        public bool HpfEnabled { get; set; }
         [DataMember]
-        public bool UseBpf { get; set; }
+        public bool BpfEnabled { get; set; }
         [DataMember]
         public float LpfFreq { get; set; }
         [DataMember]
@@ -147,6 +149,11 @@ namespace YorkTrail
                     {
                         settings.KeyBinds[kb.Key] = ShortCutKey.ConvertFromString(kb.Value);
                     }
+                }
+                // アップデートした時nullになるのでここで初期化
+                if (settings.FilterPresets == null)
+                {
+                    settings.FilterPresets = new ObservableCollection<FilterPreset>();
                 }
             }
             else
@@ -231,7 +238,7 @@ namespace YorkTrail
 
             foreach (var kb in dic)
             {
-                    ret.Add(kb.Key, ShortCutKey.ConvertToString(kb.Value));
+                ret.Add(kb.Key, ShortCutKey.ConvertToString(kb.Value));
             }
             return ret;
         }

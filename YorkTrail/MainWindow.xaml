@@ -529,6 +529,19 @@
                         <MenuItem Header="再生区間拡大/縮小(_I)" Command="{Binding ZoomCommand}" CommandParameter="{Binding ElementName=mainWindow}" Template="{DynamicResource MenuItemTemplate}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=Zoom}"/>
                         <MenuItem Header="現在位置を開始位置に(_T)" Command="{Binding CurrentToStartPositionCommand}" CommandParameter="{Binding ElementName=mainWindow}" Template="{DynamicResource MenuItemTemplate}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=CurrentToStartPosition}"/>
                         <MenuItem Header="現在位置を終了位置に(_E)" Command="{Binding CurrentToEndPositionCommand}" CommandParameter="{Binding ElementName=mainWindow}" Template="{DynamicResource MenuItemTemplate}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=CurrentToEndPosition}"/>
+                        <Separator/>
+                        <MenuItem Header="フィルタプリセットの追加(_A)" Command="{Binding OpenAddFilterPresetWindowCommand}" CommandParameter="{Binding ElementName=mainWindow}" Template="{DynamicResource MenuItemTemplate}"/>
+                        <MenuItem Header="フィルタプリセット" ItemsSource="{Binding Settings.FilterPresets, Mode=OneWay}" DisplayMemberPath="Name">
+                            <MenuItem.CommandBindings>
+                                <CommandBinding Command="{x:Static local:StaticCommands.SetFilterPreset}" Executed="FilterPreset_Clicked"/>
+                            </MenuItem.CommandBindings>
+                            <MenuItem.ItemContainerStyle>
+                                <Style TargetType="{x:Type MenuItem}">
+                                    <Setter Property="Command" Value="{x:Static local:StaticCommands.SetFilterPreset}"/>
+                                    <Setter Property="CommandParameter" Value="{Binding}"/>
+                                </Style>
+                            </MenuItem.ItemContainerStyle>
+                        </MenuItem>
                     </MenuItem>
                     <MenuItem Height="20" Width="52" Header="設定(_S)" Padding="4,2,0,2">
                         <MenuItem Header="常に手前に表示(_T)" IsChecked="{Binding Settings.AlwaysOnTop}" Template="{DynamicResource MenuItemTemplate}" IsCheckable="True" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=AlwaysOnTop}"/>
@@ -666,19 +679,19 @@
             <GroupBox Header="LPF">
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
                     <Slider Width="93" Value="{Binding LpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=10-22000, Delay=20}" Maximum="1" Minimum="0" VerticalAlignment="Top"/>
-                    <ToggleButton x:Name="LpfOnButton" Content="ON" IsChecked="{Binding UseLpf}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="ローパスフィルタを有効にする" Focusable="False"/>
+                    <ToggleButton x:Name="LpfOnButton" Content="ON" IsChecked="{Binding LpfEnabled}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="ローパスフィルタを有効にする" Focusable="False"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="HPF">
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
                     <Slider VerticalAlignment="Top" Width="93" Value="{Binding HpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=10-22000, Delay=20}" Maximum="1" Minimum="0"/>
-                    <ToggleButton x:Name="HpfOnButton" Content="ON" IsChecked="{Binding UseHpf}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="ハイパスフィルタを有効にする" Focusable="False"/>
+                    <ToggleButton x:Name="HpfOnButton" Content="ON" IsChecked="{Binding HpfEnabled}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="ハイパスフィルタを有効にする" Focusable="False"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="BPF">
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
                     <Slider VerticalAlignment="Top" Width="93" Value="{Binding BpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=50-20000, Delay=20}" Maximum="1" Minimum="0"/>
-                    <ToggleButton x:Name="BpfOnButton" Content="ON" IsChecked="{Binding UseBpf}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="バンドパスフィルタを有効にする" Focusable="False"/>
+                    <ToggleButton x:Name="BpfOnButton" Content="ON" IsChecked="{Binding BpfEnabled}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="バンドパスフィルタを有効にする" Focusable="False"/>
                 </StackPanel>
             </GroupBox>
         </StackPanel>

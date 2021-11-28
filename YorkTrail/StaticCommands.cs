@@ -11,10 +11,13 @@ namespace YorkTrail
     {
         public static RoutedCommand OpenRecentFile { get; private set; }
         public static RoutedCommand PlaybackDeviceSelect { get; private set; }
+        public static RoutedCommand SetFilterPreset { get; private set; }
+
         static StaticCommands()
         {
             StaticCommands.OpenRecentFile = new RoutedCommand();
             StaticCommands.PlaybackDeviceSelect = new RoutedCommand();
+            StaticCommands.SetFilterPreset = new RoutedCommand();
         }
     }
 }
