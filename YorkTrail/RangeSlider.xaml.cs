@@ -110,5 +110,16 @@ namespace YorkTrail
 
         public static readonly DependencyProperty MaximumProperty =
             DependencyProperty.Register("Maximum", typeof(double), typeof(RangeSlider), new UIPropertyMetadata(1d));
+
+        public ulong TotalMilliSeconds
+        {
+            get { return (ulong)GetValue(TotalMilliSecondsProperty); }
+            set { SetValue(TotalMilliSecondsProperty, value); }
+        }
+
+        public static readonly DependencyProperty TotalMilliSecondsProperty =
+            DependencyProperty.Register("TotalMilliSeconds", typeof(ulong), typeof(RangeSlider), new UIPropertyMetadata(0ul));
+
+
     }
 }

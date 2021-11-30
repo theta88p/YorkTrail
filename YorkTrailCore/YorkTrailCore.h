@@ -65,7 +65,7 @@ namespace YorkTrail
 		~YorkTrailCore();
 		!YorkTrailCore();
 		String^ GetFileInfo();
-		void FileOpen(String^ path);
+		bool FileOpen(String^ path);
 		bool IsFileLoaded();
 		void FileClose();
 		void Start();
@@ -75,6 +75,7 @@ namespace YorkTrail
 		void SetFrame(uint64_t frame);
 		void SeekRelative(long ms);
 		uint64_t GetTime();
+		uint64_t GetTotalMilliSeconds();
 		State GetState();
 		float GetPosition();
 		void SetPosition(float pos);

@@ -424,10 +424,6 @@ namespace YorkTrail
             var vm = window?.DataContext as MainWindowViewModel;
             if (window != null)
             {
-                window.ProgressBar.Minimum = 0.0f;
-                window.ProgressBar.Maximum = 1.0f;
-                window.RangeSlider.Minimum = 0.0f;
-                window.RangeSlider.Maximum = 1.0f;
                 vm.IsZooming = false;
             }
         }

@@ -114,9 +114,35 @@ namespace YorkTrail
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         public string FilePath { get; set; }
-        public bool IsZooming { get; set; }
+        private bool _isZooming;
+        public bool IsZooming
+        {
+            get { return _isZooming; }
+            set
+            {
+                _isZooming = value;
+                if (_isZooming)
+                {
+                    this.Window.ProgressBar.Minimum = this.StartPosition;
+                    this.Window.ProgressBar.Maximum = this.EndPosition;
+                    this.Window.RangeSlider.Minimum = this.StartPosition;
+                    this.Window.RangeSlider.Maximum = this.EndPosition;
+                }
+                else
+                {
+                    this.Window.ProgressBar.Minimum = 0.0;
+                    this.Window.ProgressBar.Maximum = 1.0;
+                    this.Window.RangeSlider.Minimum = 0.0;
+                    this.Window.RangeSlider.Maximum = 1.0;
+                }
+                RaisePropertyChanged(nameof(IsZooming));
+            }
+        }
         public ulong Time {
             get { return Core.GetTime(); }
+        }
+        public ulong TotalMilliSeconds { 
+            get { return Core.GetTotalMilliSeconds(); }
         }
         public float Position {
             get { return Core.GetPosition(); }
@@ -427,14 +453,37 @@ namespace YorkTrail
                             Settings.RecentFiles.RemoveAt(10);
                         }
                     }
-                    Task t = Task.Run(() => { Core.FileOpen(path); })
-                        .ContinueWith((task) => { this.StatusText = Core.GetFileInfo(); });
 
-                    t.Wait();
+                    System.Threading.CancellationTokenSource tsource = new System.Threading.CancellationTokenSource();
+                    System.Threading.CancellationToken token = tsource.Token;
+                    TaskFactory factory = new TaskFactory(token);
+
+                    Task t = factory.StartNew(() =>
+                    {
+                        if (!Core.FileOpen(path))
+                        {
+                            tsource.Cancel();
+                        }
+                    })
+                    .ContinueWith((task) =>
+                    {
+                        this.StatusText = Core.GetFileInfo();
+                        RaisePropertyChanged(nameof(TotalMilliSeconds));
+                    }, token);
 
                     if (!restored)
                     {
-                        t.ContinueWith((task) => { Core.Start(); });
+                        t.ContinueWith((task) => { Core.Start(); }, token);
+                    }
+
+                    try
+                    {
+                        t.Wait(token);
+                    }
+                    catch(OperationCanceledException)
+                    {
+                        MessageBox.Show("ファイルを開けませんでした", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        FileClose();
                     }
                 }
                 else

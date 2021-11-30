@@ -66,7 +66,7 @@ uint64_t YorkTrail::YorkTrailCore::posToFrame(float pos)
 {
     if (pDecoder != nullptr)
     {
-        return totalPCMFrames * pos * TotalFrameFactor;
+        return totalPCMFrames * pos;
     }
     else
     {
@@ -135,7 +135,7 @@ List<String^>^ YorkTrail::YorkTrailCore::GetPlaybackDeviceList()
     return deviceList;
 }
 
-void YorkTrail::YorkTrailCore::FileOpen(String^ p)
+bool YorkTrail::YorkTrailCore::FileOpen(String^ p)
 {
     if (playerTask != nullptr && playerTask->Status == TaskStatus::Running)
     {
@@ -154,7 +154,7 @@ void YorkTrail::YorkTrailCore::FileOpen(String^ p)
         if (ma_decoder_uninit(pDecoder) != MA_SUCCESS)
         {
             throwError("ma_decoder", "デコーダの終了時にエラーが発生しました");
-            return;
+            return false;
         }
     }
 
@@ -174,7 +174,7 @@ void YorkTrail::YorkTrailCore::FileOpen(String^ p)
     if (ma_decoder_init_file(path, &pConfig, pDecoder) != MA_SUCCESS)
     {
         throwError("ma_decoder", "デコーダの初期化時にエラーが発生しました");
-        return;
+        return false;
     }
 
     delete context;
@@ -182,6 +182,9 @@ void YorkTrail::YorkTrailCore::FileOpen(String^ p)
 
     if (extension == ".mp3")
     {
+        // 実際のフレーム数がTotalPCMFramesより少ない時があるのでこうする
+        totalPCMFrames -= 4000;
+
         if (pSeekPoints == nullptr)
         {
             pSeekPoints = new std::vector<drmp3_seek_point>(1024);
@@ -201,6 +204,7 @@ void YorkTrail::YorkTrailCore::FileOpen(String^ p)
     ma_context macontext;
     if (ma_context_init(NULL, 0, NULL, &macontext) != MA_SUCCESS) {
         throwError("ma_context", "コンテキスト初期化エラー");
+        return false;
     }
     ma_device_info* pPlaybackInfos;
     ma_uint32 playbackCount;
@@ -208,6 +212,7 @@ void YorkTrail::YorkTrailCore::FileOpen(String^ p)
     ma_uint32 captureCount;
     if (ma_context_get_devices(&macontext, &pPlaybackInfos, &playbackCount, &pCaptureInfos, &captureCount) != MA_SUCCESS) {
         throwError("ma_context_get_devices", "デバイスリストを取得できません");
+        return false;
     }
 
      /*
@@ -232,13 +237,13 @@ void YorkTrail::YorkTrailCore::FileOpen(String^ p)
     if (ma_device_init(NULL, &deviceConfig, pDevice) != MA_SUCCESS)
     {
         throwError("ma_device", "デバイスの初期化時にエラーが発生しました");
-        return;
+        return false;
     }
 
     if (ma_device_set_master_volume(pDevice, volume) != MA_SUCCESS)
     {
         throwError("ma_device", "音量変更時にエラーが発生しました");
-        return;
+        return false;
     }
 
     if (pLpf == nullptr)
@@ -259,6 +264,8 @@ void YorkTrail::YorkTrailCore::FileOpen(String^ p)
 
     soundtouch_setChannels(hSoundTouch, pDecoder->outputChannels);
     soundtouch_setSampleRate(hSoundTouch, pDecoder->outputSampleRate);
+
+    return true;
 }
 
 String^ YorkTrail::YorkTrailCore::GetFileInfo()
@@ -448,9 +455,14 @@ float YorkTrail::YorkTrailCore::GetPosition()
 {
     if (pDecoder != nullptr)
     {
-        curPos = (float)curFrame / totalPCMFrames / TotalFrameFactor;
+        curPos = (float)curFrame / totalPCMFrames;
     }
     return curPos;
+}
+
+uint64_t YorkTrail::YorkTrailCore::GetTotalMilliSeconds()
+{
+    return frameToMillisecs(totalPCMFrames);
 }
 
 void YorkTrail::YorkTrailCore::SetPosition(float pos)
@@ -458,7 +470,7 @@ void YorkTrail::YorkTrailCore::SetPosition(float pos)
     if (pDecoder != nullptr && path != nullptr)
     {
         curPos = pos;
-        uint64_t targetFrame = totalPCMFrames * pos * TotalFrameFactor;
+        uint64_t targetFrame = totalPCMFrames * pos;
         seek(targetFrame);
         curFrame = targetFrame;
     }
@@ -616,8 +628,7 @@ void YorkTrail::YorkTrailCore::Play()
 
     while (ma_device_is_started(pDevice) && state == State::Playing)
     {
-        // 実際のフレーム数がTotalPCMFramesより少ない時があるのでこうする
-        if (curFrame >= totalPCMFrames * endPos * TotalFrameFactor)
+        if (curFrame >= totalPCMFrames * endPos)
         {
             if (isLoop)
             {
@@ -638,6 +649,8 @@ void YorkTrail::YorkTrailCore::Play()
     {
         Sleep(10);
     }
+
+    NotifyTimeChanged();
 }
 
 void YorkTrail::YorkTrailCore::timeStretch(std::vector<float> &frames, std::vector<float> &output, float rate)
@@ -929,6 +942,7 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
         framesRead = ma_decoder_read_pcm_frames(pDecoder, decodedFrames.data(), frameCount);
         if (framesRead < frameCount) {
             // Reached the end.
+            state = State::Stopped;
         }
     }
     else
@@ -936,6 +950,7 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
         framesRead = ma_decoder_read_pcm_frames(pDecoder, decodedFrames.data(), frameCount * playbackRate);
         if (framesRead < frameCount * playbackRate) {
             // Reached the end.
+            state = State::Stopped;
         }
     }
 

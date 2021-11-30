@@ -155,12 +155,19 @@
         </Style>
     </UserControl.Resources>
     <Grid VerticalAlignment="Top">
+        <local:DisplayValueTickBar
+            Minimum="{Binding Minimum, ElementName=root}"
+            Maximum="{Binding Maximum, ElementName=root}"
+            TotalMilliSeconds="{Binding TotalMilliSeconds, ElementName=root}"
+        />
+        <!--
         <Slider TickFrequency="0.02" TickPlacement="TopLeft"
                 Minimum="{Binding Minimum, ElementName=root}"
                 Maximum="{Binding Maximum, ElementName=root}"
                 Style="{StaticResource TickOnly}" Foreground="Gray" Margin="0,-8,0,0"
                 Focusable="False"
         />
+        -->
         <Border BorderThickness="0,30,0,0" BorderBrush="Transparent" VerticalAlignment="Center" Height="30" Focusable="False"/>
         <Slider x:Name="LowerSlider"
                 Minimum="{Binding Minimum, ElementName=root}"
