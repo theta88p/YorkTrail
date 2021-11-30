@@ -22,19 +22,19 @@ namespace YorkTrail
     {
         public MainWindowViewModel()
         {
-            this.DeviceList = Core.GetPlaybackDeviceList();
-            this.Settings = Settings.ReadSettingsFromFile();
+            DeviceList = Core.GetPlaybackDeviceList();
+            Settings = Settings.ReadSettingsFromFile();
 
             if (Settings != null)
             {
                 // 無条件で復元する
-                this.Volume = Settings.Volume;
+                Volume = Settings.Volume;
                 Core.SetSoundTouchParam(Settings.SoundTouchSequenceMS, Settings.SoundTouchSeekWindowMS, Settings.SoundTouchOverlapMS);
 
                 // デバイス構成が前回と違っていたら復元しない
                 if (Settings.DeviceName == DeviceList[Settings.DeviceIndex])
                 {
-                    this.PlaybackDevice = Settings.DeviceIndex;
+                    PlaybackDevice = Settings.DeviceIndex;
                 }
             }
 
@@ -49,7 +49,7 @@ namespace YorkTrail
             BlinkTimer = new Timer(800);
             BlinkTimer.Elapsed += (sender, e) =>
             {
-                this.Window.TimeDisplay.Dispatcher.Invoke(() =>
+                Window.TimeDisplay.Dispatcher.Invoke(() =>
                 {
                     double opc = Window.TimeDisplay.Opacity;
                     if (opc == 1.0)
@@ -107,6 +107,7 @@ namespace YorkTrail
 
 
         public Timer BlinkTimer;
+        private Task playerTask;
         //private Stopwatch _sw;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -123,17 +124,17 @@ namespace YorkTrail
                 _isZooming = value;
                 if (_isZooming)
                 {
-                    this.Window.ProgressBar.Minimum = this.StartPosition;
-                    this.Window.ProgressBar.Maximum = this.EndPosition;
-                    this.Window.RangeSlider.Minimum = this.StartPosition;
-                    this.Window.RangeSlider.Maximum = this.EndPosition;
+                    Window.ProgressBar.Minimum = this.StartPosition;
+                    Window.ProgressBar.Maximum = this.EndPosition;
+                    Window.RangeSlider.Minimum = this.StartPosition;
+                    Window.RangeSlider.Maximum = this.EndPosition;
                 }
                 else
                 {
-                    this.Window.ProgressBar.Minimum = 0.0;
-                    this.Window.ProgressBar.Maximum = 1.0;
-                    this.Window.RangeSlider.Minimum = 0.0;
-                    this.Window.RangeSlider.Maximum = 1.0;
+                    Window.ProgressBar.Minimum = 0.0;
+                    Window.ProgressBar.Maximum = 1.0;
+                    Window.RangeSlider.Minimum = 0.0;
+                    Window.RangeSlider.Maximum = 1.0;
                 }
                 RaisePropertyChanged(nameof(IsZooming));
             }
@@ -368,57 +369,57 @@ namespace YorkTrail
 
         public void SaveState()
         {
-            Settings.FilePath = this.FilePath;
-            Settings.Position = this.Position;
-            Settings.StartPosition = this.StartPosition;
-            Settings.EndPosition = this.EndPosition;
-            Settings.Channels = this.Channels;
-            Settings.Pitch = this.Pitch;
-            Settings.Rate = this.Rate;
-            Settings.IsBypass = this.IsBypass;
-            Settings.IsLoop = this.IsLoop;
-            Settings.LpfEnabled = this.LpfEnabled;
-            Settings.HpfEnabled = this.HpfEnabled;
-            Settings.BpfEnabled = this.BpfEnabled;
-            Settings.LpfFreq = this.LpfFreq;
-            Settings.HpfFreq = this.HpfFreq;
-            Settings.BpfFreq = this.BpfFreq;
-            Settings.IsZooming = this.IsZooming;
+            Settings.FilePath = FilePath;
+            Settings.Position = Position;
+            Settings.StartPosition = StartPosition;
+            Settings.EndPosition = EndPosition;
+            Settings.Channels = Channels;
+            Settings.Pitch = Pitch;
+            Settings.Rate = Rate;
+            Settings.IsBypass = IsBypass;
+            Settings.IsLoop = IsLoop;
+            Settings.LpfEnabled = LpfEnabled;
+            Settings.HpfEnabled = HpfEnabled;
+            Settings.BpfEnabled = BpfEnabled;
+            Settings.LpfFreq = LpfFreq;
+            Settings.HpfFreq = HpfFreq;
+            Settings.BpfFreq = BpfFreq;
+            Settings.IsZooming = IsZooming;
         }
 
         public void ResotreState()
         {
             if (Settings.FilePath != null)
             {
-                FileOpen(Settings.FilePath, true);
+                if (FileOpen(Settings.FilePath))
+                {
+                    Position = Settings.Position;
+                    StartPosition = Settings.StartPosition;
+                    EndPosition = Settings.EndPosition;
+                    IsZooming = Settings.IsZooming;
+                    RaisePropertyChanged(nameof(Time));
+                }
             }
-            this.Position = Settings.Position;
-            RaisePropertyChanged(nameof(Time));
-            this.StartPosition = Settings.StartPosition;
-            Window.RangeSlider.LowerValue = this.StartPosition;
-            this.EndPosition = Settings.EndPosition;
-            Window.RangeSlider.UpperValue = this.EndPosition;
-            this.Channels = Settings.Channels;
-            this.Pitch = Settings.Pitch;
-            this.Rate = Settings.Rate;
-            this.IsBypass = Settings.IsBypass;
-            this.IsLoop = Settings.IsLoop;
-            this.LpfEnabled = Settings.LpfEnabled;
-            this.HpfEnabled = Settings.HpfEnabled;
-            this.BpfEnabled = Settings.BpfEnabled;
-            this.LpfFreq = Settings.LpfFreq;
-            this.HpfFreq = Settings.HpfFreq;
-            this.BpfFreq = Settings.BpfFreq;
-            this.IsZooming = Settings.IsZooming;
+            Channels = Settings.Channels;
+            Pitch = Settings.Pitch;
+            Rate = Settings.Rate;
+            IsBypass = Settings.IsBypass;
+            IsLoop = Settings.IsLoop;
+            LpfEnabled = Settings.LpfEnabled;
+            HpfEnabled = Settings.HpfEnabled;
+            BpfEnabled = Settings.BpfEnabled;
+            LpfFreq = Settings.LpfFreq;
+            HpfFreq = Settings.HpfFreq;
+            BpfFreq = Settings.BpfFreq;
         }
 
         public void AddFilterPreset(string name)
         {
-            var p = new FilterPreset(name, this.LpfEnabled, this.HpfEnabled, this.BpfEnabled, this.LpfFreq, this.HpfFreq, this.BpfFreq);
-            this.Settings.FilterPresets.Add(p);
+            var p = new FilterPreset(name, LpfEnabled, HpfEnabled, BpfEnabled, LpfFreq, HpfFreq, BpfFreq);
+            Settings.FilterPresets.Add(p);
         }
 
-        public void FileOpen(string path, bool restored)
+        public bool FileOpen(string path)
         {
             if (File.Exists(path))
             {
@@ -428,11 +429,8 @@ namespace YorkTrail
                 if (ext == ".wav" || ext == ".mp3" || ext == ".flac")
                 {
                     Window.Title = applicationName + " - " + Path.GetFileName(path);
-                    SelectionResetCommand.Execute(this.Window);
-                    // 一時停止状態の解除
-                    StopCommand.Execute(Window);
-                    //BlinkTimer.Stop();
-                    //Window.TimeDisplay.Opacity = 1.0;
+                    SelectionResetCommand.Execute(Window);
+                    Stop();
 
                     if (Settings.RecentFiles.Contains(path))
                     {
@@ -461,14 +459,9 @@ namespace YorkTrail
                     })
                     .ContinueWith((task) =>
                     {
-                        this.StatusText = Core.GetFileInfo();
+                        StatusText = Core.GetFileInfo();
                         RaisePropertyChanged(nameof(TotalMilliSeconds));
                     }, token);
-
-                    if (!restored)
-                    {
-                        t.ContinueWith((task) => { Core.Start(); }, token);
-                    }
 
                     try
                     {
@@ -478,11 +471,14 @@ namespace YorkTrail
                     {
                         MessageBox.Show("ファイルを開けませんでした", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         FileClose();
+                        return false;
                     }
+                    return true;
                 }
                 else
                 {
                     MessageBox.Show("未対応のファイル形式です", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    return false;
                 }
             }
             else
@@ -493,17 +489,18 @@ namespace YorkTrail
                 {
                     Settings.RecentFiles.Remove(path);
                 }
+                return false;
             }
         }
 
         public void FileClose()
         {
-            StopCommand.Execute(Window);
+            Stop();
             Core.FileClose();
-            this.FilePath = null;
+            FilePath = null;
             SelectionResetCommand.Execute(Window);
             Window.Title = applicationName;
-            this.StatusText = "";
+            StatusText = "";
         }
 
         public void FileDrop(object sender, DragEventArgs e)
@@ -511,28 +508,74 @@ namespace YorkTrail
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                FileOpen(files[0], false);
+                if (FileOpen(files[0]))
+                    Play();
             }
             e.Handled = true;
+        }
+
+        public void Play()
+        {
+            if (Core.GetState() == State.Pausing)
+            {
+                Pause();
+            }
+            else
+            {
+                Position = StartPosition;
+
+                if (Core.GetState() == State.Stopping)
+                    playerTask.Wait();
+
+                if (Core.GetState() == State.Stopped)
+                    playerTask = Task.Run(Core.Start);
+            }
+        }
+
+        public void Pause()
+        {
+            if (Core.GetState() == State.Playing)
+            {
+                Core.Pause();
+                BlinkTimer.Start();
+            }
+            else if (Core.GetState() == State.Pausing)
+            {
+                BlinkTimer.Stop();
+                Window.TimeDisplay.Opacity = 1.0;
+                playerTask.Wait();
+                playerTask = Task.Run(Core.Start);
+            }
+        }
+
+        public void Stop()
+        {
+            BlinkTimer.Stop();
+            Window.TimeDisplay.Opacity = 1.0;
+            Core.Stop();
+            if (playerTask?.Status == TaskStatus.Running)
+                playerTask.Wait();
+
+            Core.ResetRMS();
         }
 
         public void RangeSlider_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (Core.IsFileLoaded())
             {
-                if (this.Core.GetState() == State.Pausing)
+                if (Core.GetState() == State.Pausing)
                 {
-                    this.BlinkTimer.Stop();
+                    BlinkTimer.Stop();
                     Window.TimeDisplay.Opacity = 1.0;
-                    this.Core.Start();
+                    Core.Start();
                 }
                 RangeSlider rs = (RangeSlider)sender;
                 Point p = e.GetPosition(rs);
                 //double pos = (p.X / rs.Width * (1.0 - rs.Minimum) + rs.Minimum) * rs.Maximum;
                 double pos = ((rs.Maximum - rs.Minimum) * p.X / rs.Width) + rs.Minimum;
                 //rs.LowerValue = pos;
-                this.Position = (float)pos;
-                this.StartPosition = (float)pos;
+                Position = (float)pos;
+                StartPosition = (float)pos;
             }
         }
 
@@ -542,7 +585,7 @@ namespace YorkTrail
             Point p = e.GetPosition(rs);
             double pos = ((rs.Maximum - rs.Minimum) * p.X / rs.Width) + rs.Minimum;
             //rs.UpperValue = pos;
-            this.EndPosition = (float)pos;
+            EndPosition = (float)pos;
         }
 
         public void RangeSlider_LowerValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -559,20 +602,20 @@ namespace YorkTrail
             {
                 Slider rs = (Slider)sender;
                 float value = (float)rs.Value;
-                this.StartPosition = value;
+                StartPosition = value;
             }
             else
             {
                 if (this.Core.GetState() == State.Pausing)
                 {
-                    this.BlinkTimer.Stop();
+                    BlinkTimer.Stop();
                     Window.TimeDisplay.Opacity = 1.0;
-                    this.Core.Start();
+                    Core.Start();
                 }
                 Slider rs = (Slider)sender;
                 float value = (float)rs.Value;
-                this.Position = value;
-                this.StartPosition = value;
+                Position = value;
+                StartPosition = value;
             }
         }
         
@@ -580,13 +623,14 @@ namespace YorkTrail
         {
             Slider rs = (Slider)sender;
             float value = (float)rs.Value;
-            this.EndPosition = value;
+            EndPosition = value;
         }
         
         public void RecentFile_Clicked(object sender, ExecutedRoutedEventArgs e)
         {
             string path = (string)e.Parameter;
-            FileOpen(path, false);
+            if (FileOpen(path))
+                Play();
         }
         
         public void PlaybackDevice_Clicked(object sender, ExecutedRoutedEventArgs e)
@@ -617,7 +661,7 @@ namespace YorkTrail
             else
             {
                 // null判定するから全部終わった後じゃないとダメ
-                this.Settings = new Settings();
+                Settings = new Settings();
             }
 
             SetKeyBinds();
@@ -625,9 +669,9 @@ namespace YorkTrail
 
         public void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (this.Core.GetState() == State.Playing)
+            if (Core.GetState() == State.Playing)
             {
-                this.Core.Stop();
+                Core.Stop();
             }
 
             if (BlinkTimer.Enabled)
@@ -643,12 +687,12 @@ namespace YorkTrail
         public void FilterPreset_Clicked(object sender, ExecutedRoutedEventArgs e)
         {
             FilterPreset fp = (FilterPreset)e.Parameter;
-            this.LpfEnabled = fp.LpfEnabled;
-            this.HpfEnabled = fp.HpfEnbled;
-            this.BpfEnabled = fp.BpfEnabled;
-            this.LpfFreq = fp.LpfFreq;
-            this.HpfFreq = fp.HpfFreq;
-            this.BpfFreq = fp.BpfFreq;
+            LpfEnabled = fp.LpfEnabled;
+            HpfEnabled = fp.HpfEnbled;
+            BpfEnabled = fp.BpfEnabled;
+            LpfFreq = fp.LpfFreq;
+            HpfFreq = fp.HpfFreq;
+            BpfFreq = fp.BpfFreq;
         }
     }
 }

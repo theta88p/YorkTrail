@@ -16,10 +16,6 @@ YorkTrail::YorkTrailCore::YorkTrailCore()
 
 YorkTrail::YorkTrailCore::~YorkTrailCore()
 {
-    if (playerTask != nullptr)
-    {
-        delete playerTask;
-    }
     /*
     // デリゲートのハンドルを固定解除して削除
     if (delegGCH.IsAllocated)
@@ -137,11 +133,6 @@ List<String^>^ YorkTrail::YorkTrailCore::GetPlaybackDeviceList()
 
 bool YorkTrail::YorkTrailCore::FileOpen(String^ p)
 {
-    if (playerTask != nullptr && playerTask->Status == TaskStatus::Running)
-    {
-        Stop();
-    }
-
     extension = System::IO::Path::GetExtension(p);
     extension = extension->ToLower();
 
@@ -335,21 +326,21 @@ void YorkTrail::YorkTrailCore::FileClose()
 {
     if (path != nullptr)
     {
-        if (playerTask != nullptr && playerTask->Status == TaskStatus::Running)
-        {
-            Stop();
-        }
         ma_decoder_uninit(pDecoder);
         ma_device_uninit(pDevice);
         pDecoder = nullptr;
         pDevice = nullptr;
         totalPCMFrames = 0;
+        curPos = 0.0f;
+        curFrame = 0;
         startPos = 0.0f;
         endPos = 1.0f;
         path = nullptr;
+        NotifyTimeChanged();
     }
 }
 
+/*
 void YorkTrail::YorkTrailCore::Start()
 {
     if (playerTask != nullptr && playerTask->Status == TaskStatus::Running)
@@ -369,38 +360,27 @@ void YorkTrail::YorkTrailCore::Start()
     }
 }
 
+*/
 void YorkTrail::YorkTrailCore::Pause()
 {
-    if (path != nullptr)
-    {
-        if (state == State::Playing)
-        {
-            state = State::Pausing;
-        }
-        else if (state == State::Pausing)
-        {
-            playerTask->Wait();
-            Start();
-        }
-    }
+    if (state != State::Stopped)
+        state = State::Pausing;
 }
 
 void YorkTrail::YorkTrailCore::Stop()
 {
-    state = State::Stopped;
-    if (playerTask != nullptr)
-    {
-        playerTask->Wait();
-    }
-    //seek(0);
-    //curPos = 0.0f;
-    //curFrame = 0.0f;
+    if (state != State::Stopped)
+        state = State::Stopping;
+}
+
+void YorkTrail::YorkTrailCore::ResetRMS()
+{
     rmsL = -100.0f;
     rmsR = -100.0f;
     NotifyTimeChanged();
 }
 
-void YorkTrail::YorkTrailCore::seek(uint64_t frame)
+void YorkTrail::YorkTrailCore::Seek(uint64_t frame)
 {
     if (pDecoder != nullptr && pDevice != nullptr)
     {
@@ -415,7 +395,7 @@ void YorkTrail::YorkTrailCore::seek(uint64_t frame)
 
 void YorkTrail::YorkTrailCore::SetFrame(uint64_t frame)
 {
-    seek(frame);
+    Seek(frame);
     curFrame = frame;
 }
 
@@ -439,6 +419,8 @@ void YorkTrail::YorkTrailCore::SeekRelative(long ms)
 
 uint64_t YorkTrail::YorkTrailCore::GetTime()
 {
+    uint64_t curTime = 0;
+
     if (pDecoder != nullptr)
     {
         curTime = frameToMillisecs(curFrame);
@@ -455,7 +437,7 @@ float YorkTrail::YorkTrailCore::GetPosition()
 {
     if (pDecoder != nullptr)
     {
-        curPos = (float)curFrame / totalPCMFrames;
+        curPos = (double)curFrame / totalPCMFrames;
     }
     return curPos;
 }
@@ -471,7 +453,7 @@ void YorkTrail::YorkTrailCore::SetPosition(float pos)
     {
         curPos = pos;
         uint64_t targetFrame = totalPCMFrames * pos;
-        seek(targetFrame);
+        Seek(targetFrame);
         curFrame = targetFrame;
     }
 }
@@ -616,8 +598,10 @@ void YorkTrail::YorkTrailCore::SetSoundTouchParam(int seq, int window, int overl
     soundtouch_setSetting(hSoundTouch, 5, overlap);// SETTING_OVERLAP_MS default 8
 }
 
-void YorkTrail::YorkTrailCore::Play()
+// 別スレッドで動作させる
+void YorkTrail::YorkTrailCore::Start()
 {
+    state = State::Playing;
     ma_result result;
 
     if (ma_device_start(pDevice) != MA_SUCCESS)
@@ -650,7 +634,8 @@ void YorkTrail::YorkTrailCore::Play()
         Sleep(10);
     }
 
-    NotifyTimeChanged();
+    if (state == State::Stopping)
+        state = State::Stopped;
 }
 
 void YorkTrail::YorkTrailCore::timeStretch(std::vector<float> &frames, std::vector<float> &output, float rate)

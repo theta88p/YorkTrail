@@ -31,6 +31,7 @@ namespace YorkTrail
 	public enum class State
 	{
 		Stopped,
+		Stopping,
 		Playing,
 		Pausing
 	};
@@ -71,7 +72,7 @@ namespace YorkTrail
 		void Start();
 		void Pause();
 		void Stop();
-		void Play();
+		void ResetRMS();
 		void SetFrame(uint64_t frame);
 		void SeekRelative(long ms);
 		uint64_t GetTime();
@@ -100,7 +101,7 @@ namespace YorkTrail
 		event NotifyTimeChangedEventHandler^ NotifyTimeChanged;
 
 	private:
-		Task^ playerTask;
+		//Task^ playerTask;
 
 		HANDLE hSoundTouch;
 		ma_decoder* pDecoder;
@@ -118,7 +119,6 @@ namespace YorkTrail
 		uint32_t displayUpdateCounter = 0;
 		State state = State::Stopped;
 		uint64_t curFrame = 0;
-		uint64_t curTime = 0;
 		Channels channels = Channels::Stereo;
 		float curPos = 0;
 		float playbackRate = 1.0f;
@@ -127,7 +127,7 @@ namespace YorkTrail
 
 		uint64_t posToFrame(float pos);
 		uint64_t frameToMillisecs(uint64_t frames);
-		void seek(uint64_t frames);
+		void Seek(uint64_t frames);
 		void timeStretch(std::vector<float> &frames, std::vector<float> &ouput, float rate);
 		//void pitchShift(std::vector<float> &frames, float pitch, float mix);
 		float lerp(float v1, float v2, float t);

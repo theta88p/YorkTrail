@@ -36,9 +36,7 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            vm.BlinkTimer.Stop();
-            window.TimeDisplay.Opacity = 1.0;
-            vm.Core.Start();
+            vm.Play();
         }
     }
     public class StopCommand : ICommand
@@ -52,9 +50,7 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            vm.BlinkTimer.Stop();
-            window.TimeDisplay.Opacity = 1.0;
-            vm.Core.Stop();
+            vm.Stop();
         }
     }
     public class PauseCommand : ICommand
@@ -68,16 +64,7 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            if (vm.Core.GetState() == State.Playing)
-            {
-                vm.BlinkTimer.Start();
-            }
-            else if (vm.Core.GetState() == State.Pausing)
-            {
-                vm.BlinkTimer.Stop();
-                window.TimeDisplay.Opacity = 1.0;
-            }
-            vm.Core.Pause();
+            vm.Pause();
         }
     }
     public class FFCommand : ICommand
@@ -492,7 +479,8 @@ namespace YorkTrail
             ofd.Filter = "音声ファイル (*.wav;*.mp3;*.flac)|*.wav;*.mp3;*.flac";
             if (ofd.ShowDialog() == true)
             {
-                vm.FileOpen(ofd.FileName, false);
+                if (vm.FileOpen(ofd.FileName))
+                    vm.Play();
             }
         }
     }
