@@ -357,77 +357,6 @@ namespace YorkTrail
         }
     }
 
-    public class ZoomCommand : ICommand
-    {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            /*
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            if (vm != null)
-            {
-                return vm.StartPosition != 0.0f || vm.EndPosition != 1.0f;
-            }
-            else
-            {
-                return false;
-            }
-            */
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-
-            if (vm.IsZooming)
-            {
-                window.ProgressBar.Minimum = 0.0f;
-                window.ProgressBar.Maximum = 1.0f;
-                window.RangeSlider.Minimum = 0.0f;
-                window.RangeSlider.Maximum = 1.0f;
-                vm.IsZooming = false;
-            }
-            else
-            {
-                window.ProgressBar.Minimum = vm.StartPosition;
-                window.ProgressBar.Maximum = vm.EndPosition;
-                window.RangeSlider.Minimum = vm.StartPosition;
-                window.RangeSlider.Maximum = vm.EndPosition;
-                vm.IsZooming = true;
-            }
-        }
-    }
-    public class ZoomResetCommand : ICommand
-    {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            /*
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            if (vm != null)
-            {
-                return vm.IsZooming;
-            }
-            else
-            {
-                return false;
-            }
-            */
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            if (window != null)
-            {
-                vm.IsZooming = false;
-            }
-        }
-    }
     public class LpfOnCommand : EffectCommandBase
     {
         public override void Execute(object parameter)
@@ -659,11 +588,6 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            // ズーム解除
-            window.ProgressBar.Minimum = 0.0f;
-            window.ProgressBar.Maximum = 1.0f;
-            window.RangeSlider.Minimum = 0.0f;
-            window.RangeSlider.Maximum = 1.0f;
             vm.IsZooming = false;
 
             vm.StartPosition = 0.0f;
