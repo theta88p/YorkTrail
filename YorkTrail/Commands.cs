@@ -357,6 +357,32 @@ namespace YorkTrail
         }
     }
 
+    public class ZoomCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            /*
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            if (vm != null)
+            {
+                return vm.StartPosition != 0.0f || vm.EndPosition != 1.0f;
+            }
+            else
+            {
+                return false;
+            }
+            */
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.IsZooming = !vm.IsZooming;
+        }
+    }
     public class LpfOnCommand : EffectCommandBase
     {
         public override void Execute(object parameter)

@@ -251,6 +251,7 @@ namespace YorkTrail
         public FRCommand FRCommand { get; private set; } = new FRCommand();
         public ToStartCommand ToStartCommand { get; private set; } = new ToStartCommand();
         public ToEndCommand ToEndCommand { get; private set; } = new ToEndCommand();
+        public ZoomCommand ZoomCommand { get; private set; } = new ZoomCommand();
         public LpfOnCommand LpfOnCommand { get; private set; } = new LpfOnCommand();
         public HpfOnCommand HpfOnCommand { get; private set; } = new HpfOnCommand();
         public BpfOnCommand BpfOnCommand { get; private set; } = new BpfOnCommand();
@@ -408,7 +409,11 @@ namespace YorkTrail
             this.LpfFreq = Settings.LpfFreq;
             this.HpfFreq = Settings.HpfFreq;
             this.BpfFreq = Settings.BpfFreq;
-            this.IsZooming = Settings.IsZooming;
+
+            if (Settings.IsZooming)
+            {
+                ZoomCommand.Execute(this.Window);
+            }
         }
 
         public void AddFilterPreset(string name)
