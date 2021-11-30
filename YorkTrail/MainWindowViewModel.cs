@@ -409,11 +409,7 @@ namespace YorkTrail
             this.LpfFreq = Settings.LpfFreq;
             this.HpfFreq = Settings.HpfFreq;
             this.BpfFreq = Settings.BpfFreq;
-
-            if (Settings.IsZooming)
-            {
-                ZoomCommand.Execute(this.Window);
-            }
+            this.IsZooming = Settings.IsZooming;
         }
 
         public void AddFilterPreset(string name)
