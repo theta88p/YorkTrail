@@ -170,7 +170,7 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p)
 
     delete context;
     totalPCMFrames = ma_decoder_get_length_in_pcm_frames(pDecoder);
-
+    /*
     if (extension == ".mp3")
     {
         // ÀÛ‚ÌƒtƒŒ[ƒ€”‚ªTotalPCMFrames‚æ‚è­‚È‚¢‚ª‚ ‚é‚Ì‚Å‚±‚¤‚·‚é
@@ -180,7 +180,7 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p)
         {
             pSeekPoints = new std::vector<drmp3_seek_point>(1024);
         }
-        drmp3* pMp3 = (drmp3*)pDecoder->pInternalDecoder;
+        drmp3* pMp3 = (drmp3*)pDecoder->pBackend;
 
         if (pMp3 != nullptr)
         {
@@ -191,6 +191,7 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p)
             }
         }
     }
+    */
 
     ma_context macontext;
     if (ma_context_init(NULL, 0, NULL, &macontext) != MA_SUCCESS) {
@@ -270,21 +271,21 @@ String^ YorkTrail::YorkTrailCore::GetFileInfo()
         
         if (type == "wav")
         {
-            auto dec = (drwav*)pDecoder->pInternalDecoder;
+            auto dec = (drwav*)pDecoder->pBackend;
             ch = dec->channels;
             samplerate = dec->sampleRate.ToString() + "Hz ";
             bits = dec->bitsPerSample.ToString() + "bit ";
         }
         else if (type == "mp3")
         {
-            auto dec = (drmp3*)pDecoder->pInternalDecoder;
+            auto dec = (drmp3*)pDecoder->pBackend;
             ch = dec->channels;
             samplerate = dec->sampleRate.ToString() + "Hz ";
             bits = "";
         }
         else if (type == "flac")
         {
-            auto dec = (drflac*)pDecoder->pInternalDecoder;
+            auto dec = (drflac*)pDecoder->pBackend;
             ch = dec->channels;
             samplerate = dec->sampleRate.ToString() + "Hz ";
             bits = dec->bitsPerSample.ToString() + "bit ";
@@ -363,13 +364,15 @@ void YorkTrail::YorkTrailCore::Start()
 */
 void YorkTrail::YorkTrailCore::Pause()
 {
-    if (state != State::Stopped)
+    if (state == State::Playing)
         state = State::Pausing;
 }
 
 void YorkTrail::YorkTrailCore::Stop()
 {
-    if (state != State::Stopped)
+    if (state == State::Pausing)
+        state = State::Stopped;
+    else if (state == State::Playing)
         state = State::Stopping;
 }
 

@@ -82,7 +82,7 @@ namespace YorkTrail
             {
                 vm.BlinkTimer.Stop();
                 window.TimeDisplay.Opacity = 1.0;
-                vm.Core.Start();
+                vm.Play();
             }
             vm.Core.SeekRelative(vm.Settings.SkipLengthMS);
         }
@@ -102,7 +102,7 @@ namespace YorkTrail
             {
                 vm.BlinkTimer.Stop();
                 window.TimeDisplay.Opacity = 1.0;
-                vm.Core.Start();
+                vm.Play();
             }
             vm.Core.SeekRelative(-1 * vm.Settings.SkipLengthMS);
         }
@@ -122,9 +122,9 @@ namespace YorkTrail
             {
                 vm.BlinkTimer.Stop();
                 window.TimeDisplay.Opacity = 1.0;
-                vm.Core.Start();
+                vm.Play();
             }
-            vm.Core.SetPosition(0.0f);
+            vm.Position = 0.0f;
         }
     }
     public class ToEndCommand : ICommand
@@ -142,9 +142,9 @@ namespace YorkTrail
             {
                 vm.BlinkTimer.Stop();
                 window.TimeDisplay.Opacity = 1.0;
-                vm.Core.Start();
+                vm.Play();
             }
-            vm.Core.SetPosition(1.0f);
+            vm.Position = 1.0f;
         }
     }
     public class StereoCommand : ICommand

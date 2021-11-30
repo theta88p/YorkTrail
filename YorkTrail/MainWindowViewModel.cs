@@ -516,6 +516,8 @@ namespace YorkTrail
 
         public void Play()
         {
+            StatusText = Core.GetFileInfo();
+
             if (Core.GetState() == State.Pausing)
             {
                 Pause();
