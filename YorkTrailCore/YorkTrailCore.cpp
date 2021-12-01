@@ -125,16 +125,17 @@ List<String^>^ YorkTrail::YorkTrailCore::GetPlaybackDeviceList()
 
     for (ma_uint32 i = 0; i < playbackCount; i++)
     {
-        auto name = gcnew String(pPlaybackInfos[i].name, 0, 256, Encoding::Default);
+        auto name = gcnew String(pPlaybackInfos[i].name);
         deviceList->Add(name);
     }
     return deviceList;
 }
 
-bool YorkTrail::YorkTrailCore::FileOpen(String^ p)
+bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
 {
     extension = System::IO::Path::GetExtension(p);
     extension = extension->ToLower();
+    fileType = t;
 
     if (pDecoder == nullptr)
     {
@@ -170,6 +171,7 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p)
 
     delete context;
     totalPCMFrames = ma_decoder_get_length_in_pcm_frames(pDecoder);
+    endFrame = totalPCMFrames;
     /*
     if (extension == ".mp3")
     {
@@ -267,28 +269,31 @@ String^ YorkTrail::YorkTrailCore::GetFileInfo()
         int ch;
         String^ samplerate;
         String^ bits;
-        String^ type = extension->Substring(1);
+        String^ typeName;
         
-        if (type == "wav")
+        if (fileType == FileType::Wav)
         {
-            auto dec = (drwav*)pDecoder->pBackend;
-            ch = dec->channels;
-            samplerate = dec->sampleRate.ToString() + "Hz ";
-            bits = dec->bitsPerSample.ToString() + "bit ";
+            typeName = "wav";
+            auto dec = (ma_wav*)pDecoder->pBackend;
+            ch = dec->dr.channels;
+            samplerate = dec->dr.sampleRate.ToString() + "Hz ";
+            bits = dec->dr.bitsPerSample.ToString() + "bit ";
         }
-        else if (type == "mp3")
+        else if (fileType == FileType::Mp3)
         {
-            auto dec = (drmp3*)pDecoder->pBackend;
-            ch = dec->channels;
-            samplerate = dec->sampleRate.ToString() + "Hz ";
+            typeName = "mp3";
+            auto dec = (ma_mp3*)pDecoder->pBackend;
+            ch = dec->dr.channels;
+            samplerate = dec->dr.sampleRate.ToString() + "Hz ";
             bits = "";
         }
-        else if (type == "flac")
+        else if (fileType == FileType::Flac)
         {
-            auto dec = (drflac*)pDecoder->pBackend;
-            ch = dec->channels;
-            samplerate = dec->sampleRate.ToString() + "Hz ";
-            bits = dec->bitsPerSample.ToString() + "bit ";
+            typeName = "flac";
+            auto dec = (ma_flac*)pDecoder->pBackend;
+            ch = dec->dr->channels;
+            samplerate = dec->dr->sampleRate.ToString() + "Hz ";
+            bits = dec->dr->bitsPerSample.ToString() + "bit ";
         }
         else
         {
@@ -296,15 +301,7 @@ String^ YorkTrail::YorkTrailCore::GetFileInfo()
         }
         
         String^ fstr;
-        String^ backend;
-        
-        switch (pDevice->pContext->backend)
-        {
-        case ma_backend_wasapi: backend = "WASAPI"; break;
-        case ma_backend_dsound: backend = "DirectSound"; break;
-        case ma_backend_winmm: backend = "MME"; break;
-        default: ""; break;
-        }
+        String^ backend = gcnew String(ma_get_backend_name(pDevice->pContext->backend));
 
         String^ chStr;
         switch(ch)
@@ -314,7 +311,7 @@ String^ YorkTrail::YorkTrailCore::GetFileInfo()
         default: chStr = ch.ToString() + "ch "; break;
         }
 
-        return type + " " + samplerate + bits + chStr + backend;
+        return typeName + " " + samplerate + bits + chStr + backend;
     }
 }
 
@@ -332,10 +329,9 @@ void YorkTrail::YorkTrailCore::FileClose()
         pDecoder = nullptr;
         pDevice = nullptr;
         totalPCMFrames = 0;
-        curPos = 0.0f;
         curFrame = 0;
-        startPos = 0.0f;
-        endPos = 1.0f;
+        startFrame = 0;
+        endFrame = 0;
         path = nullptr;
         NotifyTimeChanged();
     }
@@ -436,13 +432,14 @@ YorkTrail::State YorkTrail::YorkTrailCore::GetState()
     return state;
 }
 
-float YorkTrail::YorkTrailCore::GetPosition()
+double YorkTrail::YorkTrailCore::GetPosition()
 {
+    double pos = 0;
     if (pDecoder != nullptr)
     {
-        curPos = (double)curFrame / totalPCMFrames;
+        pos = (double)curFrame / totalPCMFrames;
     }
-    return curPos;
+    return pos;
 }
 
 uint64_t YorkTrail::YorkTrailCore::GetTotalMilliSeconds()
@@ -450,15 +447,24 @@ uint64_t YorkTrail::YorkTrailCore::GetTotalMilliSeconds()
     return frameToMillisecs(totalPCMFrames);
 }
 
-void YorkTrail::YorkTrailCore::SetPosition(float pos)
+void YorkTrail::YorkTrailCore::SetPosition(double pos)
 {
     if (pDecoder != nullptr && path != nullptr)
     {
-        curPos = pos;
         uint64_t targetFrame = totalPCMFrames * pos;
         Seek(targetFrame);
         curFrame = targetFrame;
     }
+}
+
+void YorkTrail::YorkTrailCore::SetStartPosition(double pos)
+{
+    startFrame = totalPCMFrames * pos;
+}
+
+void YorkTrail::YorkTrailCore::SetEndPosition(double pos)
+{
+    endFrame = totalPCMFrames * pos;
 }
 
 void YorkTrail::YorkTrailCore::SetVolume(float vol)
@@ -615,11 +621,11 @@ void YorkTrail::YorkTrailCore::Start()
 
     while (ma_device_is_started(pDevice) && state == State::Playing)
     {
-        if (curFrame >= totalPCMFrames * endPos)
+        if (curFrame >= endFrame)
         {
             if (isLoop)
             {
-                SetPosition(startPos);
+                Seek(startFrame);
             }
             else
             {
@@ -637,7 +643,7 @@ void YorkTrail::YorkTrailCore::Start()
         Sleep(10);
     }
 
-    if (state == State::Stopping)
+    if (state != State::Pausing)
         state = State::Stopped;
 }
 

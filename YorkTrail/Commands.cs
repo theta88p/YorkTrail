@@ -78,7 +78,7 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            if (vm.Core.GetState() == State.Pausing)
+            if (vm.Core.GetState() == State.Stopped || vm.Core.GetState() == State.Pausing)
             {
                 vm.BlinkTimer.Stop();
                 window.TimeDisplay.Opacity = 1.0;
@@ -98,7 +98,7 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            if (vm.Core.GetState() == State.Pausing)
+            if (vm.Core.GetState() == State.Stopped || vm.Core.GetState() == State.Pausing)
             {
                 vm.BlinkTimer.Stop();
                 window.TimeDisplay.Opacity = 1.0;
@@ -124,7 +124,7 @@ namespace YorkTrail
                 window.TimeDisplay.Opacity = 1.0;
                 vm.Play();
             }
-            vm.Position = 0.0f;
+            vm.Position = 0.0;
         }
     }
     public class ToEndCommand : ICommand
@@ -144,7 +144,7 @@ namespace YorkTrail
                 window.TimeDisplay.Opacity = 1.0;
                 vm.Play();
             }
-            vm.Position = 1.0f;
+            vm.Position = 1.0;
         }
     }
     public class StereoCommand : ICommand

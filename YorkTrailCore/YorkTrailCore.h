@@ -28,6 +28,14 @@ constexpr float TotalFrameFactor = 0.9995;
 
 namespace YorkTrail
 {
+	public enum class FileType
+	{
+		Unknown,
+		Wav,
+		Mp3,
+		Flac
+	};
+
 	public enum class State
 	{
 		Stopped,
@@ -49,8 +57,6 @@ namespace YorkTrail
 	{
 	public:
 		int playbackDevice = 0;
-		float startPos = 0.0f;
-		float endPos = 1.0f;
 		float rmsL = -100.0f;
 		float rmsR = -100.0f;
 		float lpfFreq = 22000.0f;
@@ -66,7 +72,7 @@ namespace YorkTrail
 		~YorkTrailCore();
 		!YorkTrailCore();
 		String^ GetFileInfo();
-		bool FileOpen(String^ path);
+		bool FileOpen(String^ path, FileType type);
 		bool IsFileLoaded();
 		void FileClose();
 		void Start();
@@ -78,8 +84,10 @@ namespace YorkTrail
 		uint64_t GetTime();
 		uint64_t GetTotalMilliSeconds();
 		State GetState();
-		float GetPosition();
-		void SetPosition(float pos);
+		double GetPosition();
+		void SetPosition(double pos);
+		void SetStartPosition(double pos);
+		void SetEndPosition(double pos);
 		void SetVolume(float vol);
 		float GetVolume();
 		void SetRate(float rate);
@@ -114,13 +122,16 @@ namespace YorkTrail
 		ma_mutex* pMutex;
 		const char* path;
 		String^ extension;
+		FileType fileType;
+		uint32_t encodingFormat;
 		float volume = 1.0f;
 		uint64_t totalPCMFrames = 0;
 		uint32_t displayUpdateCounter = 0;
 		State state = State::Stopped;
 		uint64_t curFrame = 0;
+		uint64_t startFrame = 0;
+		uint64_t endFrame = 0;
 		Channels channels = Channels::Stereo;
-		float curPos = 0;
 		float playbackRate = 1.0f;
 		float playbackPitch = 1.0f;
 		bool isBypass = false;

@@ -103,8 +103,7 @@ namespace YorkTrail
             */
         }
 
-        private string applicationName = "YorkTrail";
-
+        private const string applicationName = "YorkTrail";
 
         public Timer BlinkTimer;
         private Task playerTask;
@@ -145,7 +144,7 @@ namespace YorkTrail
         public ulong TotalMilliSeconds { 
             get { return Core.GetTotalMilliSeconds(); }
         }
-        public float Position {
+        public double Position {
             get { return Core.GetPosition(); }
             set {
                 Core.SetPosition(value);
@@ -170,17 +169,22 @@ namespace YorkTrail
                 RaisePropertyChanged(nameof(StatusText));
             }
         }
-        public float StartPosition {
-            get { return Core.startPos; }
+        private double _startPosition;
+        public double StartPosition {
+            get { return _startPosition; }
             set {
-                Core.startPos = value;
+                _startPosition = value;
+                Core.SetStartPosition(value);
                 RaisePropertyChanged(nameof(StartPosition));
             }
         }
-        public float EndPosition {
-            get { return Core.endPos; }
-            set {
-                Core.endPos = value;
+        private double _endPosition;
+        public double EndPosition {
+            get { return _endPosition; }
+            set
+            {
+                _endPosition = value;
+                Core.SetEndPosition(value);
                 RaisePropertyChanged(nameof(EndPosition));
             }
         }
@@ -220,7 +224,7 @@ namespace YorkTrail
                 RaisePropertyChanged(nameof(IsLoop));
             }
         }
-        public float Volume { 
+        public float Volume {
             get {
                 return Settings?.Volume ?? Core.GetVolume();
             }
@@ -423,63 +427,106 @@ namespace YorkTrail
         {
             if (File.Exists(path))
             {
-                this.FilePath = path;
+                FilePath = path;
+                FileType type;
                 string ext = Path.GetExtension(path);
                 ext = ext.ToLower();
-                if (ext == ".wav" || ext == ".mp3" || ext == ".flac")
+
+                using(var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
-                    Window.Title = applicationName + " - " + Path.GetFileName(path);
-                    SelectionResetCommand.Execute(Window);
-                    Stop();
+                    byte[] buff = new byte[4];
+                    fs.Read(buff, 0, 4);
+                    string head = Encoding.ASCII.GetString(buff);
 
-                    if (Settings.RecentFiles.Contains(path))
+                    switch (head)
                     {
-                        Settings.RecentFiles.Remove(path);
-                        Settings.RecentFiles.Insert(0, path);
+                        case "RIFF":
+                            type = FileType.Wav;
+                            break;
+                        case "TAG":
+                        case "ID3":
+                            type = FileType.Mp3;
+                            break;
+                        case "fLaC":
+                            type = FileType.Flac;
+                            break;
+                        default:
+                            type = FileType.Unknown;
+                            break;
                     }
-                    else
+
+                    if (type == FileType.Unknown)
                     {
-                        Settings.RecentFiles.Insert(0, path);
-                        if (Settings.RecentFiles.Count > 10)
+                        switch(ext)
                         {
-                            Settings.RecentFiles.RemoveAt(10);
+                            case ".wav":
+                                type = FileType.Wav;
+                                break;
+                            case ".mp3":
+                                type = FileType.Mp3;
+                                break;
+                            case ".flac":
+                                type = FileType.Flac;
+                                break;
+                            default:
+                                type = FileType.Unknown;
+                                break;
                         }
                     }
-
-                    System.Threading.CancellationTokenSource tsource = new System.Threading.CancellationTokenSource();
-                    System.Threading.CancellationToken token = tsource.Token;
-                    TaskFactory factory = new TaskFactory(token);
-
-                    Task t = factory.StartNew(() =>
-                    {
-                        if (!Core.FileOpen(path))
-                        {
-                            tsource.Cancel();
-                        }
-                    })
-                    .ContinueWith((task) =>
-                    {
-                        StatusText = Core.GetFileInfo();
-                        RaisePropertyChanged(nameof(TotalMilliSeconds));
-                    }, token);
-
-                    try
-                    {
-                        t.Wait(token);
-                    }
-                    catch(OperationCanceledException)
-                    {
-                        MessageBox.Show("ファイルを開けませんでした", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        FileClose();
-                        return false;
-                    }
-                    return true;
                 }
-                else
+
+                if (type == FileType.Unknown)
                 {
                     MessageBox.Show("未対応のファイル形式です", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     return false;
                 }
+
+                Window.Title = applicationName + " - " + Path.GetFileName(path);
+                SelectionResetCommand.Execute(Window);
+                Stop();
+
+                if (Settings.RecentFiles.Contains(path))
+                {
+                    Settings.RecentFiles.Remove(path);
+                    Settings.RecentFiles.Insert(0, path);
+                }
+                else
+                {
+                    Settings.RecentFiles.Insert(0, path);
+                    if (Settings.RecentFiles.Count > 10)
+                    {
+                        Settings.RecentFiles.RemoveAt(10);
+                    }
+                }
+
+                System.Threading.CancellationTokenSource tsource = new System.Threading.CancellationTokenSource();
+                System.Threading.CancellationToken token = tsource.Token;
+                TaskFactory factory = new TaskFactory(token);
+
+                Task t = factory.StartNew(() =>
+                {
+                    if (!Core.FileOpen(path, type))
+                    {
+                        tsource.Cancel();
+                    }
+                })
+                .ContinueWith((task) =>
+                {
+                    StatusText = Core.GetFileInfo();
+                    RaisePropertyChanged(nameof(TotalMilliSeconds));
+                }, token);
+
+                try
+                {
+                    t.Wait(token);
+                }
+                catch(OperationCanceledException)
+                {
+                    MessageBox.Show("ファイルを開けませんでした", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    FileClose();
+                    return false;
+                }
+                return true;
             }
             else
             {
@@ -516,8 +563,6 @@ namespace YorkTrail
 
         public void Play()
         {
-            StatusText = Core.GetFileInfo();
-
             if (Core.GetState() == State.Pausing)
             {
                 Pause();

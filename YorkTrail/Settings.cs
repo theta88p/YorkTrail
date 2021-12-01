@@ -81,11 +81,11 @@ namespace YorkTrail
         [DataMember]
         public bool IsZooming { get; set; }
         [DataMember]
-        public float Position { get; set; }
+        public double Position { get; set; }
         [DataMember]
-        public float StartPosition { get; set; }
+        public double StartPosition { get; set; }
         [DataMember]
-        public float EndPosition { get; set; }
+        public double EndPosition { get; set; }
         [DataMember]
         public Channels Channels { get; set; }
         [DataMember]
