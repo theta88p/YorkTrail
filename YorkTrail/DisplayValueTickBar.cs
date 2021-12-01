@@ -104,7 +104,7 @@ namespace YorkTrail
                     var ms = TimeSpan.FromMilliseconds(tick);
 
                     FormattedText formattedText = new FormattedText(ms.ToString(@"m\:ss"), CultureInfo.CurrentCulture,
-                        FlowDirection.LeftToRight, new Typeface("Arial"), 12, Brushes.Black,
+                        FlowDirection.LeftToRight, new Typeface("Yu Gothic UI"), 12, Brushes.Black,
                         VisualTreeHelper.GetDpi(this).PixelsPerDip);
 
                     dc.DrawText(formattedText, p);
