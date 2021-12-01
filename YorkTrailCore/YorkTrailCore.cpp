@@ -172,8 +172,8 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
     delete context;
     totalPCMFrames = ma_decoder_get_length_in_pcm_frames(pDecoder);
     endFrame = totalPCMFrames;
-    /*
-    if (extension == ".mp3")
+
+    if (t == FileType::Mp3)
     {
         // 実際のフレーム数がTotalPCMFramesより少ない時があるのでこうする
         totalPCMFrames -= 4000;
@@ -182,18 +182,17 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
         {
             pSeekPoints = new std::vector<drmp3_seek_point>(1024);
         }
-        drmp3* pMp3 = (drmp3*)pDecoder->pBackend;
+        auto dec = (ma_mp3*)pDecoder->pBackend;
 
-        if (pMp3 != nullptr)
+        if (dec != nullptr)
         {
             drmp3_uint32 seekPointCount = 1024;
-            if (drmp3_calculate_seek_points(pMp3, &seekPointCount, pSeekPoints->data()))
+            if (drmp3_calculate_seek_points(&dec->dr, &seekPointCount, pSeekPoints->data()))
             {
-                drmp3_bind_seek_table(pMp3, seekPointCount, pSeekPoints->data());
+                drmp3_bind_seek_table(&dec->dr, seekPointCount, pSeekPoints->data());
             }
         }
     }
-    */
 
     ma_context macontext;
     if (ma_context_init(NULL, 0, NULL, &macontext) != MA_SUCCESS) {
@@ -264,7 +263,7 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
 
 String^ YorkTrail::YorkTrailCore::GetFileInfo()
 {
-    if (pDecoder != nullptr && path != nullptr)
+    if (pDecoder != nullptr && pDevice != nullptr)
     {
         int ch;
         String^ samplerate;
@@ -317,12 +316,12 @@ String^ YorkTrail::YorkTrailCore::GetFileInfo()
 
 bool YorkTrail::YorkTrailCore::IsFileLoaded()
 {
-    return pDecoder != nullptr && path != nullptr;
+    return pDecoder != nullptr && pDevice != nullptr;
 }
 
 void YorkTrail::YorkTrailCore::FileClose()
 {
-    if (path != nullptr)
+    if (pDecoder != nullptr && pDevice != nullptr)
     {
         ma_decoder_uninit(pDecoder);
         ma_device_uninit(pDevice);
@@ -381,13 +380,14 @@ void YorkTrail::YorkTrailCore::ResetRMS()
 
 void YorkTrail::YorkTrailCore::Seek(uint64_t frame)
 {
-    if (pDecoder != nullptr && pDevice != nullptr)
+    if (pDecoder != nullptr)
     {
         ma_mutex_lock(pMutex);
         if (ma_decoder_seek_to_pcm_frame(pDecoder, frame) != MA_SUCCESS)
         {
             throwError("ma_decoder", "シーク時にエラーが発生しました");
         }
+        curFrame = frame;
         ma_mutex_unlock(pMutex);
     }
 }
@@ -395,12 +395,11 @@ void YorkTrail::YorkTrailCore::Seek(uint64_t frame)
 void YorkTrail::YorkTrailCore::SetFrame(uint64_t frame)
 {
     Seek(frame);
-    curFrame = frame;
 }
 
 void YorkTrail::YorkTrailCore::SeekRelative(long ms)
 {
-    if (pDecoder != nullptr && path != nullptr)
+    if (pDecoder != nullptr)
     {
         uint64_t targetFrame;
         int64_t addFrame = (int64_t)pDecoder->outputSampleRate * ms / 1000;
@@ -449,11 +448,10 @@ uint64_t YorkTrail::YorkTrailCore::GetTotalMilliSeconds()
 
 void YorkTrail::YorkTrailCore::SetPosition(double pos)
 {
-    if (pDecoder != nullptr && path != nullptr)
+    if (pDecoder != nullptr)
     {
         uint64_t targetFrame = totalPCMFrames * pos;
         Seek(targetFrame);
-        curFrame = targetFrame;
     }
 }
 
@@ -610,6 +608,9 @@ void YorkTrail::YorkTrailCore::SetSoundTouchParam(int seq, int window, int overl
 // 別スレッドで動作させる
 void YorkTrail::YorkTrailCore::Start()
 {
+    if (path == nullptr)
+        return;
+
     state = State::Playing;
     ma_result result;
 
@@ -936,7 +937,7 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
         framesRead = ma_decoder_read_pcm_frames(pDecoder, decodedFrames.data(), frameCount);
         if (framesRead < frameCount) {
             // Reached the end.
-            state = State::Stopped;
+            //state = State::Stopped;
         }
     }
     else
@@ -944,7 +945,7 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
         framesRead = ma_decoder_read_pcm_frames(pDecoder, decodedFrames.data(), frameCount * playbackRate);
         if (framesRead < frameCount * playbackRate) {
             // Reached the end.
-            state = State::Stopped;
+            //state = State::Stopped;
         }
     }
 
