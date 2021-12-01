@@ -22,6 +22,8 @@ namespace YorkTrail
     {
         public MainWindowViewModel()
         {
+            _startPosition = 0.0;
+            _endPosition = 1.0;
             DeviceList = Core.GetPlaybackDeviceList();
             Settings = Settings.ReadSettingsFromFile();
 
@@ -427,7 +429,6 @@ namespace YorkTrail
         {
             if (File.Exists(path))
             {
-                FilePath = path;
                 FileType type;
                 string ext = Path.GetExtension(path);
                 ext = ext.ToLower();
@@ -526,6 +527,8 @@ namespace YorkTrail
                     FileClose();
                     return false;
                 }
+
+                FilePath = path;
                 return true;
             }
             else
