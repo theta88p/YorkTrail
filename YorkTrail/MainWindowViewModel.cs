@@ -695,7 +695,7 @@ namespace YorkTrail
             }
         }
 
-        public void MainWindow_Loaded(object sender, EventArgs e)
+        internal void MainWindow_SourceInitialized(object sender, EventArgs e)
         {
             if (Settings != null)
             {

@@ -9,7 +9,7 @@
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
     Title="YorkTrail" Height="330" Width="544" AllowDrop="True" Drop="FileDrop" MaxWidth="544" MinWidth="544" MinHeight="330" Background="WhiteSmoke"
     x:Name="mainWindow"
-    Loaded="MainWindow_Loaded"
+    SourceInitialized="MainWindow_SourceInitialized"
     Closing="MainWindow_Closing"
     WindowStartupLocation="Manual"
     Topmost="{Binding Settings.AlwaysOnTop}"

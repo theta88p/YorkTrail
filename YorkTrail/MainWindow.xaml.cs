@@ -24,12 +24,8 @@ namespace YorkTrail
         public MainWindow()
         {
             InitializeComponent();
-        }
-        private void MainWindow_Loaded(object sender, EventArgs e)
-        {
             var vm = (MainWindowViewModel)this.DataContext;
             vm.Window = this;
-            vm.MainWindow_Loaded(sender, e);
         }
         private void FileDrop(object sender, DragEventArgs e)
         {
@@ -72,6 +68,11 @@ namespace YorkTrail
         private void FilterPreset_Clicked(object sender, ExecutedRoutedEventArgs e)
         {
             ((MainWindowViewModel)this.DataContext).FilterPreset_Clicked(sender, e);
+        }
+
+        private void MainWindow_SourceInitialized(object sender, EventArgs e)
+        {
+            ((MainWindowViewModel)this.DataContext).MainWindow_SourceInitialized(sender, e);
         }
     }
 }
