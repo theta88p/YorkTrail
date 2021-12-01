@@ -11,7 +11,7 @@
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
 
-#include "SoundTouchDLL.h"
+#include "source/SoundTouchDLL/SoundTouchDLL.h"
 
 using namespace System;
 using namespace System::Text;
