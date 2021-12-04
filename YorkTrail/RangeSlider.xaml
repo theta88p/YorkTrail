@@ -156,9 +156,14 @@
     </UserControl.Resources>
     <Grid VerticalAlignment="Top">
         <local:DisplayValueTickBar
+            x:Name="DisplayValueTickBar"
             Minimum="{Binding Minimum, ElementName=root}"
             Maximum="{Binding Maximum, ElementName=root}"
             TotalMilliSeconds="{Binding TotalMilliSeconds, ElementName=root}"
+            Tempo="{Binding Tempo, ElementName=root}"
+            MeasureOffset="{Binding MeasureOffset, ElementName=root}"
+            TimeSignature="{Binding TimeSignature, ElementName=root}"
+            ShowTimeAtMeasure="{Binding ShowTimeAtMeasure, ElementName=root}"
         />
         <!--
         <Slider TickFrequency="0.02" TickPlacement="TopLeft"
@@ -168,7 +173,9 @@
                 Focusable="False"
         />
         -->
-        <Border BorderThickness="0,30,0,0" BorderBrush="Transparent" VerticalAlignment="Center" Height="30" Focusable="False"/>
+        <Border BorderThickness="0,30,0,0" BorderBrush="Transparent" VerticalAlignment="Center" Height="30" Focusable="False"
+                MouseLeftButtonDown="Border_MouseLeftButtonDown" MouseRightButtonDown="Border_MouseRightButtonDown"/>
+        
         <Slider x:Name="LowerSlider"
                 Minimum="{Binding Minimum, ElementName=root}"
                 Maximum="{Binding Maximum, ElementName=root}"

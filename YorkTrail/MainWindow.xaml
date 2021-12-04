@@ -545,6 +545,8 @@
                     </MenuItem>
                     <MenuItem Height="20" Width="52" Header="設定(_S)" Padding="4,2,0,2">
                         <MenuItem Header="常に手前に表示(_T)" IsChecked="{Binding Settings.AlwaysOnTop}" Template="{DynamicResource MenuItemTemplate}" IsCheckable="True" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=AlwaysOnTop}"/>
+                        <MenuItem Header="小節で表示(_M)" IsChecked="{Binding Settings.ShowTimeAtMeasure}" Template="{DynamicResource MenuItemTemplate}" IsCheckable="True" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=ShowTimeAtMeasure}"/>
+                        <MenuItem Header="ティックにスナップ(_S)" IsChecked="{Binding Settings.SnapToTick}" Template="{DynamicResource MenuItemTemplate}" IsCheckable="True" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=SnapToTick}"/>
                         <MenuItem x:Name="DeviceSelector" Header="再生デバイス(_D)" ItemsSource="{Binding DeviceList, Mode=OneWay}">
                             <MenuItem.CommandBindings>
                                 <CommandBinding Command="{x:Static local:StaticCommands.PlaybackDeviceSelect}" Executed="PlaybackDevice_Clicked"/>
@@ -608,6 +610,17 @@
                         <Path Style="{StaticResource PathButton}" Data="M17,17H7V14L3,18L7,22V19H19V13H17M7,7H17V10L21,6L17,2V5H5V11H7V7Z" />
                     </Canvas>
                 </ToggleButton>
+                <ToggleButton Width="24" Height="24" IsChecked="{Binding IsSliderLinked}" ToolTip="再生区間を固定">
+                    <Canvas Width="16" Height="16" RenderTransformOrigin="0.5,0.5">
+                        <Canvas.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
+                                <TranslateTransform X="-3.5" Y="-3.5"/>
+                            </TransformGroup>
+                        </Canvas.RenderTransform>
+                        <Path Style="{StaticResource PathButton}" Data="M14.8 7V5.5C14.8 4.1 13.4 3 12 3S9.2 4.1 9.2 5.5V7C8.6 7 8 7.6 8 8.2V11.7C8 12.4 8.6 13 9.2 13H14.7C15.4 13 16 12.4 16 11.8V8.3C16 7.6 15.4 7 14.8 7M13.5 7H10.5V5.5C10.5 4.7 11.2 4.2 12 4.2S13.5 4.7 13.5 5.5V7M6 17V20L2 16L6 12V15H18V12L22 16L18 20V17H6Z" />
+                    </Canvas>
+                </ToggleButton>
                 <Button Width="24" Height="24" Command="{Binding OpenTempoCalcWindowCommand}" CommandParameter="{Binding ElementName=mainWindow}" ToolTip="テンポ計算ウィンドウ">
                     <Canvas Width="16" Height="16" RenderTransformOrigin="0.5,0.5">
                         <Canvas.RenderTransform>
@@ -635,7 +648,7 @@
         </ToolBarTray>
         <Border Grid.Row="1" Width="430" BorderBrush="DarkSlateGray" Background="#FFE8E4D4" BorderThickness="1,1,1,1" CornerRadius="1,1,1,1">
             <Grid>
-                <Label x:Name="TimeDisplay" Content="{Binding Time, Mode=OneWay, Converter={StaticResource TimeToStringConverter}}" FontSize="24" FontWeight="Bold" FontFamily="Tahoma" Foreground="DarkSlateGray" Margin="6,0,0,0"/>
+                <Label x:Name="TimeDisplay" Content="{Binding TimeString, Mode=OneWay}" FontSize="24" FontWeight="Bold" FontFamily="Tahoma" Foreground="DarkSlateGray" Margin="6,0,0,0"/>
                 <StackPanel Orientation="Vertical" Width="260" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
                         <Label Content="L" Width="17" Height="20" Padding="5,1,5,1" FontWeight="Bold"/>
@@ -697,14 +710,15 @@
         </StackPanel>
         <Grid Grid.Row="4">
             <ProgressBar x:Name="ProgressBar" HorizontalAlignment="Stretch" Height="30" VerticalAlignment="Bottom" Width="430" Value="{Binding Position}" Maximum="1" Foreground="#FF066AB0"/>
-            <local:RangeSlider x:Name="RangeSlider" Width="430" Height="30" VerticalAlignment="Bottom"
+            <local:RangeSlider x:Name="SeekBar" Width="430" Height="30" VerticalAlignment="Bottom"
                                LowerValue="{Binding StartPosition, Mode=TwoWay}" UpperValue="{Binding EndPosition, Mode=TwoWay}"
                                LowerValueChanged="RangeSlider_LowerValueChanged" MouseLeftButtonDown="RangeSlider_MouseLeftButtonDown"
-                               MouseRightButtonDown="RangeSlider_MouseRightButtonDown" LowerSliderDragCompleted="RangeSlider_LowerSliderDragCompleted"
-                               UpperSliderDragCompleted="RangeSlider_UpperSliderDragCompleted" Margin="0,-8,0,0"
-                               TotalMilliSeconds="{Binding TotalMilliSeconds}"
+                               LowerSliderDragCompleted="RangeSlider_LowerSliderDragCompleted"
+                               Margin="0,-8,0,0"
+                               TotalMilliSeconds="{Binding TotalMilliSeconds}" Tempo="{Binding Tempo}" MeasureOffset="{Binding MeasureOffset}"
+                               TimeSignature="{Binding TimeSignature}" IsSliderLinked="{Binding IsSliderLinked}"
+                               ShowTimeAtMeasure="{Binding Settings.ShowTimeAtMeasure}" SnapToTick="{Binding Settings.SnapToTick}"
             />
-            <Canvas/>
         </Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Row="5" Width="430">
             <Button Command="{Binding ToStartCommand}" CommandParameter="{Binding ElementName=mainWindow}" Width="58" Height="30" ToolTip="最初へ移動">

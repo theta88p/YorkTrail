@@ -24,6 +24,7 @@ namespace YorkTrail
         {
             _startPosition = 0.0;
             _endPosition = 1.0;
+            _timeSignature = 4;
             DeviceList = Core.GetPlaybackDeviceList();
             Settings = Settings.ReadSettingsFromFile();
 
@@ -42,7 +43,7 @@ namespace YorkTrail
 
             // Positionはイベント駆動
             Core.NotifyTimeChanged += () => {
-                RaisePropertyChanged(nameof(Time));
+                RaisePropertyChanged(nameof(TimeString));
                 RaisePropertyChanged(nameof(Position));
                 RaisePropertyChanged(nameof(RMSL));
                 RaisePropertyChanged(nameof(RMSR));
@@ -127,25 +128,51 @@ namespace YorkTrail
                 {
                     Window.ProgressBar.Minimum = this.StartPosition;
                     Window.ProgressBar.Maximum = this.EndPosition;
-                    Window.RangeSlider.Minimum = this.StartPosition;
-                    Window.RangeSlider.Maximum = this.EndPosition;
+                    Window.SeekBar.Minimum = this.StartPosition;
+                    Window.SeekBar.Maximum = this.EndPosition;
                 }
                 else
                 {
                     Window.ProgressBar.Minimum = 0.0;
                     Window.ProgressBar.Maximum = 1.0;
-                    Window.RangeSlider.Minimum = 0.0;
-                    Window.RangeSlider.Maximum = 1.0;
+                    Window.SeekBar.Minimum = 0.0;
+                    Window.SeekBar.Maximum = 1.0;
                 }
                 RaisePropertyChanged(nameof(IsZooming));
             }
         }
-        public ulong Time {
+
+        public ulong Time
+        {
             get { return Core.GetTime(); }
         }
+
+        public string TimeString {
+            get {
+                long cur = (long)Core.GetTime();
+                if (Settings.ShowTimeAtMeasure)
+                {
+                    long offsetCur = cur - MeasureOffset;
+                    int msOfBeat = (int)(60000.0f / Tempo);
+                    if (msOfBeat <= 0 || TimeSignature <= 0)
+                        return "0000:00:00";
+                    int msOfMeasure = msOfBeat * TimeSignature;
+                    int measure = (int)(offsetCur / msOfMeasure);
+                    int beat = (offsetCur < 0) ? (int)(offsetCur / msOfBeat % TimeSignature) : (int)(offsetCur / msOfBeat % TimeSignature + 1);
+                    int ms = (int)cur % msOfBeat / 10;
+                    return string.Format(@"{0,3:0000}:{1,2:00}:{2,2:00}", measure, beat, ms);
+                }
+                else
+                {
+                    return TimeSpan.FromMilliseconds(cur).ToString(@"hh\:mm\:ss\.ff");
+                }
+            }
+        }
+
         public ulong TotalMilliSeconds { 
             get { return Core.GetTotalMilliSeconds(); }
         }
+
         public double Position {
             get { return Core.GetPosition(); }
             set {
@@ -235,6 +262,50 @@ namespace YorkTrail
                 Core.SetVolume(value);
             }
         }
+
+        private float _tempo;
+        public float Tempo
+        {
+            get { return _tempo; }
+            set {
+                _tempo = value;
+                RaisePropertyChanged(nameof(Tempo));
+            }
+        }
+
+        private int _measureOffset;
+        public int MeasureOffset
+        {
+            get { return _measureOffset; }
+            set {
+                _measureOffset = value;
+                RaisePropertyChanged(nameof(MeasureOffset));
+            }
+        }
+
+        private int _timeSignature;
+        public int TimeSignature
+        {
+            get { return _timeSignature; }
+            set
+            {
+                _timeSignature = value;
+                RaisePropertyChanged(nameof(TimeSignature));
+            }
+        }
+
+        private bool _isSliderLinked;
+        public bool IsSliderLinked
+        {
+            get { return _isSliderLinked; }
+            set
+            {
+                _isSliderLinked = value;
+                RaisePropertyChanged(nameof(IsSliderLinked));
+            }
+        }
+
+        public bool SnapToTick { get; set; }
 
         public YorkTrailCore Core { get; private set; } = YorkTrailHandleHolder.hYorkTrailCore;
         public float RMSL { get { return Core.rmsL; } }
@@ -391,6 +462,10 @@ namespace YorkTrail
             Settings.HpfFreq = HpfFreq;
             Settings.BpfFreq = BpfFreq;
             Settings.IsZooming = IsZooming;
+            Settings.Tempo = Tempo;
+            Settings.MeasureOffset = MeasureOffset;
+            Settings.TimeSignature = TimeSignature;
+            Settings.IsSliderLinked = IsSliderLinked;
         }
 
         public void ResotreState()
@@ -403,6 +478,10 @@ namespace YorkTrail
                     StartPosition = Settings.StartPosition;
                     EndPosition = Settings.EndPosition;
                     IsZooming = Settings.IsZooming;
+                    Tempo = Settings.Tempo;
+                    MeasureOffset = Settings.MeasureOffset;
+                    TimeSignature = Settings.TimeSignature;
+                    IsSliderLinked = Settings.IsSliderLinked;
                     RaisePropertyChanged(nameof(Time));
                 }
             }
@@ -523,7 +602,7 @@ namespace YorkTrail
                 }
                 catch(OperationCanceledException)
                 {
-                    MessageBox.Show("ファイルを開けませんでした", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("ファイルを開けませんでした\r\n" + path, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     FileClose();
                     return false;
                 }
@@ -533,7 +612,7 @@ namespace YorkTrail
             }
             else
             {
-                MessageBox.Show("ファイルが存在しません", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("ファイルが存在しません\r\n" + path, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 if (Settings.RecentFiles.Contains(path))
                 {
@@ -545,12 +624,15 @@ namespace YorkTrail
 
         public void FileClose()
         {
-            Stop();
-            Core.FileClose();
-            FilePath = null;
-            SelectionResetCommand.Execute(Window);
-            Window.Title = applicationName;
-            StatusText = "";
+            if (Core.IsFileLoaded())
+            {
+                Stop();
+                Core.FileClose();
+                FilePath = null;
+                SelectionResetCommand.Execute(Window);
+                Window.Title = applicationName;
+                StatusText = "";
+            }
         }
 
         public void FileDrop(object sender, DragEventArgs e)
@@ -566,47 +648,75 @@ namespace YorkTrail
 
         public void Play()
         {
-            if (Core.GetState() == State.Pausing)
+            if (Core.IsFileLoaded())
             {
-                Pause();
-            }
-            else
-            {
-                Position = StartPosition;
+                if (Core.GetState() == State.Pausing)
+                {
+                    Pause();
+                }
+                else
+                {
+                    Position = StartPosition;
 
-                if (Core.GetState() == State.Stopping)
-                    playerTask.Wait();
+                    if (Core.GetState() == State.Stopping)
+                        playerTask.Wait();
 
-                if (Core.GetState() == State.Stopped)
-                    playerTask = Task.Run(Core.Start);
+                    if (Core.GetState() == State.Stopped)
+                        playerTask = Task.Run(Core.Start);
+                }
             }
         }
 
         public void Pause()
         {
-            if (Core.GetState() == State.Playing)
+            if (Core.IsFileLoaded())
             {
-                Core.Pause();
-                BlinkTimer.Start();
-            }
-            else if (Core.GetState() == State.Pausing)
-            {
-                BlinkTimer.Stop();
-                Window.TimeDisplay.Opacity = 1.0;
-                playerTask.Wait();
-                playerTask = Task.Run(Core.Start);
+                if (Core.GetState() == State.Playing)
+                {
+                    Core.Pause();
+                    BlinkTimer.Start();
+                }
+                else if (Core.GetState() == State.Pausing)
+                {
+                    BlinkTimer.Stop();
+                    Window.TimeDisplay.Opacity = 1.0;
+                    playerTask.Wait();
+                    playerTask = Task.Run(Core.Start);
+                }
             }
         }
 
         public void Stop()
         {
-            BlinkTimer.Stop();
-            Window.TimeDisplay.Opacity = 1.0;
-            Core.Stop();
-            if (playerTask?.Status == TaskStatus.Running)
-                playerTask.Wait();
+            if (Core.IsFileLoaded())
+            {
+                BlinkTimer.Stop();
+                Window.TimeDisplay.Opacity = 1.0;
+                Core.Stop();
+                if (playerTask?.Status == TaskStatus.Running)
+                    playerTask.Wait();
 
-            Core.ResetRMS();
+                Core.ResetRMS();
+            }
+        }
+
+        public void SeekRelative(int ms)
+        {
+            if (Core.IsFileLoaded())
+            {
+                double rPos = (double)ms / TotalMilliSeconds;
+                if (Position + rPos < 0)
+                    Position = 0;
+                else if (Position + rPos > 1)
+                    Position = 1;
+                else
+                    Position += rPos;
+
+                if (Core.GetState() == State.Pausing)
+                    Play();
+                else if (Core.GetState() == State.Stopped)
+                    StartPosition = Position;
+            }
         }
 
         public void RangeSlider_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -615,67 +725,32 @@ namespace YorkTrail
             {
                 if (Core.GetState() == State.Pausing)
                 {
-                    BlinkTimer.Stop();
-                    Window.TimeDisplay.Opacity = 1.0;
-                    Core.Start();
+                    Play();
                 }
-                RangeSlider rs = (RangeSlider)sender;
-                Point p = e.GetPosition(rs);
-                //double pos = (p.X / rs.Width * (1.0 - rs.Minimum) + rs.Minimum) * rs.Maximum;
-                double pos = ((rs.Maximum - rs.Minimum) * p.X / rs.Width) + rs.Minimum;
-                //rs.LowerValue = pos;
-                Position = (float)pos;
-                StartPosition = (float)pos;
+                Position = Window.SeekBar.LowerValue;
             }
-        }
-
-        public void RangeSlider_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            RangeSlider rs = (RangeSlider)sender;
-            Point p = e.GetPosition(rs);
-            double pos = ((rs.Maximum - rs.Minimum) * p.X / rs.Width) + rs.Minimum;
-            //rs.UpperValue = pos;
-            EndPosition = (float)pos;
         }
 
         public void RangeSlider_LowerValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (!Core.IsFileLoaded())
             {
-                ((RangeSlider)sender).LowerValue = 0;
+                Window.SeekBar.LowerValue = 0;
             }
         }
         
         public void RangeSlider_LowerSliderDragCompleted(object sender, DragCompletedEventArgs e)
         {
-            if (!Core.IsFileLoaded())
-            {
-                Slider rs = (Slider)sender;
-                float value = (float)rs.Value;
-                StartPosition = value;
-            }
-            else
+            if (Core.IsFileLoaded())
             {
                 if (this.Core.GetState() == State.Pausing)
                 {
-                    BlinkTimer.Stop();
-                    Window.TimeDisplay.Opacity = 1.0;
-                    Core.Start();
+                    Play();
                 }
-                Slider rs = (Slider)sender;
-                float value = (float)rs.Value;
-                Position = value;
-                StartPosition = value;
+                Position = Window.SeekBar.LowerValue;
             }
         }
-        
-        public void RangeSlider_UpperSliderDragCompleted(object sender, DragCompletedEventArgs e)
-        {
-            Slider rs = (Slider)sender;
-            float value = (float)rs.Value;
-            EndPosition = value;
-        }
-        
+
         public void RecentFile_Clicked(object sender, ExecutedRoutedEventArgs e)
         {
             string path = (string)e.Parameter;
@@ -721,7 +796,7 @@ namespace YorkTrail
         {
             if (Core.GetState() == State.Playing)
             {
-                Core.Stop();
+                Stop();
             }
 
             if (BlinkTimer.Enabled)

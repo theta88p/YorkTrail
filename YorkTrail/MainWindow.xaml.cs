@@ -35,10 +35,6 @@ namespace YorkTrail
         {
             ((MainWindowViewModel)this.DataContext).RangeSlider_MouseLeftButtonDown(sender, e);
         }
-        private void RangeSlider_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            ((MainWindowViewModel)this.DataContext).RangeSlider_MouseRightButtonDown(sender, e);
-        }
         private void RangeSlider_LowerValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             ((MainWindowViewModel)this.DataContext).RangeSlider_LowerValueChanged(sender, e);
@@ -46,10 +42,6 @@ namespace YorkTrail
         private void RangeSlider_LowerSliderDragCompleted(object sender, DragCompletedEventArgs e)
         {
             ((MainWindowViewModel)this.DataContext).RangeSlider_LowerSliderDragCompleted(sender, e);
-        }
-        private void RangeSlider_UpperSliderDragCompleted(object sender, DragCompletedEventArgs e)
-        {
-            ((MainWindowViewModel)this.DataContext).RangeSlider_UpperSliderDragCompleted(sender, e);
         }
         private void RecentFile_Clicked(object sender, ExecutedRoutedEventArgs e)
         {

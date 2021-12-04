@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.ComponentModel;
 
 namespace YorkTrail
 {
@@ -23,16 +24,37 @@ namespace YorkTrail
         {
             InitializeComponent();
             ((TempoCalcWindowViewModel)this.DataContext).MainWindowViewModel = vm;
-        }
-
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            ((TempoCalcWindowViewModel)this.DataContext).TextBox_TextChanged(sender, e);
+            ((TempoCalcWindowViewModel)this.DataContext).Window = this;
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ((TempoCalcWindowViewModel)this.DataContext).ComboBox_SelectionChanged(sender, e);
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            ((TempoCalcWindowViewModel)this.DataContext).Window_Closing(sender, e);
+        }
+
+        private void TempoOutput_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ((TempoCalcWindowViewModel)this.DataContext).TempoOutput_TextChanged(sender, e);
+        }
+
+        private void StartTimeInput_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ((TempoCalcWindowViewModel)this.DataContext).StartTimeInput_TextChanged(sender, e);
+        }
+
+        private void EndTimeInput_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ((TempoCalcWindowViewModel)this.DataContext).MeasureInput_TextChanged(sender, e);
+        }
+
+        private void MeasureInput_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ((TempoCalcWindowViewModel)this.DataContext).MeasureInput_TextChanged(sender, e);
         }
     }
 }

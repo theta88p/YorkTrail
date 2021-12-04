@@ -55,14 +55,38 @@ namespace YorkTrail
         [DataMember]
         public double WindowLeft { get; set; }
 
+        private bool _alwaysOnTop;
         [DataMember]
-        private bool _alwaysOnTop = false;
         public bool AlwaysOnTop {
             get { return _alwaysOnTop; }
-            set { _alwaysOnTop = value;
+            set {
+                _alwaysOnTop = value;
                 RaisePropertyChanged(nameof(AlwaysOnTop));
             }
         }
+
+        private bool _showTimeAtMeasure;
+        [DataMember]
+        public bool ShowTimeAtMeasure {
+            get { return _showTimeAtMeasure; }
+            set {
+                _showTimeAtMeasure = value;
+                RaisePropertyChanged(nameof(ShowTimeAtMeasure));
+            }
+        }
+
+        private bool _snapToTick;
+        [DataMember]
+        public bool SnapToTick
+        {
+            get { return _snapToTick; }
+            set
+            {
+                _snapToTick = value;
+                RaisePropertyChanged(nameof(SnapToTick));
+            }
+        }
+
 
         [DataMember]
         public int SkipLengthMS { get; set; } = 2000;
@@ -108,7 +132,14 @@ namespace YorkTrail
         public float HpfFreq { get; set; }
         [DataMember]
         public float BpfFreq { get; set; }
-
+        [DataMember]
+        public bool IsSliderLinked { get; set; }
+        [DataMember]
+        public float Tempo { get; set; }
+        [DataMember]
+        public int MeasureOffset { get; set; }
+        [DataMember]
+        public int TimeSignature { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void RaisePropertyChanged([CallerMemberName] string propertyName = null)

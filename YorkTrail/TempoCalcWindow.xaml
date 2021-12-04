@@ -10,6 +10,7 @@
         WindowStartupLocation="CenterOwner"
         Background="WhiteSmoke"
         Topmost="{Binding MainWindowViewModel.Settings.AlwaysOnTop}"
+        Closing="Window_Closing"
         >
     <Window.Resources>
         <local:TimeToStringConverter x:Key="TimeToStringConverter"/>
@@ -25,11 +26,11 @@
             <ComboBoxItem Content="4"/>
             <ComboBoxItem Content="6"/>
         </ComboBox>
-        <TextBox x:Name="TempoOutput" HorizontalAlignment="Left" Margin="55,10,0,0" Text="{Binding Tempo, Mode=OneWay}" TextWrapping="Wrap" VerticalAlignment="Top" Width="80" Height="20"/>
-        <TextBox x:Name="BarInput" HorizontalAlignment="Left" Margin="194,41,0,0" Text="{Binding Bar, UpdateSourceTrigger=PropertyChanged}" TextChanged="TextBox_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" Width="80" Height="20"/>
-        <TextBox x:Name="StartTimeInput" HorizontalAlignment="Left" Margin="194,72,0,0" TextChanged="TextBox_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" Width="80" Height="20">
+        <TextBox x:Name="TempoOutput" HorizontalAlignment="Left" Margin="55,10,0,0" Text="{Binding Tempo}" TextChanged="TempoOutput_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" Width="80" Height="20"/>
+        <TextBox x:Name="MeasureInput" HorizontalAlignment="Left" Margin="194,41,0,0" Text="{Binding Measure}" TextChanged="MeasureInput_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" Width="80" Height="20"/>
+        <TextBox x:Name="StartTimeInput" HorizontalAlignment="Left" Margin="194,72,0,0" TextChanged="StartTimeInput_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" Width="80" Height="20">
             <TextBox.Text>
-                <Binding Path="StartTime" UpdateSourceTrigger="PropertyChanged">
+                <Binding Path="StartTime">
                     <Binding.Converter>
                         <local:TimeToStringConverter/>
                     </Binding.Converter>
@@ -39,9 +40,9 @@
                 </Binding>
             </TextBox.Text>
         </TextBox>
-        <TextBox x:Name="EndTimeInput" HorizontalAlignment="Left" Margin="194,103,0,0" TextChanged="TextBox_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" Width="80" Height="20">
+        <TextBox x:Name="EndTimeInput" HorizontalAlignment="Left" Margin="194,103,0,0" TextChanged="EndTimeInput_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" Width="80" Height="20">
             <TextBox.Text>
-                <Binding Path="EndTime" UpdateSourceTrigger="PropertyChanged">
+                <Binding Path="EndTime">
                     <Binding.Converter>
                         <local:TimeToStringConverter/>
                     </Binding.Converter>
