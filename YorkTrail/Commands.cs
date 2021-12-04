@@ -4,6 +4,7 @@ using System.Threading;
 using System.Windows.Input;
 using System.Diagnostics;
 using System.Windows.Controls;
+using System.Windows;
 
 namespace YorkTrail
 {
@@ -78,13 +79,7 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            if (vm.Core.GetState() == State.Stopped || vm.Core.GetState() == State.Pausing)
-            {
-                vm.BlinkTimer.Stop();
-                window.TimeDisplay.Opacity = 1.0;
-                vm.Play();
-            }
-            vm.Core.SeekRelative(vm.Settings.SkipLengthMS);
+            vm.SeekRelative(vm.Settings.SkipLengthMS);
         }
     }
     public class FRCommand : ICommand
@@ -98,13 +93,7 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            if (vm.Core.GetState() == State.Stopped || vm.Core.GetState() == State.Pausing)
-            {
-                vm.BlinkTimer.Stop();
-                window.TimeDisplay.Opacity = 1.0;
-                vm.Play();
-            }
-            vm.Core.SeekRelative(-1 * vm.Settings.SkipLengthMS);
+            vm.SeekRelative(-1 * vm.Settings.SkipLengthMS);
         }
     }
     public class ToStartCommand : ICommand
@@ -120,9 +109,11 @@ namespace YorkTrail
             var vm = window?.DataContext as MainWindowViewModel;
             if (vm.Core.GetState() == State.Pausing)
             {
-                vm.BlinkTimer.Stop();
-                window.TimeDisplay.Opacity = 1.0;
                 vm.Play();
+            }
+            else if (vm.Core.GetState() == State.Stopped)
+            {
+                vm.StartPosition = 0.0;
             }
             vm.Position = 0.0;
         }
@@ -140,9 +131,11 @@ namespace YorkTrail
             var vm = window?.DataContext as MainWindowViewModel;
             if (vm.Core.GetState() == State.Pausing)
             {
-                vm.BlinkTimer.Stop();
-                window.TimeDisplay.Opacity = 1.0;
-                vm.Play();
+                vm.Stop();
+            }
+            else if (vm.Core.GetState() == State.Stopped)
+            {
+                vm.StartPosition = 1.0;
             }
             vm.Position = 1.0;
         }
@@ -454,13 +447,20 @@ namespace YorkTrail
             {
                 var tcwindow = new TempoCalcWindow(vm);
                 vm.TempoCalcWindow = tcwindow;
+                var tcwvm = (TempoCalcWindowViewModel)tcwindow.DataContext;
+                tcwvm.StartTime = (ulong)vm.MeasureOffset;
+                tcwvm.Tempo = vm.Tempo;
                 tcwindow.ShowActivated = true;
                 tcwindow.Owner = window;
                 tcwindow.Show();
             }
+            else if (vm.TempoCalcWindow.Visibility == Visibility.Collapsed)
+            {
+                vm.TempoCalcWindow.Visibility = Visibility.Visible;
+            }
             else
             {
-                vm.TempoCalcWindow.Close();
+                vm.TempoCalcWindow.Visibility = Visibility.Collapsed;
             }
         }
     }
