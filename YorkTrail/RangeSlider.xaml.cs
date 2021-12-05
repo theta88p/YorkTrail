@@ -35,6 +35,9 @@ namespace YorkTrail
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         */
         private double diff;
+        private bool isMouseDown;
+        private double mouseMoveStartPos;
+        private double mouseMoveCurrentPos;
 
         void Slider_Loaded(object sender, RoutedEventArgs e)
         {
@@ -205,6 +208,54 @@ namespace YorkTrail
             UpperSlider.Value = ((Maximum - Minimum) * p.X / b.ActualWidth) + Minimum;
         }
 
+        private static void IsSliderLinkedPropertyChanged(DependencyObject dpObj, DependencyPropertyChangedEventArgs e)
+        {
+            if ((bool)e.NewValue)
+            {
+                RangeSlider rs = (RangeSlider)dpObj;
+                rs.diff = rs.UpperSlider.Value - rs.LowerSlider.Value;
+            }
+        }
+
+        private void DisplayValueTickBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            isMouseDown = true;
+            mouseMoveStartPos = e.GetPosition(DisplayValueTickBar).X;
+            e.Handled = true;
+        }
+
+        private void DisplayValueTickBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            isMouseDown = false;
+            e.Handled = true;
+        }
+
+        private void DisplayValueTickBar_MouseLeave(object sender, MouseEventArgs e)
+        {
+            isMouseDown = false;
+            e.Handled = true;
+        }
+
+        private void DisplayValueTickBar_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!isMouseDown)
+                return;
+
+            mouseMoveCurrentPos = e.GetPosition(DisplayValueTickBar).X;
+            double offsetX = mouseMoveCurrentPos - mouseMoveStartPos;
+            double offsetValue = (Maximum - Minimum) * offsetX / ActualWidth;
+
+            if (Minimum - offsetValue >= 0 && Maximum - offsetValue <= 1
+                && Minimum - offsetValue < LowerSlider.Value && Maximum - offsetValue > UpperSlider.Value)
+            {
+                Minimum -= offsetValue;
+                Maximum -= offsetValue;
+            }
+
+            mouseMoveStartPos = mouseMoveCurrentPos;
+            e.Handled = true;
+        }
+
         public double Minimum {
             get { return (double)GetValue(MinimumProperty); }
             set { SetValue(MinimumProperty, value); }
@@ -299,14 +350,5 @@ namespace YorkTrail
         public static readonly DependencyProperty SnapToTickProperty =
             DependencyProperty.Register("SnapToTick", typeof(bool), typeof(RangeSlider), new FrameworkPropertyMetadata(false));
 
-        
-        private static void IsSliderLinkedPropertyChanged(DependencyObject dpObj, DependencyPropertyChangedEventArgs e)
-        {
-            if ((bool)e.NewValue)
-            {
-                RangeSlider rs = (RangeSlider)dpObj;
-                rs.diff = rs.UpperSlider.Value - rs.LowerSlider.Value;
-            }
-        }
     }
 }

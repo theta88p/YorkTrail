@@ -709,8 +709,8 @@
             </GroupBox>
         </StackPanel>
         <Grid Grid.Row="4">
-            <ProgressBar x:Name="ProgressBar" HorizontalAlignment="Stretch" Height="30" VerticalAlignment="Bottom" Width="430" Value="{Binding Position}" Maximum="1" Foreground="#FF066AB0"/>
-            <local:RangeSlider x:Name="SeekBar" Width="430" Height="30" VerticalAlignment="Bottom"
+            <ProgressBar x:Name="ProgressBar" HorizontalAlignment="Stretch" Height="30" VerticalAlignment="Bottom" Width="430" Value="{Binding Position}" Minimum="{Binding ElementName=SeekBar, Path=Minimum}" Maximum="{Binding ElementName=SeekBar, Path=Maximum}" Foreground="#FF066AB0"/>
+            <local:RangeSlider x:Name="SeekBar" Width="430" Height="54" VerticalAlignment="Bottom"
                                LowerValue="{Binding StartPosition, Mode=TwoWay}" UpperValue="{Binding EndPosition, Mode=TwoWay}"
                                LowerValueChanged="RangeSlider_LowerValueChanged" MouseLeftButtonDown="RangeSlider_MouseLeftButtonDown"
                                LowerSliderDragCompleted="RangeSlider_LowerSliderDragCompleted"

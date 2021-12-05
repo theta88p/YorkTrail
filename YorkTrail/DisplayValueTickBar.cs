@@ -62,6 +62,12 @@ namespace YorkTrail
 
         protected override void OnRender(DrawingContext dc)
         {
+            // 透明に塗らないとクリック出来ない
+            var bgpen = new Pen();
+            bgpen.Thickness = 0;
+            bgpen.Brush = Brushes.Transparent;
+            dc.DrawRectangle(bgpen.Brush, bgpen, new Rect(0, 0, ActualWidth, ActualHeight));
+
             if (ShowTimeAtMeasure)
             {
                 RanderMeasure(dc);
@@ -184,7 +190,6 @@ namespace YorkTrail
             {
                 return;
             }
-
             int span = 1;
             int vSpan = 1;
             ulong selectedLength = (ulong)(TotalMilliSeconds - (1 - Maximum + Minimum) * TotalMilliSeconds);
@@ -208,9 +213,9 @@ namespace YorkTrail
 
                 if (tick % vSpan == 0)
                 {
-                    dc.DrawLine(pen, new Point(x, -2), new Point(x, -8));
+                    dc.DrawLine(pen, new Point(x, 16), new Point(x, 22));
 
-                    Point p = new Point(x - 8, -24);
+                    Point p = new Point(x - 8, 0);
                     var ms = TimeSpan.FromMilliseconds(tick);
 
                     FormattedText formattedText = new FormattedText(ms.ToString(@"m\:ss"), CultureInfo.CurrentCulture,
@@ -221,7 +226,7 @@ namespace YorkTrail
                 }
                 else
                 {
-                    dc.DrawLine(pen, new Point(x, -2), new Point(x, -6));
+                    dc.DrawLine(pen, new Point(x, 18), new Point(x, 22));
                 }
             }
         }
@@ -253,9 +258,9 @@ namespace YorkTrail
 
                 if (tick % vSpan == MeasureOffset)
                 {
-                    dc.DrawLine(pen, new Point(x, -2), new Point(x, -8));
+                    dc.DrawLine(pen, new Point(x, 16), new Point(x, 22));
 
-                    Point p = new Point(x - 4, -24);
+                    Point p = new Point(x - 4, 0);
                     int measureNum = measureMult * i;
 
                     FormattedText formattedText = new FormattedText(measureNum.ToString(), CultureInfo.CurrentCulture,
@@ -266,7 +271,7 @@ namespace YorkTrail
                 }
                 else
                 {
-                    dc.DrawLine(pen, new Point(x, -2), new Point(x, -6));
+                    dc.DrawLine(pen, new Point(x, 18), new Point(x, 22));
                 }
             }
         }

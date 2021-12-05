@@ -154,46 +154,58 @@
             <Setter Property="Template" Value="{StaticResource SliderHorizontal}"/>
         </Style>
     </UserControl.Resources>
-    <Grid VerticalAlignment="Top">
-        <local:DisplayValueTickBar
-            x:Name="DisplayValueTickBar"
-            Minimum="{Binding Minimum, ElementName=root}"
-            Maximum="{Binding Maximum, ElementName=root}"
-            TotalMilliSeconds="{Binding TotalMilliSeconds, ElementName=root}"
-            Tempo="{Binding Tempo, ElementName=root}"
-            MeasureOffset="{Binding MeasureOffset, ElementName=root}"
-            TimeSignature="{Binding TimeSignature, ElementName=root}"
-            ShowTimeAtMeasure="{Binding ShowTimeAtMeasure, ElementName=root}"
-        />
-        <!--
-        <Slider TickFrequency="0.02" TickPlacement="TopLeft"
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="24"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <local:DisplayValueTickBar
+                x:Name="DisplayValueTickBar" Height="24"
                 Minimum="{Binding Minimum, ElementName=root}"
                 Maximum="{Binding Maximum, ElementName=root}"
-                Style="{StaticResource TickOnly}" Foreground="Gray" Margin="0,-8,0,0"
-                Focusable="False"
-        />
-        -->
-        <Border BorderThickness="0,30,0,0" BorderBrush="Transparent" VerticalAlignment="Center" Height="30" Focusable="False"
-                MouseLeftButtonDown="Border_MouseLeftButtonDown" MouseRightButtonDown="Border_MouseRightButtonDown"/>
+                TotalMilliSeconds="{Binding TotalMilliSeconds, ElementName=root}"
+                Tempo="{Binding Tempo, ElementName=root}"
+                MeasureOffset="{Binding MeasureOffset, ElementName=root}"
+                TimeSignature="{Binding TimeSignature, ElementName=root}"
+                ShowTimeAtMeasure="{Binding ShowTimeAtMeasure, ElementName=root}"
+                MouseLeftButtonDown="DisplayValueTickBar_MouseLeftButtonDown"
+                MouseLeftButtonUp="DisplayValueTickBar_MouseLeftButtonUp"
+                MouseMove="DisplayValueTickBar_MouseMove"
+                MouseLeave="DisplayValueTickBar_MouseLeave"
+            />
+            <!--
+            <Slider TickFrequency="0.02" TickPlacement="TopLeft"
+                    Minimum="{Binding Minimum, ElementName=root}"
+                    Maximum="{Binding Maximum, ElementName=root}"
+                    Style="{StaticResource TickOnly}" Foreground="Gray" Margin="0,-8,0,0"
+                    Focusable="False"
+            />
+            -->
+        </Grid>
+        <Grid Grid.Row="1">
+            <Border BorderThickness="0,30,0,0" BorderBrush="Transparent" VerticalAlignment="Top" Focusable="False"
+                    MouseLeftButtonDown="Border_MouseLeftButtonDown" MouseRightButtonDown="Border_MouseRightButtonDown"/>
         
-        <Slider x:Name="LowerSlider"
-                Minimum="{Binding Minimum, ElementName=root}"
-                Maximum="{Binding Maximum, ElementName=root}"
-                Value="{Binding LowerValue, ElementName=root, Mode=TwoWay}"
-                Margin="-11,0,0,0"
-                Style="{StaticResource SliderStyleLeft}" VerticalAlignment="Center"
-                Thumb.DragCompleted="LowerSlider_DragCompleted" SmallChange="0"
-                Focusable="False"
-                />
+            <Slider x:Name="LowerSlider"
+                    Minimum="{Binding Minimum, ElementName=root}"
+                    Maximum="{Binding Maximum, ElementName=root}"
+                    Value="{Binding LowerValue, ElementName=root, Mode=TwoWay}"
+                    Margin="-11,0,0,0"
+                    Style="{StaticResource SliderStyleLeft}" VerticalAlignment="Center"
+                    Thumb.DragCompleted="LowerSlider_DragCompleted" SmallChange="0"
+                    Focusable="False"
+                    />
 
-        <Slider x:Name="UpperSlider"
-                Minimum="{Binding Minimum, ElementName=root}"
-                Maximum="{Binding Maximum, ElementName=root}"
-                Value="{Binding UpperValue, ElementName=root, Mode=TwoWay}"
-                Margin="0,0,-11,0"
-                Style="{StaticResource SliderStyleRight}" VerticalAlignment="Center"
-                Thumb.DragCompleted="UpperSlider_DragCompleted"
-                Focusable="False"
-                />
+            <Slider x:Name="UpperSlider"
+                    Minimum="{Binding Minimum, ElementName=root}"
+                    Maximum="{Binding Maximum, ElementName=root}"
+                    Value="{Binding UpperValue, ElementName=root, Mode=TwoWay}"
+                    Margin="0,0,-11,0"
+                    Style="{StaticResource SliderStyleRight}" VerticalAlignment="Center"
+                    Thumb.DragCompleted="UpperSlider_DragCompleted"
+                    Focusable="False"
+                    />
+        </Grid>
     </Grid>
 </UserControl>

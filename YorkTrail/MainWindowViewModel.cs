@@ -131,15 +131,11 @@ namespace YorkTrail
                 _isZooming = value;
                 if (_isZooming)
                 {
-                    Window.ProgressBar.Minimum = this.StartPosition;
-                    Window.ProgressBar.Maximum = this.EndPosition;
                     Window.SeekBar.Minimum = this.StartPosition;
                     Window.SeekBar.Maximum = this.EndPosition;
                 }
                 else
                 {
-                    Window.ProgressBar.Minimum = 0.0;
-                    Window.ProgressBar.Maximum = 1.0;
                     Window.SeekBar.Minimum = 0.0;
                     Window.SeekBar.Maximum = 1.0;
                 }
@@ -775,7 +771,17 @@ namespace YorkTrail
             {
                 if (DeviceList[i] == device)
                 {
-                    PlaybackDevice = i;
+                    if (Core.IsFileLoaded())
+                    {
+                        Stop();
+                        Core.DeviceClose();
+                        PlaybackDevice = i;
+                        Core.DeviceOpen();
+                    }
+                    else
+                    {
+                        PlaybackDevice = i;
+                    }
                 }
             }
         }
