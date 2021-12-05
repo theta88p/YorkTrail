@@ -125,7 +125,7 @@ List<String^>^ YorkTrail::YorkTrailCore::GetPlaybackDeviceList()
 
     for (ma_uint32 i = 0; i < playbackCount; i++)
     {
-        auto name = gcnew String(pPlaybackInfos[i].name);
+        auto name = gcnew String(pPlaybackInfos[i].name, 0, 256, System::Text::Encoding::Default);
         deviceList->Add(name);
     }
     return deviceList;
@@ -148,15 +148,6 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
             throwError("ma_decoder", "デコーダの終了時にエラーが発生しました");
             return false;
         }
-    }
-
-    if (pDevice == nullptr)
-    {
-        pDevice = new ma_device();
-    }
-    else
-    {
-        ma_device_uninit(pDevice);
     }
 
     marshal_context^ context = gcnew marshal_context();
@@ -194,6 +185,44 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
         }
     }
 
+    if (!DeviceOpen())
+    {
+        return false;
+    }
+
+    if (pLpf == nullptr)
+    {
+        pLpf = new ma_lpf();
+    }
+    if (pHpf == nullptr)
+    {
+        pHpf = new ma_hpf();
+    }
+    if (pBpf == nullptr)
+    {
+        pBpf = new ma_bpf();
+    }
+    SetLPF(lpfFreq);
+    SetHPF(hpfFreq);
+    SetBPF(bpfFreq);
+
+    soundtouch_setChannels(hSoundTouch, pDecoder->outputChannels);
+    soundtouch_setSampleRate(hSoundTouch, pDecoder->outputSampleRate);
+
+    return true;
+}
+
+bool YorkTrail::YorkTrailCore::DeviceOpen()
+{
+    if (pDevice == nullptr)
+    {
+        pDevice = new ma_device();
+    }
+    else
+    {
+        ma_device_uninit(pDevice);
+    }
+
     ma_context macontext;
     if (ma_context_init(NULL, 0, NULL, &macontext) != MA_SUCCESS) {
         throwError("ma_context", "コンテキスト初期化エラー");
@@ -208,11 +237,11 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
         return false;
     }
 
-     /*
-   // 固定したデリゲートのハンドルを指定
-    using namespace System::Runtime::InteropServices;
-    IntPtr ptr = Marshal::GetFunctionPointerForDelegate(hDeleg);
-    */
+    /*
+  // 固定したデリゲートのハンドルを指定
+   using namespace System::Runtime::InteropServices;
+   IntPtr ptr = Marshal::GetFunctionPointerForDelegate(hDeleg);
+   */
     ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
     deviceConfig.playback.format = pDecoder->outputFormat;
     deviceConfig.playback.channels = pDecoder->outputChannels;
@@ -238,25 +267,6 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
         throwError("ma_device", "音量変更時にエラーが発生しました");
         return false;
     }
-
-    if (pLpf == nullptr)
-    {
-        pLpf = new ma_lpf();
-    }
-    if (pHpf == nullptr)
-    {
-        pHpf = new ma_hpf();
-    }
-    if (pBpf == nullptr)
-    {
-        pBpf = new ma_bpf();
-    }
-    SetLPF(lpfFreq);
-    SetHPF(hpfFreq);
-    SetBPF(bpfFreq);
-
-    soundtouch_setChannels(hSoundTouch, pDecoder->outputChannels);
-    soundtouch_setSampleRate(hSoundTouch, pDecoder->outputSampleRate);
 
     return true;
 }
@@ -321,7 +331,7 @@ bool YorkTrail::YorkTrailCore::IsFileLoaded()
 
 void YorkTrail::YorkTrailCore::FileClose()
 {
-    if (pDecoder != nullptr && pDevice != nullptr)
+    if (pDecoder != nullptr)
     {
         ma_decoder_uninit(pDecoder);
         ma_device_uninit(pDevice);
@@ -333,6 +343,15 @@ void YorkTrail::YorkTrailCore::FileClose()
         endFrame = 0;
         path = nullptr;
         NotifyTimeChanged();
+    }
+}
+
+void YorkTrail::YorkTrailCore::DeviceClose()
+{
+    if (pDevice != nullptr)
+    {
+        ma_device_uninit(pDevice);
+        pDevice = nullptr;
     }
 }
 

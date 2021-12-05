@@ -75,6 +75,8 @@ namespace YorkTrail
 		bool FileOpen(String^ path, FileType type);
 		bool IsFileLoaded();
 		void FileClose();
+		bool DeviceOpen();
+		void DeviceClose();
 		void Start();
 		void Pause();
 		void Stop();
