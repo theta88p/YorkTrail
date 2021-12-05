@@ -40,6 +40,11 @@ namespace YorkTrail
                     PlaybackDevice = Settings.DeviceIndex;
                 }
             }
+            else
+            {
+                Settings = new Settings();
+                Settings.IsInitialized = true;
+            }
 
             // Positionはイベント駆動
             Core.NotifyTimeChanged += () => {
@@ -153,13 +158,14 @@ namespace YorkTrail
                 if (Settings.ShowTimeAtMeasure)
                 {
                     long offsetCur = cur - MeasureOffset;
-                    int msOfBeat = (int)(60000.0f / Tempo);
+                    float msOfBeat = 60000.0f / Tempo;
                     if (msOfBeat <= 0 || TimeSignature <= 0)
                         return "0000:00:00";
-                    int msOfMeasure = msOfBeat * TimeSignature;
+                    float msOfMeasure = msOfBeat * TimeSignature;
                     int measure = (int)(offsetCur / msOfMeasure);
                     int beat = (offsetCur < 0) ? (int)(offsetCur / msOfBeat % TimeSignature) : (int)(offsetCur / msOfBeat % TimeSignature + 1);
-                    int ms = (int)cur % msOfBeat / 10;
+                    int ms = (int)(cur % msOfBeat / 10);
+                    ms = (ms < 1000) ? ms : ms /= 10;
                     return string.Format(@"{0,3:0000}:{1,2:00}:{2,2:00}", measure, beat, ms);
                 }
                 else
@@ -358,13 +364,15 @@ namespace YorkTrail
         public TempoQuarterCommand TempoQuarterCommand { get; private set; } = new TempoQuarterCommand();
         public LoopCommand LoopCommand { get; private set; } = new LoopCommand();
         public AlwaysOnTopCommand AlwaysOnTopCommand { get; private set; } = new AlwaysOnTopCommand();
+        public ShowTimeAtMeasureCommand ShowTimeAtMeasureCommand { get; private set; } = new ShowTimeAtMeasureCommand();
+        public SnapToTickCommand SnapToTickCommand { get; private set; } = new SnapToTickCommand();
         public OpenKeyCustomizeCommand OpenKeyCustomizeCommand { get; private set; } = new OpenKeyCustomizeCommand();
         public OpenSettingWindowCommand OpenSettingWindowCommand { get; private set; } = new OpenSettingWindowCommand();
         public OpenAddFilterPresetWindowCommand OpenAddFilterPresetWindowCommand { get; private set; } = new OpenAddFilterPresetWindowCommand();
         public FilterPresetDeleteCommand FilterPresetDeleteCommand { get; private set; } = new FilterPresetDeleteCommand();
         public FilterPresetMoveUpCommand FilterPresetMoveUpCommand { get; private set; } = new FilterPresetMoveUpCommand();
         public FilterPresetMoveDownCommand FilterPresetMoveDownCommand { get; private set; } = new FilterPresetMoveDownCommand();
-        public FilterPresetRenameCommand filterPresetRenameCommand { get; private set; } = new FilterPresetRenameCommand();
+        public FilterPresetRenameCommand FilterPresetRenameCommand { get; private set; } = new FilterPresetRenameCommand();
 
         public void DisplayUpdate()
         {
@@ -412,6 +420,8 @@ namespace YorkTrail
             Window.InputBindings.Add(new KeyBinding() { Command = ZoomCommand, CommandParameter = Window, Key = Settings.KeyBinds["Zoom"].Key, Modifiers = Settings.KeyBinds["Zoom"].Modifiers });
             Window.InputBindings.Add(new KeyBinding() { Command = OpenTempoCalcWindowCommand, CommandParameter = Window, Key = Settings.KeyBinds["OpenTempoCalcWindow"].Key, Modifiers = Settings.KeyBinds["OpenTempoCalcWindow"].Modifiers });
             Window.InputBindings.Add(new KeyBinding() { Command = AlwaysOnTopCommand, CommandParameter = Window, Key = Settings.KeyBinds["AlwaysOnTop"].Key, Modifiers = Settings.KeyBinds["AlwaysOnTop"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = ShowTimeAtMeasureCommand, CommandParameter = Window, Key = Settings.KeyBinds["ShowTimeAtMeasure"].Key, Modifiers = Settings.KeyBinds["ShowTimeAtMeasure"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = SnapToTickCommand, CommandParameter = Window, Key = Settings.KeyBinds["SnapToTick"].Key, Modifiers = Settings.KeyBinds["SnapToTick"].Modifiers });
             Window.InputBindings.Add(new KeyBinding() { Command = ExitCommand, CommandParameter = Window, Key = Settings.KeyBinds["Exit"].Key, Modifiers = Settings.KeyBinds["Exit"].Modifiers });
         }
 
@@ -772,7 +782,7 @@ namespace YorkTrail
 
         internal void MainWindow_SourceInitialized(object sender, EventArgs e)
         {
-            if (Settings != null)
+            if (!Settings.IsInitialized)
             {
                 RestoreWindowSettings();
 
@@ -782,11 +792,6 @@ namespace YorkTrail
                 {
                     ResotreState();
                 }
-            }
-            else
-            {
-                // null判定するから全部終わった後じゃないとダメ
-                Settings = new Settings();
             }
 
             SetKeyBinds();

@@ -52,7 +52,7 @@ namespace YorkTrail
         }
         public int TimeSignature { get; set; } = 4;
         public int Measure { get; set; } = 8;
-        public uint MeasureTime { get; set; } = 1;
+        public float MeasureTime { get; set; } = 1;
 
 
         public InputStartTimeButtonCommand InputStartTimeButtonCommand { get; private set; } = new InputStartTimeButtonCommand();
@@ -68,7 +68,7 @@ namespace YorkTrail
         {
             if (Tempo > 0 && !float.IsInfinity(Tempo))
             {
-                MeasureTime = (uint)(60000.0f / Tempo * TimeSignature);
+                MeasureTime = 60000.0f / Tempo * TimeSignature;
                 //EndTime = StartTime + MeasureTime * (uint)Measure;
 
                 if (MainWindowViewModel != null)

@@ -254,23 +254,23 @@ namespace YorkTrail
         public static readonly DependencyProperty TempoProperty =
             DependencyProperty.Register("Tempo", typeof(float), typeof(RangeSlider), new FrameworkPropertyMetadata(0.0f));
 
-        public uint MeasureOffset
+        public int MeasureOffset
         {
-            get { return (uint)GetValue(MeasureOffsetProperty); }
+            get { return (int)GetValue(MeasureOffsetProperty); }
             set { SetValue(MeasureOffsetProperty, value); }
         }
 
         public static readonly DependencyProperty MeasureOffsetProperty =
-            DependencyProperty.Register("MeasureOffset", typeof(uint), typeof(RangeSlider), new FrameworkPropertyMetadata(0u));
+            DependencyProperty.Register("MeasureOffset", typeof(int), typeof(RangeSlider), new FrameworkPropertyMetadata(0));
 
-        public uint TimeSignature
+        public int TimeSignature
         {
-            get { return (uint)GetValue(TimeSignatureProperty); }
+            get { return (int)GetValue(TimeSignatureProperty); }
             set { SetValue(TimeSignatureProperty, value); }
         }
 
         public static readonly DependencyProperty TimeSignatureProperty =
-            DependencyProperty.Register("TimeSignature", typeof(uint), typeof(RangeSlider), new FrameworkPropertyMetadata(0u));
+            DependencyProperty.Register("TimeSignature", typeof(int), typeof(RangeSlider), new FrameworkPropertyMetadata(0));
 
         public bool IsSliderLinked
         {

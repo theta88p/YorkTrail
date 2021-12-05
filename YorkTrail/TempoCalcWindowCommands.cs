@@ -20,7 +20,8 @@ namespace YorkTrail
             var window = parameter as TempoCalcWindow;
             var vm = window?.DataContext as TempoCalcWindowViewModel;
             var mwvm = vm?.MainWindowViewModel;
-            vm.StartTime = mwvm.Time;
+            // レイテンシを考慮して-50する
+            vm.StartTime = mwvm.Time - 50;
         }
     }
     public class InputEndTimeButtonCommand : ICommand
@@ -36,7 +37,7 @@ namespace YorkTrail
             var window = parameter as TempoCalcWindow;
             var vm = window?.DataContext as TempoCalcWindowViewModel;
             var mwvm = vm?.MainWindowViewModel;
-            vm.EndTime = mwvm.Time;
+            vm.EndTime = mwvm.Time - 50;
         }
     }
 }

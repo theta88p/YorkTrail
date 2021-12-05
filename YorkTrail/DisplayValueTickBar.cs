@@ -32,23 +32,23 @@ namespace YorkTrail
         public static readonly DependencyProperty TempoProperty =
             DependencyProperty.Register("Tempo", typeof(float), typeof(DisplayValueTickBar), new FrameworkPropertyMetadata(0.0f, FrameworkPropertyMetadataOptions.AffectsRender));
 
-        public uint MeasureOffset
+        public int MeasureOffset
         {
-            get { return (uint)GetValue(MeasureOffsetProperty); }
+            get { return (int)GetValue(MeasureOffsetProperty); }
             set { SetValue(MeasureOffsetProperty, value); }
         }
 
         public static readonly DependencyProperty MeasureOffsetProperty =
-            DependencyProperty.Register("MeasureOffset", typeof(uint), typeof(DisplayValueTickBar), new FrameworkPropertyMetadata(0u, FrameworkPropertyMetadataOptions.AffectsRender));
+            DependencyProperty.Register("MeasureOffset", typeof(int), typeof(DisplayValueTickBar), new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender));
 
-        public uint TimeSignature
+        public int TimeSignature
         {
-            get { return (uint)GetValue(TimeSignatureProperty); }
+            get { return (int)GetValue(TimeSignatureProperty); }
             set { SetValue(TimeSignatureProperty, value); }
         }
 
         public static readonly DependencyProperty TimeSignatureProperty =
-            DependencyProperty.Register("TimeSignature", typeof(uint), typeof(DisplayValueTickBar), new FrameworkPropertyMetadata(0u, FrameworkPropertyMetadataOptions.AffectsRender));
+            DependencyProperty.Register("TimeSignature", typeof(int), typeof(DisplayValueTickBar), new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public bool ShowTimeAtMeasure
         {
@@ -72,7 +72,7 @@ namespace YorkTrail
             }
         }
 
-        private void GetSpan(ulong selectedLength, out uint span, out uint vSpan)
+        private void GetSpan(ulong selectedLength, out int span, out int vSpan)
         {
             if (selectedLength > 6000000)
             {
@@ -131,11 +131,11 @@ namespace YorkTrail
             }
         }
 
-        private void GetBarSpan(ulong selectedLength, out uint span, out uint vSpan, out uint measureMult)
+        private void GetMeasureSpan(ulong selectedLength, out int span, out int vSpan, out int measureMult)
         {
             float factor = selectedLength * Tempo / 100;
-            uint measure = (uint)(60000.0f / Tempo * TimeSignature);
-            uint vMult = 1;
+            int measure = (int)(60000.0f / Tempo * TimeSignature);
+            int vMult = 1;
             measureMult = 1;
 
             if (Tempo == 0)
@@ -146,10 +146,10 @@ namespace YorkTrail
 
             if (factor > 48000)
             {
-                for (uint i = 10; i > 0; i--)
+                for (int i = 10; i > 0; i--)
                 {
-                    uint m = 1;
-                    for (uint j = 1; j < i; j++)
+                    int m = 1;
+                    for (int j = 1; j < i; j++)
                     {
                         m *= 2;
                     }
@@ -184,15 +184,15 @@ namespace YorkTrail
                 return;
             }
 
-            uint span = 1;
-            uint vSpan = 1;
+            int span = 1;
+            int vSpan = 1;
             ulong selectedLength = (ulong)(TotalMilliSeconds - (1 - Maximum + Minimum) * TotalMilliSeconds);
             GetSpan(selectedLength, out span, out vSpan);
             TickList.Clear();
 
-            for (uint i = (uint)(Minimum * TotalMilliSeconds / span); i <= (uint)(Maximum * TotalMilliSeconds / span); i++)
+            for (int i = (int)(Minimum * TotalMilliSeconds / span); i <= (int)(Maximum * TotalMilliSeconds / span); i++)
             {
-                uint tick = span * i;
+                int tick = span * i;
                 double pos = ((double)tick - Minimum * TotalMilliSeconds) / (TotalMilliSeconds - (1 - Maximum + Minimum) * TotalMilliSeconds);
                 TickList.Add((double)tick / TotalMilliSeconds);
                 double x = base.ActualWidth * pos;
@@ -232,16 +232,16 @@ namespace YorkTrail
                 return;
             }
 
-            uint span = 1;
-            uint vSpan = 1;
-            uint measureMult = 1;
+            int span = 1;
+            int vSpan = 1;
+            int measureMult = 1;
             ulong selectedLength = (ulong)(TotalMilliSeconds - (1 - Maximum + Minimum) * TotalMilliSeconds);
-            GetBarSpan(selectedLength, out span, out vSpan, out measureMult);
+            GetMeasureSpan(selectedLength, out span, out vSpan, out measureMult);
             TickList.Clear();
 
-            for (uint i = (uint)(Minimum * TotalMilliSeconds / span); i <= (uint)(Maximum * TotalMilliSeconds / span); i++)
+            for (int i = (int)(Minimum * TotalMilliSeconds / span); i <= (int)(Maximum * TotalMilliSeconds / span); i++)
             {
-                uint tick = span * i + MeasureOffset;
+                int tick = span * i + MeasureOffset;
                 double pos = ((double)tick - Minimum * TotalMilliSeconds) / (TotalMilliSeconds - (1 - Maximum + Minimum) * TotalMilliSeconds);
                 TickList.Add((double)tick / TotalMilliSeconds);
                 double x = base.ActualWidth * pos;
@@ -255,7 +255,7 @@ namespace YorkTrail
                     dc.DrawLine(pen, new Point(x, -2), new Point(x, -8));
 
                     Point p = new Point(x - 4, -24);
-                    uint measureNum = measureMult * i;
+                    int measureNum = measureMult * i;
 
                     FormattedText formattedText = new FormattedText(measureNum.ToString(), CultureInfo.CurrentCulture,
                         FlowDirection.LeftToRight, new Typeface("Yu Gothic UI"), 12, Brushes.Black,
