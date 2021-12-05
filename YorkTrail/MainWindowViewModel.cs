@@ -131,8 +131,8 @@ namespace YorkTrail
                 _isZooming = value;
                 if (_isZooming)
                 {
-                    Window.SeekBar.Minimum = this.StartPosition;
-                    Window.SeekBar.Maximum = this.EndPosition;
+                    Window.SeekBar.Minimum = Math.Max(0, StartPosition - (EndPosition - StartPosition) / 4);
+                    Window.SeekBar.Maximum = Math.Min(1, EndPosition + (EndPosition - StartPosition) / 4);
                 }
                 else
                 {
@@ -739,7 +739,11 @@ namespace YorkTrail
 
         public void RangeSlider_LowerValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (!Core.IsFileLoaded())
+            if (Core.IsFileLoaded())
+            {
+                //Position = Window.SeekBar.LowerValue;
+            }
+            else
             {
                 Window.SeekBar.LowerValue = 0;
             }
