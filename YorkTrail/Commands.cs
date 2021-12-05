@@ -432,6 +432,34 @@ namespace YorkTrail
             vm.Settings.AlwaysOnTop = !vm.Settings.AlwaysOnTop;
         }
     }
+    public class ShowTimeAtMeasureCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.Settings.ShowTimeAtMeasure = !vm.Settings.ShowTimeAtMeasure;
+        }
+    }
+    public class SnapToTickCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.Settings.SnapToTick = !vm.Settings.SnapToTick;
+        }
+    }
     public class OpenTempoCalcWindowCommand : ICommand
     {
         public event EventHandler CanExecuteChanged;

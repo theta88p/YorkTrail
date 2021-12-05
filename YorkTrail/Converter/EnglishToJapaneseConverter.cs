@@ -48,6 +48,8 @@ namespace YorkTrail
                 case "Zoom": return "再生位置拡大/縮小";
                 case "OpenTempoCalcWindow": return "テンポ計算ウィンドウ";
                 case "AlwaysOnTop": return "常に手前に表示";
+                case "ShowTimeAtMeasure": return "小節で表示";
+                case "SnapToTick": return "ティックにスナップ";
                 case "Exit": return "終了";
                 default: return "";
             }

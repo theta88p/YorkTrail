@@ -23,6 +23,8 @@ namespace YorkTrail
             SetDefaultKeyBinds();
         }
 
+        public bool IsInitialized { get; set; } = false;
+
         [DataMember]
         public float Volume { get; set; } = 1.0f;
         [DataMember]
@@ -257,6 +259,8 @@ namespace YorkTrail
                 { "Zoom", new ShortCutKey(Key.X, ModifierKeys.Control) },
                 { "OpenTempoCalcWindow", new ShortCutKey(Key.T, ModifierKeys.Alt) },
                 { "AlwaysOnTop", new ShortCutKey(Key.T, ModifierKeys.Control) },
+                { "ShowTimeAtMeasure", new ShortCutKey(Key.None, ModifierKeys.None) },
+                { "SnapToTick", new ShortCutKey(Key.None, ModifierKeys.None) },
                 { "Exit", new ShortCutKey(Key.Q, ModifierKeys.Control) },
             };
 
