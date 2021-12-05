@@ -34,7 +34,7 @@ namespace YorkTrail
         private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         */
-        private double diff;
+        private double upperLowerDiff;
         private bool isMouseDown;
         private double mouseMoveStartPos;
         private double mouseMoveCurrentPos;
@@ -47,11 +47,11 @@ namespace YorkTrail
 
         private void LowerSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (IsSliderLinked)
+            if (IsSliderLinked && !isMouseDown)
             {
-                UpperSlider.Value = LowerSlider.Value + diff;
+                UpperSlider.Value = LowerSlider.Value + upperLowerDiff;
                 if (UpperSlider.Value >= UpperSlider.Maximum)
-                    LowerSlider.Value = UpperSlider.Value - diff;
+                    LowerSlider.Value = UpperSlider.Value - upperLowerDiff;
             }
             else
             {
@@ -66,11 +66,11 @@ namespace YorkTrail
 
         private void UpperSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (IsSliderLinked)
+            if (IsSliderLinked && !isMouseDown)
             {
-                LowerSlider.Value = UpperSlider.Value - diff;
+                LowerSlider.Value = UpperSlider.Value - upperLowerDiff;
                 if (LowerSlider.Value <= LowerSlider.Minimum)
-                    UpperSlider.Value = LowerSlider.Value + diff;
+                    UpperSlider.Value = LowerSlider.Value + upperLowerDiff;
             }
             else
             {
@@ -88,51 +88,56 @@ namespace YorkTrail
         public event DragCompletedEventHandler LowerSliderDragCompleted;
         public event DragCompletedEventHandler UpperSliderDragCompleted;
 
+        private void DoSnapToTick(Slider slider)
+        {
+            var tl = DisplayValueTickBar.TickList;
+
+            for (int i = 0; i < tl.Count; i++)
+            {
+                if (slider.Value < tl[0])
+                {
+                    if (slider.Value < (Minimum + tl[0]) / 2)
+                    {
+                        slider.Value = Minimum;
+                    }
+                    else
+                    {
+                        slider.Value = tl[0];
+                    }
+                    break;
+                }
+                else if (slider.Value < tl[i])
+                {
+                    if (slider.Value < (tl[i - 1] + tl[i]) / 2)
+                    {
+                        slider.Value = tl[i - 1];
+                    }
+                    else
+                    {
+                        slider.Value = tl[i];
+                    }
+                    break;
+                }
+                else if (slider.Value >= tl[tl.Count - 1])
+                {
+                    if (slider.Value < (tl[tl.Count - 1] + Maximum) / 2)
+                    {
+                        slider.Value = tl[tl.Count - 1];
+                    }
+                    else
+                    {
+                        slider.Value = Maximum;
+                    }
+                    break;
+                }
+            }
+        }
+
         private void LowerSlider_DragCompleted(object sender, DragCompletedEventArgs e)
         {
             if (SnapToTick)
             {
-                var tl = DisplayValueTickBar.TickList;
-
-                for (int i = 0; i < tl.Count; i++)
-                {
-                    if (LowerSlider.Value < tl[0])
-                    {
-                        if (LowerSlider.Value < (Minimum + tl[0]) / 2)
-                        {
-                            LowerSlider.Value = Minimum;
-                        }
-                        else
-                        {
-                            LowerSlider.Value = tl[0];
-                        }
-                        break;
-                    }
-                    else if (LowerSlider.Value < tl[i])
-                    {
-                        if (LowerSlider.Value < (tl[i - 1] + tl[i]) / 2)
-                        {
-                            LowerSlider.Value = tl[i - 1];
-                        }
-                        else
-                        {
-                            LowerSlider.Value = tl[i];
-                        }
-                        break;
-                    }
-                    else if (LowerSlider.Value >= tl[tl.Count - 1])
-                    {
-                        if (LowerSlider.Value < (tl[tl.Count - 1] + Maximum) / 2)
-                        {
-                            LowerSlider.Value = tl[tl.Count - 1];
-                        }
-                        else
-                        {
-                            LowerSlider.Value = Maximum;
-                        }
-                        break;
-                    }
-                }
+                DoSnapToTick(LowerSlider);
             }
 
             if (LowerSliderDragCompleted != null)
@@ -145,47 +150,7 @@ namespace YorkTrail
         {
             if (SnapToTick)
             {
-                var tl = DisplayValueTickBar.TickList;
-
-                for (int i = 0; i < tl.Count; i++)
-                {
-                    if (UpperSlider.Value < tl[0])
-                    {
-                        if (UpperSlider.Value < (Minimum + tl[0]) / 2)
-                        {
-                            UpperSlider.Value = Minimum;
-                        }
-                        else
-                        {
-                            UpperSlider.Value = tl[0];
-                        }
-                        break;
-                    }
-                    else if (UpperSlider.Value < tl[i])
-                    {
-                        if (UpperSlider.Value < (tl[i - 1] + tl[i]) / 2)
-                        {
-                            UpperSlider.Value = tl[i - 1];
-                        }
-                        else
-                        {
-                            UpperSlider.Value = tl[i];
-                        }
-                        break;
-                    }
-                    else if (UpperSlider.Value >= tl[tl.Count - 1])
-                    {
-                        if (UpperSlider.Value < (tl[tl.Count - 1] + Maximum) / 2)
-                        {
-                            UpperSlider.Value = tl[tl.Count - 1];
-                        }
-                        else
-                        {
-                            UpperSlider.Value = Maximum;
-                        }
-                        break;
-                    }
-                }
+                DoSnapToTick(UpperSlider);
             }
 
             if (UpperSliderDragCompleted != null)
@@ -213,7 +178,7 @@ namespace YorkTrail
             if ((bool)e.NewValue)
             {
                 RangeSlider rs = (RangeSlider)dpObj;
-                rs.diff = rs.UpperSlider.Value - rs.LowerSlider.Value;
+                rs.upperLowerDiff = rs.UpperSlider.Value - rs.LowerSlider.Value;
             }
         }
 
@@ -224,32 +189,104 @@ namespace YorkTrail
             e.Handled = true;
         }
 
+        private void DoSnapToLowerValue()
+        {
+            double diff = 0;
+            var tl = DisplayValueTickBar.TickList;
+
+            for (int i = 0; i < tl.Count; i++)
+            {
+                if (LowerSlider.Value < tl[0])
+                {
+                    if (LowerSlider.Value < (Minimum + tl[0]) / 2)
+                    {
+                        diff = LowerSlider.Value - Minimum;
+                        LowerSlider.Value = Minimum;
+                    }
+                    else
+                    {
+                        diff = tl[0] - Minimum;
+                        LowerSlider.Value = tl[0];
+                    }
+                    break;
+                }
+                else if (LowerSlider.Value < tl[i])
+                {
+                    if (LowerSlider.Value < (tl[i - 1] + tl[i]) / 2)
+                    {
+                        diff = tl[i - 1] - LowerSlider.Value;
+                        LowerSlider.Value = tl[i - 1];
+                    }
+                    else
+                    {
+                        diff = tl[i] - LowerSlider.Value;
+                        LowerSlider.Value = tl[i];
+                    }
+                    break;
+                }
+                else if (LowerSlider.Value >= tl[tl.Count - 1])
+                {
+                    if (LowerSlider.Value < (tl[tl.Count - 1] + Maximum) / 2)
+                    {
+                        diff = tl[tl.Count - 1] - LowerSlider.Value;
+                        LowerSlider.Value = tl[tl.Count - 1];
+                    }
+                    else
+                    {
+                        diff = Maximum - LowerSlider.Value;
+                        LowerSlider.Value = Maximum;
+                    }
+                    break;
+                }
+            }
+
+            if (Minimum + diff >= 0 && Maximum + diff <= 1)
+            {
+                Minimum += diff;
+                Maximum += diff;
+            }
+        }
+
         private void DisplayValueTickBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             isMouseDown = false;
+
+            if (SnapToTick)
+            {
+                DoSnapToLowerValue();
+            }
             e.Handled = true;
         }
 
         private void DisplayValueTickBar_MouseLeave(object sender, MouseEventArgs e)
         {
             isMouseDown = false;
+
+            if (SnapToTick)
+            {
+                DoSnapToLowerValue();
+            }
             e.Handled = true;
         }
 
         private void DisplayValueTickBar_MouseMove(object sender, MouseEventArgs e)
         {
             if (!isMouseDown)
+            {
                 return;
+            }
 
             mouseMoveCurrentPos = e.GetPosition(DisplayValueTickBar).X;
             double offsetX = mouseMoveCurrentPos - mouseMoveStartPos;
             double offsetValue = (Maximum - Minimum) * offsetX / ActualWidth;
 
             if (Minimum - offsetValue >= 0 && Maximum - offsetValue <= 1
-                && Minimum - offsetValue < LowerSlider.Value && Maximum - offsetValue > UpperSlider.Value)
+                && LowerSlider.Value - offsetValue >= 0 && UpperSlider.Value - offsetValue <= 1)
             {
                 Minimum -= offsetValue;
                 Maximum -= offsetValue;
+                LowerSlider.Value -= offsetValue;
+                UpperSlider.Value -= offsetValue;
             }
 
             mouseMoveStartPos = mouseMoveCurrentPos;
