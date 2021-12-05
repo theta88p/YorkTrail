@@ -138,7 +138,8 @@ namespace YorkTrail
             int vMult = 1;
             measureMult = 1;
 
-            if (Tempo == 0)
+            // ゼロ除算防止
+            if (Tempo == 0 || TimeSignature == 0)
             {
                 factor = selectedLength / 100;
                 measure = 240000;

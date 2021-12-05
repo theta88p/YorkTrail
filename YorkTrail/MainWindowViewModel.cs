@@ -490,7 +490,7 @@ namespace YorkTrail
                     IsZooming = Settings.IsZooming;
                     Tempo = Settings.Tempo;
                     MeasureOffset = Settings.MeasureOffset;
-                    TimeSignature = Settings.TimeSignature;
+                    TimeSignature = (Settings.TimeSignature == 0) ? 4 : Settings.TimeSignature;
                     IsSliderLinked = Settings.IsSliderLinked;
                     RaisePropertyChanged(nameof(Time));
                 }

@@ -141,7 +141,7 @@ namespace YorkTrail
         [DataMember]
         public int MeasureOffset { get; set; }
         [DataMember]
-        public int TimeSignature { get; set; }
+        public int TimeSignature { get; set; } = 4;
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
