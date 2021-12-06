@@ -201,8 +201,8 @@ namespace YorkTrail
                 int tick = span * i;
                 double pos = ((double)tick - Minimum * TotalMilliSeconds) / (TotalMilliSeconds - (1 - Maximum + Minimum) * TotalMilliSeconds);
                 TickList.Add((double)tick / TotalMilliSeconds);
-                double x = base.ActualWidth * pos;
-                if (x < -10)
+                double x = ActualWidth * pos;
+                if (x < -5 || x > ActualWidth + 5)
                 {
                     continue;
                 }
@@ -250,7 +250,11 @@ namespace YorkTrail
                 int tick = span * i + MeasureOffset;
                 double pos = ((double)tick - Minimum * TotalMilliSeconds) / (TotalMilliSeconds - (1 - Maximum + Minimum) * TotalMilliSeconds);
                 TickList.Add((double)tick / TotalMilliSeconds);
-                double x = base.ActualWidth * pos;
+                double x = ActualWidth * pos;
+                if (x < -5 || x > ActualWidth + 5)
+                {
+                    continue;
+                }
 
                 var pen = new Pen();
                 pen.Thickness = 0.75;
