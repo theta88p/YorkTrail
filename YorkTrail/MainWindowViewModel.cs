@@ -122,26 +122,7 @@ namespace YorkTrail
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         public string FilePath { get; set; }
-        private bool _isZooming;
-        public bool IsZooming
-        {
-            get { return _isZooming; }
-            set
-            {
-                _isZooming = value;
-                if (_isZooming)
-                {
-                    Window.SeekBar.Minimum = Math.Max(0, StartPosition - (EndPosition - StartPosition) / 4);
-                    Window.SeekBar.Maximum = Math.Min(1, EndPosition + (EndPosition - StartPosition) / 4);
-                }
-                else
-                {
-                    Window.SeekBar.Minimum = 0.0;
-                    Window.SeekBar.Maximum = 1.0;
-                }
-                RaisePropertyChanged(nameof(IsZooming));
-            }
-        }
+        public int ZoomMultiplier { get; set; }
 
         public ulong Time
         {
@@ -331,7 +312,8 @@ namespace YorkTrail
         public FRCommand FRCommand { get; private set; } = new FRCommand();
         public ToStartCommand ToStartCommand { get; private set; } = new ToStartCommand();
         public ToEndCommand ToEndCommand { get; private set; } = new ToEndCommand();
-        public ZoomCommand ZoomCommand { get; private set; } = new ZoomCommand();
+        public ZoomInCommand ZoomInCommand { get; private set; } = new ZoomInCommand();
+        public ZoomOutCommand ZoomOutCommand { get; private set; } = new ZoomOutCommand();
         public LpfOnCommand LpfOnCommand { get; private set; } = new LpfOnCommand();
         public HpfOnCommand HpfOnCommand { get; private set; } = new HpfOnCommand();
         public BpfOnCommand BpfOnCommand { get; private set; } = new BpfOnCommand();
@@ -413,7 +395,8 @@ namespace YorkTrail
             Window.InputBindings.Add(new KeyBinding() { Command = FileOpenCommand, CommandParameter = Window, Key = Settings.KeyBinds["FileOpen"].Key, Modifiers = Settings.KeyBinds["FileOpen"].Modifiers });
             Window.InputBindings.Add(new KeyBinding() { Command = LoopCommand, CommandParameter = Window, Key = Settings.KeyBinds["Loop"].Key, Modifiers = Settings.KeyBinds["Loop"].Modifiers });
             Window.InputBindings.Add(new KeyBinding() { Command = SelectionResetCommand, CommandParameter = Window, Key = Settings.KeyBinds["SelectionReset"].Key, Modifiers = Settings.KeyBinds["SelectionReset"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = ZoomCommand, CommandParameter = Window, Key = Settings.KeyBinds["Zoom"].Key, Modifiers = Settings.KeyBinds["Zoom"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = ZoomInCommand, CommandParameter = Window, Key = Settings.KeyBinds["ZoomIn"].Key, Modifiers = Settings.KeyBinds["ZoomIn"].Modifiers });
+            Window.InputBindings.Add(new KeyBinding() { Command = ZoomOutCommand, CommandParameter = Window, Key = Settings.KeyBinds["ZoomOut"].Key, Modifiers = Settings.KeyBinds["ZoomOut"].Modifiers });
             Window.InputBindings.Add(new KeyBinding() { Command = OpenTempoCalcWindowCommand, CommandParameter = Window, Key = Settings.KeyBinds["OpenTempoCalcWindow"].Key, Modifiers = Settings.KeyBinds["OpenTempoCalcWindow"].Modifiers });
             Window.InputBindings.Add(new KeyBinding() { Command = AlwaysOnTopCommand, CommandParameter = Window, Key = Settings.KeyBinds["AlwaysOnTop"].Key, Modifiers = Settings.KeyBinds["AlwaysOnTop"].Modifiers });
             Window.InputBindings.Add(new KeyBinding() { Command = ShowTimeAtMeasureCommand, CommandParameter = Window, Key = Settings.KeyBinds["ShowTimeAtMeasure"].Key, Modifiers = Settings.KeyBinds["ShowTimeAtMeasure"].Modifiers });
@@ -467,11 +450,13 @@ namespace YorkTrail
             Settings.LpfFreq = LpfFreq;
             Settings.HpfFreq = HpfFreq;
             Settings.BpfFreq = BpfFreq;
-            Settings.IsZooming = IsZooming;
             Settings.Tempo = Tempo;
             Settings.MeasureOffset = MeasureOffset;
             Settings.TimeSignature = TimeSignature;
             Settings.IsSliderLinked = IsSliderLinked;
+            Settings.SeekBarMinimum = Window.SeekBar.Minimum;
+            Settings.SeekBarMaximum = Window.SeekBar.Maximum;
+            Settings.ZoomMultiplier = ZoomMultiplier;
         }
 
         public void ResotreState()
@@ -483,11 +468,13 @@ namespace YorkTrail
                     Position = Settings.Position;
                     StartPosition = Settings.StartPosition;
                     EndPosition = Settings.EndPosition;
-                    IsZooming = Settings.IsZooming;
                     Tempo = Settings.Tempo;
                     MeasureOffset = Settings.MeasureOffset;
                     TimeSignature = (Settings.TimeSignature == 0) ? 4 : Settings.TimeSignature;
                     IsSliderLinked = Settings.IsSliderLinked;
+                    Window.SeekBar.Minimum = Settings.SeekBarMinimum;
+                    Window.SeekBar.Maximum = Settings.SeekBarMaximum;
+                    ZoomMultiplier = Settings.ZoomMultiplier;
                     RaisePropertyChanged(nameof(Time));
                 }
             }
@@ -760,6 +747,15 @@ namespace YorkTrail
                 Position = Window.SeekBar.LowerValue;
             }
         }
+
+        internal void SeekBar_DisplayValueTickBarMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (Core.IsFileLoaded())
+            {
+                Position = Window.SeekBar.LowerValue;
+            }
+        }
+
 
         public void RecentFile_Clicked(object sender, ExecutedRoutedEventArgs e)
         {

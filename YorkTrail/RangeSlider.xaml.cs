@@ -87,12 +87,13 @@ namespace YorkTrail
         public event RoutedPropertyChangedEventHandler<double> UpperValueChanged;
         public event DragCompletedEventHandler LowerSliderDragCompleted;
         public event DragCompletedEventHandler UpperSliderDragCompleted;
+        public event MouseButtonEventHandler DisplayValueTickBarMouseLeftButtonUp;
 
         private void DoSnapToTick(Slider slider)
         {
             var tl = DisplayValueTickBar.TickList;
 
-            for (int i = 0; i < tl.Count; i++)
+            for (int i = 1; i < tl.Count; i++)
             {
                 if (slider.Value < tl[0])
                 {
@@ -192,21 +193,23 @@ namespace YorkTrail
         private void DoSnapToLowerValue()
         {
             double diff = 0;
+            double value = 0;
+
             var tl = DisplayValueTickBar.TickList;
 
-            for (int i = 0; i < tl.Count; i++)
+            for (int i = 1; i < tl.Count; i++)
             {
                 if (LowerSlider.Value < tl[0])
                 {
                     if (LowerSlider.Value < (Minimum + tl[0]) / 2)
                     {
-                        diff = LowerSlider.Value - Minimum;
-                        LowerSlider.Value = Minimum;
+                        diff = Minimum - LowerSlider.Value;
+                        value = Minimum;
                     }
                     else
                     {
-                        diff = tl[0] - Minimum;
-                        LowerSlider.Value = tl[0];
+                        diff = tl[0] - LowerSlider.Value;
+                        value = tl[0];
                     }
                     break;
                 }
@@ -215,12 +218,12 @@ namespace YorkTrail
                     if (LowerSlider.Value < (tl[i - 1] + tl[i]) / 2)
                     {
                         diff = tl[i - 1] - LowerSlider.Value;
-                        LowerSlider.Value = tl[i - 1];
+                        value = tl[i - 1];
                     }
                     else
                     {
                         diff = tl[i] - LowerSlider.Value;
-                        LowerSlider.Value = tl[i];
+                        value = tl[i];
                     }
                     break;
                 }
@@ -229,12 +232,12 @@ namespace YorkTrail
                     if (LowerSlider.Value < (tl[tl.Count - 1] + Maximum) / 2)
                     {
                         diff = tl[tl.Count - 1] - LowerSlider.Value;
-                        LowerSlider.Value = tl[tl.Count - 1];
+                        value = tl[tl.Count - 1];
                     }
                     else
                     {
                         diff = Maximum - LowerSlider.Value;
-                        LowerSlider.Value = Maximum;
+                        value = Maximum;
                     }
                     break;
                 }
@@ -244,7 +247,9 @@ namespace YorkTrail
             {
                 Minimum += diff;
                 Maximum += diff;
+                LowerSlider.Value = value;
             }
+
         }
 
         private void DisplayValueTickBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -254,6 +259,11 @@ namespace YorkTrail
             if (SnapToTick)
             {
                 DoSnapToLowerValue();
+            }
+
+            if (DisplayValueTickBarMouseLeftButtonUp != null)
+            {
+                DisplayValueTickBarMouseLeftButtonUp(sender, e);
             }
             e.Handled = true;
         }

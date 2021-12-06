@@ -66,5 +66,10 @@ namespace YorkTrail
         {
             ((MainWindowViewModel)this.DataContext).MainWindow_SourceInitialized(sender, e);
         }
+
+        private void SeekBar_DisplayValueTickBarMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ((MainWindowViewModel)this.DataContext).SeekBar_DisplayValueTickBarMouseLeftButtonUp(sender, e);
+        }
     }
 }

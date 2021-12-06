@@ -105,8 +105,6 @@ namespace YorkTrail
         [DataMember]
         public string FilePath { get; set; }
         [DataMember]
-        public bool IsZooming { get; set; }
-        [DataMember]
         public double Position { get; set; }
         [DataMember]
         public double StartPosition { get; set; }
@@ -141,7 +139,14 @@ namespace YorkTrail
         [DataMember]
         public int MeasureOffset { get; set; }
         [DataMember]
-        public int TimeSignature { get; set; } = 4;
+        public int TimeSignature { get; set; }
+        [DataMember]
+        public double SeekBarMinimum { get; set; }
+        [DataMember]
+        public double SeekBarMaximum { get; set; }
+        [DataMember]
+        public int ZoomMultiplier { get; set; }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
@@ -256,7 +261,8 @@ namespace YorkTrail
                 { "FileClose", new ShortCutKey(Key.None, ModifierKeys.None) },
                 { "Loop", new ShortCutKey(Key.L, ModifierKeys.Control) },
                 { "SelectionReset", new ShortCutKey(Key.I, ModifierKeys.Control) },
-                { "Zoom", new ShortCutKey(Key.X, ModifierKeys.Control) },
+                { "ZoomIn", new ShortCutKey(Key.X, ModifierKeys.Control) },
+                { "ZoomOut", new ShortCutKey(Key.Z, ModifierKeys.Control) },
                 { "OpenTempoCalcWindow", new ShortCutKey(Key.T, ModifierKeys.Alt) },
                 { "AlwaysOnTop", new ShortCutKey(Key.T, ModifierKeys.Control) },
                 { "ShowTimeAtMeasure", new ShortCutKey(Key.None, ModifierKeys.None) },
