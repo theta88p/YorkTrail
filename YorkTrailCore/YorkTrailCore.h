@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <msclr/marshal.h>
+//#include <chrono>
 
 #include "extras/dr_flac.h"    // Enables FLAC decoding.
 #include "extras/dr_mp3.h"     // Enables MP3 decoding.
@@ -137,6 +138,8 @@ namespace YorkTrail
 		float playbackRate = 1.0f;
 		float playbackPitch = 1.0f;
 		bool isBypass = false;
+
+		//std::chrono::system_clock::time_point*  startTime;
 
 		uint64_t posToFrame(float pos);
 		uint64_t frameToMillisecs(uint64_t frames);

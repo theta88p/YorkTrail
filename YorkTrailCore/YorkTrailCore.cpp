@@ -632,6 +632,7 @@ void YorkTrail::YorkTrailCore::Start()
 
     state = State::Playing;
     ma_result result;
+    //startTime = &std::chrono::system_clock::now();
 
     if (ma_device_start(pDevice) != MA_SUCCESS)
     {
@@ -1055,6 +1056,18 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
     rmsR = r;
 
     std::memcpy(pOutput, processdFrames.data(), sizeof(float) * frameCount * pDecoder->outputChannels);
+
+    /*
+    if (startTime != nullptr)
+    {
+        std::chrono::system_clock::time_point end;
+        end = std::chrono::system_clock::now();
+        double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - *startTime).count();
+        Debug::WriteLine(elapsed.ToString());
+        //delete startTime;
+        //startTime = nullptr;
+    }
+    */
 
     ma_mutex_unlock(pMutex);
 }

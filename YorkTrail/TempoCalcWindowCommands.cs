@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,11 +18,19 @@ namespace YorkTrail
         }
         public virtual void Execute(object parameter)
         {
-            var window = parameter as TempoCalcWindow;
-            var vm = window?.DataContext as TempoCalcWindowViewModel;
-            var mwvm = vm?.MainWindowViewModel;
-            // レイテンシを考慮して-50する
-            vm.StartTime = mwvm.Time - 50;
+            var window = (TempoCalcWindow)parameter;
+            var vm = (TempoCalcWindowViewModel)window.DataContext;
+            var mwvm = vm.MainWindowViewModel;
+
+            var sw = new Stopwatch();
+            sw.Start();
+            // レイテンシを考慮して-30する
+            ulong time = mwvm.Time - 30;
+            // 時間取得の時間も考慮する
+            time -= (ulong)sw.ElapsedMilliseconds;
+            sw.Stop();
+            vm.StartTime = time;
+            //Debug.WriteLine(sw.ElapsedMilliseconds);
         }
     }
     public class InputEndTimeButtonCommand : ICommand
@@ -34,10 +43,18 @@ namespace YorkTrail
         }
         public virtual void Execute(object parameter)
         {
-            var window = parameter as TempoCalcWindow;
-            var vm = window?.DataContext as TempoCalcWindowViewModel;
-            var mwvm = vm?.MainWindowViewModel;
-            vm.EndTime = mwvm.Time - 50;
+            var window = (TempoCalcWindow)parameter;
+            var vm = (TempoCalcWindowViewModel)window.DataContext;
+            var mwvm = vm.MainWindowViewModel;
+
+            var sw = new Stopwatch();
+            sw.Start();
+            // レイテンシを考慮して-30する
+            ulong time = mwvm.Time - 30;
+            // 時間取得の時間も考慮する
+            time -= (ulong)sw.ElapsedMilliseconds;
+            sw.Stop();
+            vm.EndTime = time;
         }
     }
 }

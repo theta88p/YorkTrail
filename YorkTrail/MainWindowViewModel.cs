@@ -655,7 +655,9 @@ namespace YorkTrail
                         playerTask.Wait();
 
                     if (Core.GetState() == State.Stopped)
+                    {
                         playerTask = Task.Run(Core.Start);
+                    }
                 }
             }
         }
