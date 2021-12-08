@@ -699,14 +699,6 @@ namespace YorkTrail
         {
             if (Core.IsFileLoaded())
             {
-                double rPos = (double)ms / TotalMilliSeconds;
-                if (Position + rPos < 0)
-                    Position = 0;
-                else if (Position + rPos > 1)
-                    Position = 1;
-                else
-                    Position += rPos;
-
                 if (Core.GetState() == State.Pausing)
                     Play();
                 else if (Core.GetState() == State.Stopped)

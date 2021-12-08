@@ -113,7 +113,8 @@ namespace YorkTrail
             }
             else if (vm.Core.GetState() == State.Stopped)
             {
-                vm.StartPosition = 0.0;
+                // 開始終了をリンクしている場合UIと内部で不整合が起きるためこうする
+                window.SeekBar.LowerSlider.Value = 0.0;
             }
             vm.Position = 0.0;
         }
@@ -135,7 +136,7 @@ namespace YorkTrail
             }
             else if (vm.Core.GetState() == State.Stopped)
             {
-                vm.StartPosition = 1.0;
+                window.SeekBar.LowerSlider.Value = 1.0;
             }
             vm.Position = 1.0;
         }
