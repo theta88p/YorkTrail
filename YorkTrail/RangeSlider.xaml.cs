@@ -51,7 +51,9 @@ namespace YorkTrail
             {
                 UpperSlider.Value = LowerSlider.Value + upperLowerDiff;
                 if (UpperSlider.Value >= UpperSlider.Maximum)
+                {
                     LowerSlider.Value = UpperSlider.Value - upperLowerDiff;
+                }
             }
             else
             {
@@ -70,7 +72,9 @@ namespace YorkTrail
             {
                 LowerSlider.Value = UpperSlider.Value - upperLowerDiff;
                 if (LowerSlider.Value <= LowerSlider.Minimum)
+                {
                     UpperSlider.Value = LowerSlider.Value + upperLowerDiff;
+                }
             }
             else
             {

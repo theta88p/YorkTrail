@@ -667,7 +667,9 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            vm.StartPosition = vm.Position;
+            // ValueChangedの中で値を変更しているので、バインドしているプロパティを直に変更すると
+            // 呼び出し順の関係上、開始終了をリンクしているとき不整合が起きる
+            window.SeekBar.LowerSlider.Value = vm.Position;
         }
     }
 
@@ -682,7 +684,7 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            vm.EndPosition = vm.Position;
+            window.SeekBar.UpperSlider.Value = vm.Position;
         }
     }
 
