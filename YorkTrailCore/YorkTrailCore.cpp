@@ -163,11 +163,12 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
     delete context;
     totalPCMFrames = ma_decoder_get_length_in_pcm_frames(pDecoder);
     endFrame = totalPCMFrames;
+    Debug::WriteLine(totalPCMFrames);
 
     if (t == FileType::Mp3)
     {
         // ÀÛ‚ÌƒtƒŒ[ƒ€”‚ªTotalPCMFrames‚æ‚è­‚È‚¢‚ª‚ ‚é‚Ì‚Å‚±‚¤‚·‚é
-        totalPCMFrames -= 4000;
+        //totalPCMFrames -= 4000;
 
         if (pSeekPoints == nullptr)
         {
@@ -401,6 +402,15 @@ void YorkTrail::YorkTrailCore::Seek(uint64_t frame)
 {
     if (pDecoder != nullptr)
     {
+        if (frame < 0)
+        {
+            frame = 0;
+        }
+        else if (frame >= totalPCMFrames)
+        {
+            frame = totalPCMFrames - 10000;
+        }
+
         ma_mutex_lock(pMutex);
         if (ma_decoder_seek_to_pcm_frame(pDecoder, frame) != MA_SUCCESS)
         {
@@ -422,15 +432,8 @@ void YorkTrail::YorkTrailCore::SeekRelative(long ms)
     {
         uint64_t targetFrame;
         int64_t addFrame = (int64_t)pDecoder->outputSampleRate * ms / 1000;
-        if ((int64_t)curFrame + addFrame < 0)
-        {
-            targetFrame = 0;
-        }
-        else
-        {
-            targetFrame = curFrame + addFrame;
-        }
-        SetFrame(targetFrame);
+        targetFrame = curFrame + addFrame;
+        Seek(targetFrame);
     }
 }
 
@@ -957,7 +960,9 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
         framesRead = ma_decoder_read_pcm_frames(pDecoder, decodedFrames.data(), frameCount);
         if (framesRead < frameCount) {
             // Reached the end.
-            //state = State::Stopped;
+            Debug::WriteLine("Cur:{0}\r\nRead:{1}\r\nTotal:{2}", curFrame, framesRead, totalPCMFrames);
+            totalPCMFrames = min(curFrame + framesRead, totalPCMFrames);
+            state = State::Stopping;
         }
     }
     else
@@ -965,7 +970,9 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
         framesRead = ma_decoder_read_pcm_frames(pDecoder, decodedFrames.data(), frameCount * playbackRate);
         if (framesRead < frameCount * playbackRate) {
             // Reached the end.
-            //state = State::Stopped;
+            Debug::WriteLine("Cur:{0}\r\nRead:{1}\r\nTotal:{2}", curFrame, framesRead, totalPCMFrames);
+            totalPCMFrames = curFrame + framesRead;
+            state = State::Stopping;
         }
     }
 
