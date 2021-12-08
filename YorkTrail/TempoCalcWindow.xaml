@@ -15,6 +15,7 @@
     <Window.Resources>
         <local:TimeToStringConverter x:Key="TimeToStringConverter"/>
         <local:TimeValidationRule x:Key="TimeValidationRule"/>
+        <local:PlusIntegerValidationRule x:Key="PlusIntegerValidationRule"/>
     </Window.Resources>
     <Window.DataContext>
         <local:TempoCalcWindowViewModel/>
@@ -26,8 +27,24 @@
             <ComboBoxItem Content="4"/>
             <ComboBoxItem Content="6"/>
         </ComboBox>
-        <TextBox x:Name="TempoOutput" HorizontalAlignment="Left" Margin="55,10,0,0" Text="{Binding Tempo, UpdateSourceTrigger=PropertyChanged}" TextChanged="TempoOutput_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" Width="80" Height="20"/>
-        <TextBox x:Name="MeasureInput" HorizontalAlignment="Left" Margin="194,41,0,0" Text="{Binding Measure}" TextChanged="MeasureInput_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" Width="80" Height="20"/>
+        <TextBox x:Name="TempoOutput" HorizontalAlignment="Left" Margin="55,10,0,0" TextChanged="TempoOutput_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" Width="80" Height="20">
+            <TextBox.Text>
+                <Binding Path="Tempo" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <local:PlusIntegerValidationRule/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+        <TextBox x:Name="MeasureInput" HorizontalAlignment="Left" Margin="194,41,0,0" TextChanged="MeasureInput_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" Width="80" Height="20">
+            <TextBox.Text>
+                <Binding Path="Measure" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <local:PlusIntegerValidationRule/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
         <TextBox x:Name="StartTimeInput" HorizontalAlignment="Left" Margin="194,72,0,0" TextChanged="StartTimeInput_TextChanged" TextWrapping="Wrap" VerticalAlignment="Top" Width="80" Height="20">
             <TextBox.Text>
                 <Binding Path="StartTime" UpdateSourceTrigger="PropertyChanged">
@@ -35,7 +52,7 @@
                         <local:TimeToStringConverter/>
                     </Binding.Converter>
                     <Binding.ValidationRules>
-                        <local:TimeValidationRule/>
+                        <local:PlusIntegerValidationRule/>
                     </Binding.ValidationRules>
                 </Binding>
             </TextBox.Text>
