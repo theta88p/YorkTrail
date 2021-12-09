@@ -563,6 +563,7 @@ namespace YorkTrail
 
                 Window.Title = applicationName + " - " + Path.GetFileName(path);
                 SelectionResetCommand.Execute(Window);
+                ClearMarkerCommand.Execute(Window);
                 Stop();
 
                 if (Settings.RecentFiles.Contains(path))
