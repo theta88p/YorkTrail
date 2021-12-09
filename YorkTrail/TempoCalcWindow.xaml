@@ -15,7 +15,7 @@
     <Window.Resources>
         <local:TimeToStringConverter x:Key="TimeToStringConverter"/>
         <local:TimeValidationRule x:Key="TimeValidationRule"/>
-        <local:PlusIntegerValidationRule x:Key="PlusIntegerValidationRule"/>
+        <local:IntegerRangeValidationRule x:Key="PlusIntegerValidationRule"/>
     </Window.Resources>
     <Window.DataContext>
         <local:TempoCalcWindowViewModel/>
@@ -31,7 +31,7 @@
             <TextBox.Text>
                 <Binding Path="Tempo" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
-                        <local:PlusIntegerValidationRule/>
+                        <local:IntegerRangeValidationRule Min="0" NoMax="True"/>
                     </Binding.ValidationRules>
                 </Binding>
             </TextBox.Text>
@@ -40,7 +40,7 @@
             <TextBox.Text>
                 <Binding Path="Measure" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
-                        <local:PlusIntegerValidationRule/>
+                        <local:IntegerRangeValidationRule Min="0" NoMax="True"/>
                     </Binding.ValidationRules>
                 </Binding>
             </TextBox.Text>
@@ -52,7 +52,7 @@
                         <local:TimeToStringConverter/>
                     </Binding.Converter>
                     <Binding.ValidationRules>
-                        <local:PlusIntegerValidationRule/>
+                        <local:TimeValidationRule/>
                     </Binding.ValidationRules>
                 </Binding>
             </TextBox.Text>
