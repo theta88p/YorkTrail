@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Windows.Controls.Primitives;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Collections.ObjectModel;
 
 namespace YorkTrail
 {
@@ -97,45 +98,39 @@ namespace YorkTrail
         {
             var tl = DisplayValueTickBar.TickList;
 
-            for (int i = 1; i < tl.Count; i++)
+            for (int i = 0; i <= tl.Count; i++)
             {
-                if (slider.Value < tl[0])
+                double prev;
+                double next;
+
+                if (i == 0)
                 {
-                    if (slider.Value < (Minimum + tl[0]) / 2)
-                    {
-                        slider.Value = Minimum;
-                    }
-                    else
-                    {
-                        slider.Value = tl[0];
-                    }
-                    break;
+                    prev = Minimum;
+                    next = tl[0];
                 }
-                else if (slider.Value < tl[i])
+                else if (i == tl.Count)
                 {
-                    if (slider.Value < (tl[i - 1] + tl[i]) / 2)
-                    {
-                        slider.Value = tl[i - 1];
-                    }
-                    else
-                    {
-                        slider.Value = tl[i];
-                    }
-                    break;
+                    prev = tl[i - 1];
+                    next = 1.0;
                 }
-                else if (slider.Value >= tl[tl.Count - 1])
+                else
                 {
-                    if (slider.Value < (tl[tl.Count - 1] + Maximum) / 2)
-                    {
-                        slider.Value = tl[tl.Count - 1];
-                    }
-                    else
-                    {
-                        slider.Value = Maximum;
-                    }
-                    break;
+                    prev = tl[i - 1];
+                    next = tl[i];
+                }
+
+                if (slider.Value >= prev && slider.Value < (prev + next) / 2)
+                {
+                    slider.Value = prev;
+                    return;
+                }
+                else if (slider.Value >= (prev + next) / 2 && slider.Value < next)
+                {
+                    slider.Value = next;
+                    return;
                 }
             }
+
         }
 
         private void LowerSlider_DragCompleted(object sender, DragCompletedEventArgs e)
@@ -201,51 +196,40 @@ namespace YorkTrail
 
             var tl = DisplayValueTickBar.TickList;
 
-            for (int i = 1; i < tl.Count; i++)
+            for (int i = 0; i <= tl.Count; i++)
             {
-                if (LowerSlider.Value < tl[0])
+                double prev;
+                double next;
+
+                if (i == 0)
                 {
-                    if (LowerSlider.Value < (Minimum + tl[0]) / 2)
-                    {
-                        diff = Minimum - LowerSlider.Value;
-                        value = Minimum;
-                    }
-                    else
-                    {
-                        diff = tl[0] - LowerSlider.Value;
-                        value = tl[0];
-                    }
+                    prev = Minimum;
+                    next = tl[0];
+                }
+                else if (i == tl.Count)
+                {
+                    prev = tl[i - 1];
+                    next = 1.0;
+                }
+                else
+                {
+                    prev = tl[i - 1];
+                    next = tl[i];
+                }
+
+                if (LowerSlider.Value >= prev && LowerSlider.Value < (prev + next) / 2)
+                {
+                    value = prev;
                     break;
                 }
-                else if (LowerSlider.Value < tl[i])
+                else if (LowerSlider.Value >= (prev + next) / 2 && LowerSlider.Value < next)
                 {
-                    if (LowerSlider.Value < (tl[i - 1] + tl[i]) / 2)
-                    {
-                        diff = tl[i - 1] - LowerSlider.Value;
-                        value = tl[i - 1];
-                    }
-                    else
-                    {
-                        diff = tl[i] - LowerSlider.Value;
-                        value = tl[i];
-                    }
-                    break;
-                }
-                else if (LowerSlider.Value >= tl[tl.Count - 1])
-                {
-                    if (LowerSlider.Value < (tl[tl.Count - 1] + Maximum) / 2)
-                    {
-                        diff = tl[tl.Count - 1] - LowerSlider.Value;
-                        value = tl[tl.Count - 1];
-                    }
-                    else
-                    {
-                        diff = Maximum - LowerSlider.Value;
-                        value = Maximum;
-                    }
+                    value = next;
                     break;
                 }
             }
+
+            diff = value - LowerSlider.Value;
 
             if (Minimum + diff >= 0 && Maximum + diff <= 1)
             {
@@ -400,6 +384,15 @@ namespace YorkTrail
 
         public static readonly DependencyProperty SnapToTickProperty =
             DependencyProperty.Register("SnapToTick", typeof(bool), typeof(RangeSlider), new FrameworkPropertyMetadata(false));
+
+        public ObservableCollection<double> MarkerList
+        {
+            get { return (ObservableCollection<double>)GetValue(MarkerListProperty); }
+            set { SetValue(MarkerListProperty, value); }
+        }
+
+        public static readonly DependencyProperty MarkerListProperty =
+            DependencyProperty.Register("MarkerList", typeof(ObservableCollection<double>), typeof(RangeSlider), new FrameworkPropertyMetadata(null));
 
     }
 }

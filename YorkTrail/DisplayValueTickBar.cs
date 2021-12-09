@@ -7,11 +7,17 @@ using System.Threading.Tasks;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace YorkTrail
 {
     public class DisplayValueTickBar : TickBar
     {
+        public DisplayValueTickBar()
+        {
+        }
+
         public List<double> TickList { get; private set; } = new List<double>();
 
         public ulong TotalMilliSeconds
@@ -58,7 +64,35 @@ namespace YorkTrail
 
         public static readonly DependencyProperty ShowTimeAtMeasureProperty =
             DependencyProperty.Register("ShowTimeAtMeasure", typeof(bool), typeof(DisplayValueTickBar), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
-        
+
+        public ObservableCollection<double> MarkerList
+        {
+            get { return (ObservableCollection<double>)GetValue(MarkerListProperty); }
+            set { SetValue(MarkerListProperty, value); }
+        }
+
+        public static readonly DependencyProperty MarkerListProperty =
+            DependencyProperty.Register("MarkerList", typeof(ObservableCollection<double>), typeof(DisplayValueTickBar), new FrameworkPropertyMetadata(default(ObservableCollection<double>), FrameworkPropertyMetadataOptions.AffectsRender, OnMarkerListChanged));
+
+
+        private static void OnMarkerListChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
+        {
+            INotifyCollectionChanged oldList = args.OldValue as INotifyCollectionChanged;
+            INotifyCollectionChanged newList = args.NewValue as INotifyCollectionChanged;
+
+            var ctrl = (DisplayValueTickBar)obj;
+            //If the old list implements the INotifyCollectionChanged interface, then unsubscribe to CollectionChanged events.
+            if (oldList != null)
+                oldList.CollectionChanged -= ctrl.OnMarkerListCollectionChanged;
+            //If the new list implements the INotifyCollectionChanged interface, then subscribe to CollectionChanged events.
+            if (newList != null)
+                newList.CollectionChanged += ctrl.OnMarkerListCollectionChanged;
+        }
+
+        private void OnMarkerListCollectionChanged(object s, NotifyCollectionChangedEventArgs e)
+        {
+            this.InvalidateVisual();
+        }
 
         protected override void OnRender(DrawingContext dc)
         {
@@ -68,13 +102,15 @@ namespace YorkTrail
             bgpen.Brush = Brushes.Transparent;
             dc.DrawRectangle(bgpen.Brush, bgpen, new Rect(0, 0, ActualWidth, ActualHeight));
 
+            RenderMarker(dc);
+
             if (ShowTimeAtMeasure)
             {
-                RanderMeasure(dc);
+                RenderMeasure(dc);
             }
             else
             {
-                RanderTime(dc);
+                RenderTime(dc);
             }
         }
 
@@ -184,7 +220,34 @@ namespace YorkTrail
             vSpan = measure * measureMult * vMult;
         }
 
-        private void RanderTime(DrawingContext dc)
+        private void RenderMarker(DrawingContext dc)
+        {
+            var pen = new Pen();
+            pen.Thickness = 0.5;
+            pen.Brush = Brushes.Black;
+
+            foreach (var m in MarkerList)
+            {
+                double pos = (m - Minimum) / (Maximum - Minimum);
+                double x = ActualWidth * pos;
+
+                if (x >= 0 || x <= ActualWidth)
+                {
+                    var start = new Point(x, 22);
+                    var segments = new[]
+                    {
+                        new LineSegment(new Point(x - 4, 16), true),
+                        new LineSegment(new Point(x + 4, 16), true)
+                    };
+
+                    var figure = new PathFigure(start, segments, true);
+                    var geo = new PathGeometry(new[] { figure });
+                    dc.DrawGeometry(Brushes.Yellow, pen, geo);
+                }
+            }
+        }
+
+        private void RenderTime(DrawingContext dc)
         {
             if (TotalMilliSeconds <= 0)
             {
@@ -231,7 +294,7 @@ namespace YorkTrail
             }
         }
 
-        private void RanderMeasure(DrawingContext dc)
+        private void RenderMeasure(DrawingContext dc)
         {
             if (TotalMilliSeconds <= 0 || Tempo == float.PositiveInfinity)
             {

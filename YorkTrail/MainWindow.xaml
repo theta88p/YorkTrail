@@ -526,10 +526,16 @@
                         <MenuItem Header="バイパス(_B)" IsChecked="{Binding IsBypass}" Template="{DynamicResource MenuItemTemplate}" IsCheckable="True" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=Bypass}"/>
                         <Separator/>
                         <MenuItem Header="ループ再生(_L)" IsChecked="{Binding IsLoop}" Template="{DynamicResource MenuItemTemplate}" IsCheckable="True" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=Loop}"/>
+                        <MenuItem Header="ティックにスナップ(_N)" IsChecked="{Binding Settings.SnapToTick}" Template="{DynamicResource MenuItemTemplate}" IsCheckable="True" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=SnapToTick}"/>
+                        <MenuItem Header="再生区間を固定(_F)" IsChecked="{Binding Settings.IsSliderLinked}" Template="{DynamicResource MenuItemTemplate}" IsCheckable="True" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=IsSliderLinked}"/>
                         <MenuItem Header="再生区間拡大(_I)" Command="{Binding ZoomInCommand}" CommandParameter="{Binding ElementName=mainWindow}" Template="{DynamicResource MenuItemTemplate}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=ZoomIn}"/>
                         <MenuItem Header="再生区間縮小(_O)" Command="{Binding ZoomOutCommand}" CommandParameter="{Binding ElementName=mainWindow}" Template="{DynamicResource MenuItemTemplate}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=ZoomOut}"/>
-                        <MenuItem Header="現在位置を開始位置に(_T)" Command="{Binding CurrentToStartPositionCommand}" CommandParameter="{Binding ElementName=mainWindow}" Template="{DynamicResource MenuItemTemplate}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=CurrentToStartPosition}"/>
+                        <MenuItem Header="再生区間をリセット(_R)" Command="{Binding SelectionResetCommand}" CommandParameter="{Binding ElementName=mainWindow}" Template="{DynamicResource MenuItemTemplate}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=SelectionReset}"/>
+                        <MenuItem Header="現在位置を開始位置に(_S)" Command="{Binding CurrentToStartPositionCommand}" CommandParameter="{Binding ElementName=mainWindow}" Template="{DynamicResource MenuItemTemplate}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=CurrentToStartPosition}"/>
                         <MenuItem Header="現在位置を終了位置に(_E)" Command="{Binding CurrentToEndPositionCommand}" CommandParameter="{Binding ElementName=mainWindow}" Template="{DynamicResource MenuItemTemplate}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=CurrentToEndPosition}"/>
+                        <Separator/>
+                        <MenuItem Header="マーカーを追加・削除(_M)" Command="{Binding AddMarkerCommand}" CommandParameter="{Binding ElementName=mainWindow}" Template="{DynamicResource MenuItemTemplate}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=AddMarker}"/>
+                        <MenuItem Header="マーカーをクリア(_Z)" Command="{Binding ClearMarkerCommand}" CommandParameter="{Binding ElementName=mainWindow}" Template="{DynamicResource MenuItemTemplate}" IsCheckable="True" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=ClearMarker}"/>
                         <Separator/>
                         <MenuItem Header="フィルタプリセット" ItemsSource="{Binding Settings.FilterPresets, Mode=OneWay}" DisplayMemberPath="Name">
                             <MenuItem.CommandBindings>
@@ -547,7 +553,7 @@
                     <MenuItem Height="20" Width="52" Header="設定(_S)" Padding="4,2,0,2">
                         <MenuItem Header="常に手前に表示(_T)" IsChecked="{Binding Settings.AlwaysOnTop}" Template="{DynamicResource MenuItemTemplate}" IsCheckable="True" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=AlwaysOnTop}"/>
                         <MenuItem Header="小節で表示(_M)" IsChecked="{Binding Settings.ShowTimeAtMeasure}" Template="{DynamicResource MenuItemTemplate}" IsCheckable="True" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=ShowTimeAtMeasure}"/>
-                        <MenuItem Header="ティックにスナップ(_S)" IsChecked="{Binding Settings.SnapToTick}" Template="{DynamicResource MenuItemTemplate}" IsCheckable="True" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=SnapToTick}"/>
+                        <Separator/>
                         <MenuItem x:Name="DeviceSelector" Header="再生デバイス(_D)" ItemsSource="{Binding DeviceList, Mode=OneWay}">
                             <MenuItem.CommandBindings>
                                 <CommandBinding Command="{x:Static local:StaticCommands.PlaybackDeviceSelect}" Executed="PlaybackDevice_Clicked"/>
@@ -622,6 +628,7 @@
                         <Path Style="{StaticResource PathButton}" Data="M14.8 7V5.5C14.8 4.1 13.4 3 12 3S9.2 4.1 9.2 5.5V7C8.6 7 8 7.6 8 8.2V11.7C8 12.4 8.6 13 9.2 13H14.7C15.4 13 16 12.4 16 11.8V8.3C16 7.6 15.4 7 14.8 7M13.5 7H10.5V5.5C10.5 4.7 11.2 4.2 12 4.2S13.5 4.7 13.5 5.5V7M6 17V20L2 16L6 12V15H18V12L22 16L18 20V17H6Z" />
                     </Canvas>
                 </ToggleButton>
+                <!--
                 <Button Width="24" Height="24" Command="{Binding SelectionResetCommand}" CommandParameter="{Binding ElementName=mainWindow}" ToolTip="再生区間リセット">
                     <Canvas Width="16" Height="16" RenderTransformOrigin="0.5,0.5">
                         <Canvas.RenderTransform>
@@ -631,6 +638,18 @@
                             </TransformGroup>
                         </Canvas.RenderTransform>
                         <Path Style="{StaticResource PathButton}" Data="M9,11H15V8L19,12L15,16V13H9V16L5,12L9,8V11M2,20V4H4V20H2M20,20V4H22V20H20Z" />
+                    </Canvas>
+                </Button>
+                -->
+                <Button Width="24" Height="24" Command="{Binding AddMarkerCommand}" CommandParameter="{Binding ElementName=mainWindow}" ToolTip="マーカー設置・削除">
+                    <Canvas Width="16" Height="16" RenderTransformOrigin="0.5,0.5">
+                        <Canvas.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
+                                <TranslateTransform X="-3.5" Y="-3.5"/>
+                            </TransformGroup>
+                        </Canvas.RenderTransform>
+                        <Path Style="{StaticResource PathButton}" Data="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z" />
                     </Canvas>
                 </Button>
                 <Button Width="24" Height="24" Command="{Binding OpenTempoCalcWindowCommand}" CommandParameter="{Binding ElementName=mainWindow}" ToolTip="テンポ計算ウィンドウ">
@@ -731,10 +750,11 @@
                                TotalMilliSeconds="{Binding TotalMilliSeconds}" Tempo="{Binding Tempo}" MeasureOffset="{Binding MeasureOffset}"
                                TimeSignature="{Binding TimeSignature}" IsSliderLinked="{Binding IsSliderLinked}"
                                ShowTimeAtMeasure="{Binding Settings.ShowTimeAtMeasure}" SnapToTick="{Binding Settings.SnapToTick}"
+                               MarkerList="{Binding MarkerList}"
             />
         </Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Row="5" Width="430">
-            <Button Command="{Binding ToStartCommand}" CommandParameter="{Binding ElementName=mainWindow}" Width="58" Height="30" ToolTip="最初へ移動">
+            <Button Command="{Binding ToStartCommand}" CommandParameter="{Binding ElementName=mainWindow}" Width="58" Height="30" ToolTip="前のマーカーへ">
                 <Canvas Width="24" Height="24">
                     <Path Fill="Black" Data="M0,6V18H2V6ZM11.5,12L20,18V6M11,18V6L2.5,12L11,18Z" />
                 </Canvas>
@@ -764,7 +784,7 @@
                     <Path Fill="Black" Data="M13,6V18L21.5,12M4,18L12.5,12L4,6V18Z" />
                 </Canvas>
             </Button>
-            <Button Command="{Binding ToEndCommand}" CommandParameter="{Binding ElementName=mainWindow}" Width="58" Height="30" ToolTip="最後へ移動">
+            <Button Command="{Binding ToEndCommand}" CommandParameter="{Binding ElementName=mainWindow}" Width="58" Height="30" ToolTip="次のマーカーへ">
                 <Canvas Width="24" Height="24">
                     <Path Fill="Black" Data="M13,6V18L21.5,12M4,18L12.5,12L4,6V18ZM22,6V18H24V6Z" />
                 </Canvas>

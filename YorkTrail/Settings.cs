@@ -146,6 +146,8 @@ namespace YorkTrail
         public double SeekBarMaximum { get; set; }
         [DataMember]
         public int ZoomMultiplier { get; set; }
+        [DataMember]
+        public ObservableCollection<double> MarkerList { get; set; }
 
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -25,6 +25,8 @@ namespace YorkTrail
             _startPosition = 0.0;
             _endPosition = 1.0;
             _timeSignature = 4;
+            MarkerList = new ObservableCollection<double>();
+
             DeviceList = Core.GetPlaybackDeviceList();
             Settings = Settings.ReadSettingsFromFile();
 
@@ -123,6 +125,7 @@ namespace YorkTrail
 
         public string FilePath { get; set; }
         public int ZoomMultiplier { get; set; }
+        public ObservableCollection<double> MarkerList { get; set; }
 
         public ulong Time
         {
@@ -351,6 +354,8 @@ namespace YorkTrail
         public FilterPresetMoveUpCommand FilterPresetMoveUpCommand { get; private set; } = new FilterPresetMoveUpCommand();
         public FilterPresetMoveDownCommand FilterPresetMoveDownCommand { get; private set; } = new FilterPresetMoveDownCommand();
         public FilterPresetRenameCommand FilterPresetRenameCommand { get; private set; } = new FilterPresetRenameCommand();
+        public AddMarkerCommand AddMarkerCommand { get; private set; } = new AddMarkerCommand();
+        public ClearMarkerCommand ClearMarkerCommand { get; private set; } = new ClearMarkerCommand();
 
         public void DisplayUpdate()
         {
@@ -457,6 +462,7 @@ namespace YorkTrail
             Settings.SeekBarMinimum = Window.SeekBar.Minimum;
             Settings.SeekBarMaximum = Window.SeekBar.Maximum;
             Settings.ZoomMultiplier = ZoomMultiplier;
+            Settings.MarkerList = MarkerList;
         }
 
         public void ResotreState()
@@ -475,6 +481,7 @@ namespace YorkTrail
                     Window.SeekBar.Minimum = Settings.SeekBarMinimum;
                     Window.SeekBar.Maximum = Settings.SeekBarMaximum;
                     ZoomMultiplier = Settings.ZoomMultiplier;
+                    StaticMethods.ShallowCopy(Settings.MarkerList, MarkerList);
                     RaisePropertyChanged(nameof(Time));
                 }
             }

@@ -107,16 +107,17 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
+            double value = StaticMethods.GetClosePointInList(vm.MarkerList, vm.Position, true);
+            value = Math.Max(window.SeekBar.Minimum, value);
+            value = Math.Min(window.SeekBar.Maximum, value);
+
             if (vm.Core.GetState() == State.Pausing)
             {
                 vm.Play();
             }
-            else if (vm.Core.GetState() == State.Stopped)
-            {
-                // 開始終了をリンクしている場合UIと内部で不整合が起きるためこうする
-                window.SeekBar.LowerSlider.Value = 0.0;
-            }
-            vm.Position = 0.0;
+            // 開始終了をリンクしている場合UIと内部で不整合が起きるためこうする
+            window.SeekBar.LowerSlider.Value = value;
+            vm.Position = value;
         }
     }
     public class ToEndCommand : ICommand
@@ -130,15 +131,16 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
+            double value = StaticMethods.GetClosePointInList(vm.MarkerList, vm.Position, false);
+            value = Math.Max(window.SeekBar.Minimum, value);
+            value = Math.Min(window.SeekBar.Maximum, value);
+
             if (vm.Core.GetState() == State.Pausing)
             {
                 vm.Stop();
             }
-            else if (vm.Core.GetState() == State.Stopped)
-            {
-                window.SeekBar.LowerSlider.Value = 1.0;
-            }
-            vm.Position = 1.0;
+            window.SeekBar.LowerSlider.Value = value;
+            vm.Position = value;
         }
     }
     public class StereoCommand : ICommand
@@ -793,6 +795,61 @@ namespace YorkTrail
             {
                 vm.Settings.FilterPresets.Move(i, i + 1);
             }
+        }
+    }
+
+    public class AddMarkerCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+
+            if (vm.MarkerList.Count == 0)
+            {
+                vm.MarkerList.Add(vm.Position);
+            }
+            else
+            {
+                for (int i = 0; i < vm.MarkerList.Count; i++)
+                {
+                    if (vm.MarkerList[i] == vm.Position)
+                    {
+                        vm.MarkerList.Remove(vm.Position);
+                        return;
+                    }
+                    else if (vm.MarkerList[i] > vm.Position)
+                    {
+                        vm.MarkerList.Insert(i, vm.Position);
+                        return;
+                    }
+                    else if (i == vm.MarkerList.Count - 1)
+                    {
+                        vm.MarkerList.Add(vm.Position);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    public class ClearMarkerCommand : ICommand
+    {
+        public event EventHandler CanExecuteChanged;
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+        public void Execute(object parameter)
+        {
+            var window = parameter as MainWindow;
+            var vm = window?.DataContext as MainWindowViewModel;
+            vm.MarkerList.Clear();
         }
     }
 }

@@ -169,6 +169,7 @@
                 MeasureOffset="{Binding MeasureOffset, ElementName=root}"
                 TimeSignature="{Binding TimeSignature, ElementName=root}"
                 ShowTimeAtMeasure="{Binding ShowTimeAtMeasure, ElementName=root}"
+                MarkerList="{Binding MarkerList, ElementName=root}"
                 MouseLeftButtonDown="DisplayValueTickBar_MouseLeftButtonDown"
                 MouseLeftButtonUp="DisplayValueTickBar_MouseLeftButtonUp"
                 MouseMove="DisplayValueTickBar_MouseMove"
