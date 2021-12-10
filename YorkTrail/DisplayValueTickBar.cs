@@ -102,8 +102,6 @@ namespace YorkTrail
             bgpen.Brush = Brushes.Transparent;
             dc.DrawRectangle(bgpen.Brush, bgpen, new Rect(0, 0, ActualWidth, ActualHeight));
 
-            RenderMarker(dc);
-
             if (ShowTimeAtMeasure)
             {
                 RenderMeasure(dc);
@@ -112,6 +110,8 @@ namespace YorkTrail
             {
                 RenderTime(dc);
             }
+
+            RenderMarker(dc);
         }
 
         private void GetSpan(ulong selectedLength, out int span, out int vSpan)
