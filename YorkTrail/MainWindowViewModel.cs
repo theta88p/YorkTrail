@@ -359,7 +359,7 @@ namespace YorkTrail
 
         public void DisplayUpdate()
         {
-            RaisePropertyChanged(nameof(Time));
+            RaisePropertyChanged(nameof(TimeString));
             RaisePropertyChanged(nameof(Position));
             RaisePropertyChanged(nameof(RMSL));
             RaisePropertyChanged(nameof(RMSR));
@@ -707,10 +707,17 @@ namespace YorkTrail
         {
             if (Core.IsFileLoaded())
             {
+                Core.SeekRelative(ms);
+
                 if (Core.GetState() == State.Pausing)
+                {
                     Play();
+                }
                 else if (Core.GetState() == State.Stopped)
+                {
                     StartPosition = Position;
+                    DisplayUpdate();
+                }
             }
         }
 
@@ -763,7 +770,9 @@ namespace YorkTrail
         {
             string path = (string)e.Parameter;
             if (FileOpen(path))
+            {
                 Play();
+            }
         }
         
         public void PlaybackDevice_Clicked(object sender, ExecutedRoutedEventArgs e)
