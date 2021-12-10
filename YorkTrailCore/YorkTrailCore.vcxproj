@@ -110,7 +110,6 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\Users\Ryota\source\repos\miniaudio;C:\Users\Ryota\source\repos\soundtouch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <CompileAsManaged>Pure</CompileAsManaged>
     </ClCompile>
     <Link>
       <AdditionalDependencies>C:\Users\Ryota\source\repos\soundtouch\out\build\x86-Release\SoundTouchDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
