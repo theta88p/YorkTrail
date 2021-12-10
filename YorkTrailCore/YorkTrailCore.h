@@ -141,9 +141,9 @@ namespace YorkTrail
 
 		//std::chrono::system_clock::time_point*  startTime;
 
-		uint64_t posToFrame(float pos);
+		uint64_t posToFrame(double pos);
 		uint64_t frameToMillisecs(uint64_t frames);
-		void Seek(uint64_t frames);
+		void Seek(int64_t frames);
 		void timeStretch(std::vector<float> &frames, std::vector<float> &ouput, float rate);
 		//void pitchShift(std::vector<float> &frames, float pitch, float mix);
 		float lerp(float v1, float v2, float t);

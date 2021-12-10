@@ -58,7 +58,7 @@ void YorkTrail::YorkTrailCore::throwError(String^ loc, String^ msg)
     */
 }
 
-uint64_t YorkTrail::YorkTrailCore::posToFrame(float pos)
+uint64_t YorkTrail::YorkTrailCore::posToFrame(double pos)
 {
     if (pDecoder != nullptr)
     {
@@ -168,7 +168,7 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
     if (t == FileType::Mp3)
     {
         // 実際のフレーム数がTotalPCMFramesより少ない時があるのでこうする
-        //totalPCMFrames -= 4000;
+        totalPCMFrames -= 10000;
 
         if (pSeekPoints == nullptr)
         {
@@ -398,25 +398,19 @@ void YorkTrail::YorkTrailCore::ResetRMS()
     NotifyTimeChanged();
 }
 
-void YorkTrail::YorkTrailCore::Seek(uint64_t frame)
+void YorkTrail::YorkTrailCore::Seek(int64_t frame)
 {
     if (pDecoder != nullptr)
     {
-        if (frame < 0)
-        {
-            frame = 0;
-        }
-        else if (frame >= totalPCMFrames)
-        {
-            frame = totalPCMFrames - 10000;
-        }
+        frame = max(frame, 0);
+        frame = min(frame, totalPCMFrames);
 
         ma_mutex_lock(pMutex);
         if (ma_decoder_seek_to_pcm_frame(pDecoder, frame) != MA_SUCCESS)
         {
             throwError("ma_decoder", "シーク時にエラーが発生しました");
         }
-        curFrame = frame;
+        curFrame = (uint64_t)frame;
         ma_mutex_unlock(pMutex);
     }
 }
@@ -430,9 +424,8 @@ void YorkTrail::YorkTrailCore::SeekRelative(long ms)
 {
     if (pDecoder != nullptr)
     {
-        uint64_t targetFrame;
         int64_t addFrame = (int64_t)pDecoder->outputSampleRate * ms / 1000;
-        targetFrame = curFrame + addFrame;
+        int64_t targetFrame = curFrame + addFrame;
         Seek(targetFrame);
     }
 }
@@ -472,19 +465,21 @@ void YorkTrail::YorkTrailCore::SetPosition(double pos)
 {
     if (pDecoder != nullptr)
     {
-        uint64_t targetFrame = totalPCMFrames * pos;
+        int64_t targetFrame = totalPCMFrames * pos;
         Seek(targetFrame);
     }
 }
 
 void YorkTrail::YorkTrailCore::SetStartPosition(double pos)
 {
-    startFrame = totalPCMFrames * pos;
+    int64_t targetFrame = max((int64_t)totalPCMFrames * pos, 0);
+    startFrame = (uint64_t)targetFrame;
 }
 
 void YorkTrail::YorkTrailCore::SetEndPosition(double pos)
 {
-    endFrame = totalPCMFrames * pos;
+    int64_t targetFrame = min((int64_t)totalPCMFrames * pos, totalPCMFrames);
+    endFrame = (uint64_t)targetFrame;
 }
 
 void YorkTrail::YorkTrailCore::SetVolume(float vol)
@@ -643,8 +638,25 @@ void YorkTrail::YorkTrailCore::Start()
         return;
     }
 
-    while (ma_device_is_started(pDevice) && state == State::Playing)
+    while (state == State::Playing)
     {
+        if (!ma_device_is_started(pDevice))
+        {
+            bool started = false;
+            for (int i = 0; i < 100; i++)
+            {
+                if (ma_device_is_started(pDevice))
+                {
+                    started = true;
+                    break;
+                }
+                Sleep(10);
+            }
+            if (!started)
+            {
+                break;
+            }
+        }
         if (curFrame >= endFrame)
         {
             if (isLoop)
@@ -961,7 +973,7 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
         if (framesRead < frameCount) {
             // Reached the end.
             Debug::WriteLine("Cur:{0}\r\nRead:{1}\r\nTotal:{2}", curFrame, framesRead, totalPCMFrames);
-            totalPCMFrames = min(curFrame + framesRead, totalPCMFrames);
+            //totalPCMFrames = min(curFrame + framesRead, totalPCMFrames);
             state = State::Stopping;
         }
     }
@@ -971,7 +983,7 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
         if (framesRead < frameCount * playbackRate) {
             // Reached the end.
             Debug::WriteLine("Cur:{0}\r\nRead:{1}\r\nTotal:{2}", curFrame, framesRead, totalPCMFrames);
-            totalPCMFrames = curFrame + framesRead;
+            //totalPCMFrames = curFrame + framesRead;
             state = State::Stopping;
         }
     }
