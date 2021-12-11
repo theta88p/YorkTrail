@@ -22,9 +22,10 @@ namespace YorkTrail
             }
         }
 
-        public static double GetClosePointInList(ObservableCollection<double>list, double position, bool getPrev)
+        public static double GetClosePointInList(ObservableCollection<double>list, double position, ulong totalms, bool getPrev)
         {
-            double alpha = 0.002;
+            // 1000ms
+            double alpha = 1.0 / totalms * 1000;
 
             for (int i = 0; i <= list.Count; i++)
             {

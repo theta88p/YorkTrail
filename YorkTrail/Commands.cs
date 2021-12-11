@@ -107,7 +107,7 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            double value = StaticMethods.GetClosePointInList(vm.MarkerList, vm.Position, true);
+            double value = StaticMethods.GetClosePointInList(vm.MarkerList, vm.Position, vm.TotalMilliSeconds, true);
             value = Math.Max(window.SeekBar.Minimum, value);
             value = Math.Min(window.SeekBar.Maximum, value);
 
@@ -131,7 +131,7 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            double value = StaticMethods.GetClosePointInList(vm.MarkerList, vm.Position, false);
+            double value = StaticMethods.GetClosePointInList(vm.MarkerList, vm.Position, vm.TotalMilliSeconds, false);
             value = Math.Max(window.SeekBar.Minimum, value);
             value = Math.Min(window.SeekBar.Maximum, value);
 
