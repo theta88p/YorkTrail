@@ -979,10 +979,11 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
     }
     else
     {
-        framesRead = ma_decoder_read_pcm_frames(pDecoder, decodedFrames.data(), frameCount * playbackRate);
-        if (framesRead < frameCount * playbackRate) {
+        ma_uint64 requireFrames = frameCount * playbackRate;
+        framesRead = ma_decoder_read_pcm_frames(pDecoder, decodedFrames.data(), requireFrames);
+        if (framesRead < requireFrames) {
             // Reached the end.
-            Debug::WriteLine("Cur:{0}\r\nRead:{1}\r\nTotal:{2}", curFrame, framesRead, totalPCMFrames);
+            Debug::WriteLine("Cur:{0} Count:{1} Read:{2} Total:{3}", curFrame, requireFrames, framesRead, totalPCMFrames);
             //totalPCMFrames = curFrame + framesRead;
             state = State::Stopping;
         }
