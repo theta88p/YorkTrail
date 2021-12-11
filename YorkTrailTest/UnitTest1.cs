@@ -1,31 +1,22 @@
 using NUnit.Framework;
-using System;
-using System.Reflection;
 using YorkTrail;
 
 namespace YorkTrailTest
 {
     public class Tests
     {
-        //public YorkTrailCore Core;
-        public MainWindowViewModel vm;
+        public YorkTrailCore Core;
 
         [SetUp]
         public void Setup()
         {
-            //Core = new YorkTrailCore();
-            vm = new MainWindowViewModel();
+            Core = new YorkTrailCore();
         }
 
         [Test]
         public void Test1()
         {
-            //Type type = Core.GetType();
-            //MethodInfo methodInfo = type.GetMethod("posToFrame", BindingFlags.NonPublic | BindingFlags.Instance);
-            //methodInfo.Invoke();
-            //bool res = Core.FileOpen(@"D:\Music\CD音源\アニメ＆ゲーム\非可逆\ワスレナゴハン\01 ワスレナゴハン.mp3", FileType.Mp3);
-            bool res = vm.FileOpen(@"D:\Music\CD音源\アニメ＆ゲーム\非可逆\ワスレナゴハン\01 ワスレナゴハン.mp3");
-            Assert.IsTrue(res);
+            Assert.IsTrue(Core.FileOpen(@"D:\Music\CD音源\アニメ＆ゲーム\非可逆\下川みくに - それが、愛でしょう\01 下川みくに - それが、愛でしょう.mp3", FileType.Mp3));
         }
     }
 }
