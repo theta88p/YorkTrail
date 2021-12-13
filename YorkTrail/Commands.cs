@@ -351,12 +351,12 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            if (vm.ZoomMultiplier < 2048)
-            {
-                vm.ZoomMultiplier = Math.Max(4, vm.ZoomMultiplier * 2);
-            }
-            window.SeekBar.Minimum = Math.Max(0, vm.StartPosition - (vm.EndPosition - vm.StartPosition) / (vm.ZoomMultiplier * 0.1));
-            window.SeekBar.Maximum = Math.Min(1, vm.EndPosition + (vm.EndPosition - vm.StartPosition) / (vm.ZoomMultiplier * 0.1));
+            int initial = (int)Math.Pow(2, (int)((vm.EndPosition - vm.StartPosition) * 4));
+            initial = Math.Max(initial, 4);
+            vm.ZoomMultiplier = Math.Max(initial, vm.ZoomMultiplier * 2);
+            vm.ZoomMultiplier = Math.Min(vm.ZoomMultiplier, 1024);
+            window.SeekBar.Minimum = Math.Max(0, vm.StartPosition - (vm.EndPosition - vm.StartPosition) / (vm.ZoomMultiplier * (vm.EndPosition - vm.StartPosition)));
+            window.SeekBar.Maximum = Math.Min(1, vm.EndPosition + (vm.EndPosition - vm.StartPosition) / (vm.ZoomMultiplier * (vm.EndPosition - vm.StartPosition)));
         }
     }
 
@@ -371,17 +371,11 @@ namespace YorkTrail
         {
             var window = parameter as MainWindow;
             var vm = window?.DataContext as MainWindowViewModel;
-            vm.ZoomMultiplier = Math.Max(4, vm.ZoomMultiplier / 2);
-            if (vm.ZoomMultiplier > 4)
-            {
-                window.SeekBar.Minimum = Math.Max(0, vm.StartPosition - (vm.EndPosition - vm.StartPosition) / (vm.ZoomMultiplier * 0.1));
-                window.SeekBar.Maximum = Math.Min(1, vm.EndPosition + (vm.EndPosition - vm.StartPosition) / (vm.ZoomMultiplier * 0.1));
-            }
-            else
-            {
-                window.SeekBar.Minimum = 0;
-                window.SeekBar.Maximum = 1;
-            }
+            int initial = (int)Math.Pow(2, (int)((vm.EndPosition - vm.StartPosition) * 4));
+            initial = Math.Max(initial, 4);
+            vm.ZoomMultiplier = (vm.ZoomMultiplier <= initial) ? 0 : vm.ZoomMultiplier / 2;
+            window.SeekBar.Minimum = Math.Max(0, vm.StartPosition - (vm.EndPosition - vm.StartPosition) / (vm.ZoomMultiplier * (vm.EndPosition - vm.StartPosition)));
+            window.SeekBar.Maximum = Math.Min(1, vm.EndPosition + (vm.EndPosition - vm.StartPosition) / (vm.ZoomMultiplier * (vm.EndPosition - vm.StartPosition)));
         }
     }
 
