@@ -185,8 +185,9 @@
             -->
         </Grid>
         <Grid Grid.Row="1">
-            <Border BorderThickness="0,30,0,0" BorderBrush="Transparent" VerticalAlignment="Top" Focusable="False"
-                    MouseLeftButtonDown="Border_MouseLeftButtonDown" MouseRightButtonDown="Border_MouseRightButtonDown"/>
+            <Border x:Name="SliderBack" BorderThickness="0,30,0,0" BorderBrush="Transparent" VerticalAlignment="Top" Focusable="False"
+                    MouseLeftButtonDown="Border_MouseLeftButtonDown" MouseMove="Border_MouseMove"
+                    MouseLeftButtonUp="Border_MouseLeftButtonUp" MouseRightButtonDown="Border_MouseRightButtonDown"/>
         
             <Slider x:Name="LowerSlider"
                     Minimum="{Binding Minimum, ElementName=root}"

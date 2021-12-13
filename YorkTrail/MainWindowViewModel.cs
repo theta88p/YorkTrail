@@ -721,7 +721,7 @@ namespace YorkTrail
             }
         }
 
-        public void RangeSlider_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        public void RangeSlider_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (Core.IsFileLoaded())
             {

@@ -159,11 +159,30 @@ namespace YorkTrail
             }
         }
 
+        private void Border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            isMouseDown = false;
+            Point p = e.GetPosition(SliderBack);
+            LowerSlider.Value = ((Maximum - Minimum) * p.X / SliderBack.ActualWidth) + Minimum;
+            LowerSlider.IsHitTestVisible = true;
+        }
+
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var b = (Border)sender;
-            Point p = e.GetPosition(b);
-            LowerSlider.Value = ((Maximum - Minimum) * p.X / b.ActualWidth) + Minimum;
+            isMouseDown = true;
+            Point p = e.GetPosition(SliderBack);
+            LowerSlider.IsHitTestVisible = false;
+            LowerSlider.Value = ((Maximum - Minimum) * p.X / SliderBack.ActualWidth) + Minimum;
+        }
+
+        private void Border_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!isMouseDown)
+            {
+                return;
+            }
+            Point p = e.GetPosition(SliderBack);
+            LowerSlider.Value = ((Maximum - Minimum) * p.X / SliderBack.ActualWidth) + Minimum;
         }
 
         private void Border_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
