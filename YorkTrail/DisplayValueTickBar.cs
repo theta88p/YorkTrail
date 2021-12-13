@@ -116,14 +116,29 @@ namespace YorkTrail
 
         private void GetSpan(ulong selectedLength, out int span, out int vSpan)
         {
-            if (selectedLength > 6000000)
+            span = 200;
+            vSpan = 1000;
+
+            if (selectedLength > 3600000)
             {
-                span = 600000;
-                vSpan = 1200000;
+                for (int i = 10; i > 0; i--)
+                {
+                    if ((long)selectedLength > 3600000 * i)
+                    {
+                        span = 600000 * i;
+                        vSpan = 1800000 * i;
+                        break;
+                    }
+                }
+            }
+            else if (selectedLength > 1800000)
+            {
+                span = 300000;
+                vSpan = 600000;
             }
             else if (selectedLength > 1200000)
             {
-                span = 300000;
+                span = 200000;
                 vSpan = 600000;
             }
             else if (selectedLength > 600000)
@@ -136,9 +151,14 @@ namespace YorkTrail
                 span = 60000;
                 vSpan = 120000;
             }
-            else if (selectedLength > 120000)
+            else if (selectedLength > 180000)
             {
                 span = 30000;
+                vSpan = 60000;
+            }
+            else if (selectedLength > 120000)
+            {
+                span = 20000;
                 vSpan = 60000;
             }
             else if (selectedLength > 60000)
@@ -148,27 +168,32 @@ namespace YorkTrail
             }
             else if (selectedLength > 30000)
             {
-                span = 10000;
-                vSpan = 20000;
-            }
-            else if (selectedLength > 10000)
-            {
                 span = 5000;
+                vSpan = 15000;
+            }
+            else if (selectedLength > 20000)
+            {
+                span = 2000;
                 vSpan = 10000;
             }
-            else if (selectedLength > 5000)
+            else if (selectedLength > 10000)
             {
                 span = 1000;
                 vSpan = 5000;
             }
-            else if (selectedLength > 2000)
+            else if (selectedLength > 5000)
             {
                 span = 500;
+                vSpan = 2000;
+            }
+            else if (selectedLength > 2000)
+            {
+                span = 200;
                 vSpan = 1000;
             }
             else
             {
-                span = 200;
+                span = 100;
                 vSpan = 1000;
             }
         }
