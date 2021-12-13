@@ -480,27 +480,37 @@
             <ToolBar x:Name="MenuToolBar" Style="{StaticResource GrayToolBar}">
                 <Menu Background="WhiteSmoke">
                     <MenuItem Height="20" Width="62" Header="ファイル(_F)" Padding="4,2,0,2">
-                        <MenuItem Header="開く(_O)" Command="{Binding FileOpenCommand}" CommandParameter="{Binding ElementName=mainWindow}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=FileOpen}"/>
-                        <MenuItem Header="閉じる(_C)" Command="{Binding FileCloseCommand}" CommandParameter="{Binding ElementName=mainWindow}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=FileClose}"/>
-                        <Separator/>
-                        <MenuItem Header="終了(_X)" Command="{Binding ExitCommand}" CommandParameter="{Binding ElementName=mainWindow}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=Exit}"/>
-                        <Separator/>
-                        <MenuItem Header="最近使ったファイル(_F)" ItemsSource="{Binding Settings.RecentFiles, Mode=OneWay}">
-                            <MenuItem.CommandBindings>
-                                <CommandBinding Command="{x:Static local:StaticCommands.OpenRecentFile}" Executed="RecentFile_Clicked"/>
-                            </MenuItem.CommandBindings>
-                            <MenuItem.ItemTemplate>
-                                <DataTemplate>
-                                    <ContentPresenter Content="{Binding Converter={StaticResource PathShortenConverter}}"/>
-                                </DataTemplate>
-                            </MenuItem.ItemTemplate>
-                            <MenuItem.ItemContainerStyle>
-                                <Style TargetType="{x:Type MenuItem}">
-                                    <Setter Property="Command" Value="{x:Static local:StaticCommands.OpenRecentFile}"/>
-                                    <Setter Property="CommandParameter" Value="{Binding}"/>
-                                </Style>
-                            </MenuItem.ItemContainerStyle>
-                        </MenuItem>
+                        <MenuItem.Resources>
+                            <CollectionViewSource x:Key="recentFiles" Source="{Binding Settings.RecentFiles, Mode=OneWay}"/>
+                            <Style x:Key="CompositeMenuItem" TargetType="{x:Type MenuItem}">
+                                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            </Style>
+                        </MenuItem.Resources>
+                        <MenuItem.ItemsSource>
+                            <CompositeCollection>
+                                <MenuItem Header="開く(_O)" Style="{StaticResource CompositeMenuItem}" Command="{Binding FileOpenCommand}" CommandParameter="{x:Reference mainWindow}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=FileOpen}"/>
+                                <MenuItem Header="閉じる(_C)" Style="{StaticResource CompositeMenuItem}" Command="{Binding FileCloseCommand}" CommandParameter="{x:Reference mainWindow}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=FileClose}"/>
+                                <Separator/>
+                                <MenuItem Header="終了(_X)" Style="{StaticResource CompositeMenuItem}" Command="{Binding ExitCommand}" CommandParameter="{x:Reference mainWindow}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToString}, ConverterParameter=Exit}"/>
+                                <Separator/>
+                                <CollectionContainer Collection="{Binding Source={StaticResource recentFiles}}"/>
+                            </CompositeCollection>
+                        </MenuItem.ItemsSource>
+                        <MenuItem.CommandBindings>
+                            <CommandBinding Command="{x:Static local:StaticCommands.OpenRecentFile}" Executed="RecentFile_Clicked"/>
+                        </MenuItem.CommandBindings>
+                        <MenuItem.ItemTemplate>
+                            <DataTemplate>
+                                <ContentPresenter Content="{Binding Converter={StaticResource PathShortenConverter}}"/>
+                            </DataTemplate>
+                        </MenuItem.ItemTemplate>
+                        <MenuItem.ItemContainerStyle>
+                            <Style TargetType="{x:Type MenuItem}">
+                                <Setter Property="Command" Value="{x:Static local:StaticCommands.OpenRecentFile}"/>
+                                <Setter Property="CommandParameter" Value="{Binding}"/>
+                            </Style>
+                        </MenuItem.ItemContainerStyle>
                     </MenuItem>
                     <MenuItem Height="20" Width="54" Header="編集(_E)" Padding="4,2,0,2">
                         <MenuItem Header="チャンネル(_C)">
@@ -744,7 +754,7 @@
             <ProgressBar x:Name="ProgressBar" HorizontalAlignment="Stretch" Height="30" VerticalAlignment="Bottom" Width="430" Value="{Binding Position}" Minimum="{Binding ElementName=SeekBar, Path=Minimum}" Maximum="{Binding ElementName=SeekBar, Path=Maximum}" Foreground="#FF066AB0"/>
             <local:RangeSlider x:Name="SeekBar" Width="430" Height="54" VerticalAlignment="Bottom"
                                LowerValue="{Binding StartPosition, Mode=TwoWay}" UpperValue="{Binding EndPosition, Mode=TwoWay}"
-                               LowerValueChanged="RangeSlider_LowerValueChanged" MouseLeftButtonDown="RangeSlider_MouseLeftButtonDown"
+                               LowerValueChanged="RangeSlider_LowerValueChanged" MouseLeftButtonUp="RangeSlider_MouseLeftButtonUp"
                                LowerSliderDragCompleted="RangeSlider_LowerSliderDragCompleted"
                                DisplayValueTickBarMouseLeftButtonUp="SeekBar_DisplayValueTickBarMouseLeftButtonUp"
                                Margin="0,-8,0,0"
