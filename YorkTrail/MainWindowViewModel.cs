@@ -280,19 +280,6 @@ namespace YorkTrail
             }
         }
 
-        private bool _isSliderLinked;
-        public bool IsSliderLinked
-        {
-            get { return _isSliderLinked; }
-            set
-            {
-                _isSliderLinked = value;
-                RaisePropertyChanged(nameof(IsSliderLinked));
-            }
-        }
-
-        public bool SnapToTick { get; set; }
-
         public YorkTrailCore Core { get; private set; } = YorkTrailHandleHolder.hYorkTrailCore;
         public float RMSL { get { return Core.rmsL; } }
         public float RMSR { get { return Core.rmsR; } }
@@ -458,7 +445,6 @@ namespace YorkTrail
             Settings.Tempo = Tempo;
             Settings.MeasureOffset = MeasureOffset;
             Settings.TimeSignature = TimeSignature;
-            Settings.IsSliderLinked = IsSliderLinked;
             Settings.SeekBarMinimum = Window.SeekBar.Minimum;
             Settings.SeekBarMaximum = Window.SeekBar.Maximum;
             Settings.ZoomMultiplier = ZoomMultiplier;
@@ -477,7 +463,6 @@ namespace YorkTrail
                     Tempo = Settings.Tempo;
                     MeasureOffset = Settings.MeasureOffset;
                     TimeSignature = (Settings.TimeSignature == 0) ? 4 : Settings.TimeSignature;
-                    IsSliderLinked = Settings.IsSliderLinked;
                     Window.SeekBar.Minimum = Settings.SeekBarMinimum;
                     Window.SeekBar.Maximum = Settings.SeekBarMaximum;
                     ZoomMultiplier = Settings.ZoomMultiplier;

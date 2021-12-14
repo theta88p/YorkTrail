@@ -628,7 +628,7 @@
                         <Path Style="{StaticResource PathButton}" Data="M17,17H7V14L3,18L7,22V19H19V13H17M7,7H17V10L21,6L17,2V5H5V11H7V7Z" />
                     </Canvas>
                 </ToggleButton>
-                <ToggleButton Width="24" Height="24" IsChecked="{Binding IsSliderLinked}" ToolTip="再生区間を固定">
+                <ToggleButton Width="24" Height="24" IsChecked="{Binding Settings.IsSliderLinked}" ToolTip="再生区間を固定">
                     <Canvas Width="16" Height="16" RenderTransformOrigin="0.5,0.5">
                         <Canvas.RenderTransform>
                             <TransformGroup>
@@ -759,7 +759,7 @@
                                DisplayValueTickBarMouseLeftButtonUp="SeekBar_DisplayValueTickBarMouseLeftButtonUp"
                                Margin="0,-8,0,0"
                                TotalMilliSeconds="{Binding TotalMilliSeconds}" Tempo="{Binding Tempo}" MeasureOffset="{Binding MeasureOffset}"
-                               TimeSignature="{Binding TimeSignature}" IsSliderLinked="{Binding IsSliderLinked}"
+                               TimeSignature="{Binding TimeSignature}" IsSliderLinked="{Binding Settings.IsSliderLinked}"
                                ShowTimeAtMeasure="{Binding Settings.ShowTimeAtMeasure}" SnapToTick="{Binding Settings.SnapToTick}"
                                MarkerList="{Binding MarkerList}"
             />

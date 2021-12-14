@@ -89,6 +89,17 @@ namespace YorkTrail
             }
         }
 
+        private bool _isSliderLinked;
+        [DataMember]
+        public bool IsSliderLinked
+        {
+            get { return _isSliderLinked; }
+            set
+            {
+                _isSliderLinked = value;
+                RaisePropertyChanged(nameof(IsSliderLinked));
+            }
+        }
 
         [DataMember]
         public int SkipLengthMS { get; set; } = 2000;
@@ -132,8 +143,6 @@ namespace YorkTrail
         public float HpfFreq { get; set; }
         [DataMember]
         public float BpfFreq { get; set; }
-        [DataMember]
-        public bool IsSliderLinked { get; set; }
         [DataMember]
         public float Tempo { get; set; }
         [DataMember]
