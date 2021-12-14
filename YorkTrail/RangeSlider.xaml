@@ -173,7 +173,6 @@
                 MouseLeftButtonDown="DisplayValueTickBar_MouseLeftButtonDown"
                 MouseLeftButtonUp="DisplayValueTickBar_MouseLeftButtonUp"
                 MouseMove="DisplayValueTickBar_MouseMove"
-                MouseLeave="DisplayValueTickBar_MouseLeave"
             />
             <!--
             <Slider TickFrequency="0.02" TickPlacement="TopLeft"

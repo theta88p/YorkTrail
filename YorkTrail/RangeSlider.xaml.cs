@@ -36,7 +36,8 @@ namespace YorkTrail
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         */
         private double upperLowerDiff;
-        private bool isMouseDown;
+        private bool isTickBarMouseDown;
+        private bool isSliderBackMouseDown;
         private double mouseMoveStartPos;
         private double mouseMoveCurrentPos;
 
@@ -48,7 +49,7 @@ namespace YorkTrail
 
         private void LowerSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (IsSliderLinked && !isMouseDown)
+            if (IsSliderLinked && !isTickBarMouseDown)
             {
                 UpperSlider.Value = LowerSlider.Value + upperLowerDiff;
                 if (UpperSlider.Value >= UpperSlider.Maximum)
@@ -69,7 +70,7 @@ namespace YorkTrail
 
         private void UpperSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (IsSliderLinked && !isMouseDown)
+            if (IsSliderLinked && !isTickBarMouseDown)
             {
                 LowerSlider.Value = UpperSlider.Value - upperLowerDiff;
                 if (LowerSlider.Value <= LowerSlider.Minimum)
@@ -161,15 +162,19 @@ namespace YorkTrail
 
         private void Border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            isMouseDown = false;
+            isSliderBackMouseDown = false;
             Point p = e.GetPosition(SliderBack);
             LowerSlider.Value = ((Maximum - Minimum) * p.X / SliderBack.ActualWidth) + Minimum;
+            if (SnapToTick)
+            {
+                DoSnapToTick(LowerSlider);
+            }
             LowerSlider.IsHitTestVisible = true;
         }
 
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            isMouseDown = true;
+            isSliderBackMouseDown = true;
             Point p = e.GetPosition(SliderBack);
             LowerSlider.IsHitTestVisible = false;
             LowerSlider.Value = ((Maximum - Minimum) * p.X / SliderBack.ActualWidth) + Minimum;
@@ -177,7 +182,7 @@ namespace YorkTrail
 
         private void Border_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!isMouseDown)
+            if (!isSliderBackMouseDown)
             {
                 return;
             }
@@ -190,6 +195,10 @@ namespace YorkTrail
             var b = (Border)sender;
             Point p = e.GetPosition(b);
             UpperSlider.Value = ((Maximum - Minimum) * p.X / b.ActualWidth) + Minimum;
+            if (SnapToTick)
+            {
+                DoSnapToTick(UpperSlider);
+            }
         }
 
         private static void IsSliderLinkedPropertyChanged(DependencyObject dpObj, DependencyPropertyChangedEventArgs e)
@@ -203,9 +212,8 @@ namespace YorkTrail
 
         private void DisplayValueTickBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            isMouseDown = true;
+            isTickBarMouseDown = true;
             mouseMoveStartPos = e.GetPosition(DisplayValueTickBar).X;
-            e.Handled = true;
         }
 
         private void DoSnapToLowerValue()
@@ -261,7 +269,7 @@ namespace YorkTrail
 
         private void DisplayValueTickBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            isMouseDown = false;
+            isTickBarMouseDown = false;
 
             if (SnapToTick)
             {
@@ -272,9 +280,8 @@ namespace YorkTrail
             {
                 DisplayValueTickBarMouseLeftButtonUp(sender, e);
             }
-            e.Handled = true;
         }
-
+        /*
         private void DisplayValueTickBar_MouseLeave(object sender, MouseEventArgs e)
         {
             isMouseDown = false;
@@ -283,12 +290,11 @@ namespace YorkTrail
             {
                 DoSnapToLowerValue();
             }
-            e.Handled = true;
         }
-
+        */
         private void DisplayValueTickBar_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!isMouseDown)
+            if (!isTickBarMouseDown)
             {
                 return;
             }
@@ -307,7 +313,6 @@ namespace YorkTrail
             }
 
             mouseMoveStartPos = mouseMoveCurrentPos;
-            e.Handled = true;
         }
 
         public double Minimum {
