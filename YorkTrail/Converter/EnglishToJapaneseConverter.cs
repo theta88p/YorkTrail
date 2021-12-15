@@ -45,7 +45,8 @@ namespace YorkTrail
                 case "FileClose": return "ファイルを閉じる";
                 case "Loop": return "ループ再生";
                 case "SelectionReset": return "再生区間リセット";
-                case "Zoom": return "再生位置拡大/縮小";
+                case "ZoomIn": return "再生区間拡大";
+                case "ZoomOut": return "再生区間縮小";
                 case "OpenTempoCalcWindow": return "テンポ計算ウィンドウ";
                 case "AlwaysOnTop": return "常に手前に表示";
                 case "ShowTimeAtMeasure": return "小節で表示";
