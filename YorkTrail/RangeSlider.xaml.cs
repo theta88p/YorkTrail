@@ -170,6 +170,8 @@ namespace YorkTrail
                 DoSnapToTick(LowerSlider);
             }
             LowerSlider.IsHitTestVisible = true;
+            SliderBack.ReleaseMouseCapture();
+            e.Handled = true;
         }
 
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -178,6 +180,8 @@ namespace YorkTrail
             Point p = e.GetPosition(SliderBack);
             LowerSlider.IsHitTestVisible = false;
             LowerSlider.Value = ((Maximum - Minimum) * p.X / SliderBack.ActualWidth) + Minimum;
+            SliderBack.CaptureMouse();
+            e.Handled = true;
         }
 
         private void Border_MouseMove(object sender, MouseEventArgs e)
@@ -188,6 +192,7 @@ namespace YorkTrail
             }
             Point p = e.GetPosition(SliderBack);
             LowerSlider.Value = ((Maximum - Minimum) * p.X / SliderBack.ActualWidth) + Minimum;
+            e.Handled = true;
         }
 
         private void Border_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -199,6 +204,7 @@ namespace YorkTrail
             {
                 DoSnapToTick(UpperSlider);
             }
+            e.Handled = true;
         }
 
         private static void IsSliderLinkedPropertyChanged(DependencyObject dpObj, DependencyPropertyChangedEventArgs e)
@@ -214,6 +220,8 @@ namespace YorkTrail
         {
             isTickBarMouseDown = true;
             mouseMoveStartPos = e.GetPosition(DisplayValueTickBar).X;
+            DisplayValueTickBar.CaptureMouse();
+            e.Handled = true;
         }
 
         private void DoSnapToLowerValue()
@@ -264,7 +272,6 @@ namespace YorkTrail
                 Maximum += diff;
                 LowerSlider.Value = value;
             }
-
         }
 
         private void DisplayValueTickBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -280,6 +287,8 @@ namespace YorkTrail
             {
                 DisplayValueTickBarMouseLeftButtonUp(sender, e);
             }
+            DisplayValueTickBar.ReleaseMouseCapture();
+            e.Handled = true;
         }
         /*
         private void DisplayValueTickBar_MouseLeave(object sender, MouseEventArgs e)
@@ -313,6 +322,7 @@ namespace YorkTrail
             }
 
             mouseMoveStartPos = mouseMoveCurrentPos;
+            e.Handled = true;
         }
 
         public double Minimum {
