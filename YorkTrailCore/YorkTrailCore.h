@@ -48,9 +48,9 @@ namespace YorkTrail
 	public enum class Channels
 	{
 		Stereo,
-		L,
-		R,
-		LPlusR,
+		LOnly,
+		ROnly,
+		Mono,
 		LMinusR
 	};
 

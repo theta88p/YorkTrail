@@ -26,6 +26,7 @@ namespace YorkTrail
             InitializeComponent();
             var vm = (MainWindowViewModel)this.DataContext;
             vm.Window = this;
+            CommandCollection.SetWindowInstance(this);
         }
         private void FileDrop(object sender, DragEventArgs e)
         {

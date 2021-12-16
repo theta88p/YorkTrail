@@ -57,19 +57,19 @@ namespace YorkTrailTest
         public void ChannelTest()
         {
             vm.PlayCommand.Execute(window);
-            vm.LOnlyCommand.Execute(window);
+            vm.Channels = Channels.LOnly;
             Thread.Sleep(1000);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
-            vm.ROnlyCommand.Execute(window);
+            vm.Channels = Channels.ROnly;
             Thread.Sleep(1000);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
-            vm.MonoCommand.Execute(window);
+            vm.Channels = Channels.Mono;
             Thread.Sleep(1000);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
-            vm.LMinusRCommand.Execute(window);
+            vm.Channels = Channels.LMinusR;
             Thread.Sleep(1000);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
-            vm.StereoCommand.Execute(window);
+            vm.Channels = Channels.Stereo;
             Thread.Sleep(1000);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
         }
@@ -78,23 +78,23 @@ namespace YorkTrailTest
         public void TempoTest()
         {
             vm.PlayCommand.Execute(window);
-            vm.TempoDoubleCommand.Execute(window);
+            vm.Rate = 2.0f;
             Thread.Sleep(1000);
             Assert.AreEqual(vm.Core.GetRate(), 2.0f);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
-            vm.TempoNormalCommand.Execute(window);
+            vm.Rate = 1.0f;
             Thread.Sleep(1000);
             Assert.AreEqual(vm.Core.GetRate(), 1.0f);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
-            vm.TempoHalfCommand.Execute(window);
+            vm.Rate = 0.5f;
             Thread.Sleep(1000);
             Assert.AreEqual(vm.Core.GetRate(), 0.5f);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
-            vm.TempoOneThirdCommand.Execute(window);
+            vm.Rate = 0.33f;
             Thread.Sleep(1000);
             Assert.AreEqual(vm.Core.GetRate(), 0.33f);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
-            vm.TempoQuarterCommand.Execute(window);
+            vm.Rate = 0.25f;
             Thread.Sleep(1000);
             Assert.AreEqual(vm.Core.GetRate(), 0.25f);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
@@ -104,19 +104,19 @@ namespace YorkTrailTest
         public void PitchTest()
         {
             vm.PlayCommand.Execute(window);
-            vm.PitchDoubleCommand.Execute(window);
+            vm.Pitch = 2.0f;
             Thread.Sleep(1000);
             Assert.AreEqual(vm.Core.GetPitch(), 2.0f);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
-            vm.PitchQuadCommand.Execute(window);
+            vm.Pitch = 4.0f;
             Thread.Sleep(1000);
             Assert.AreEqual(vm.Core.GetPitch(), 4.0f);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
-            vm.PitchHalfCommand.Execute(window);
+            vm.Pitch = 0.5f;
             Thread.Sleep(1000);
             Assert.AreEqual(vm.Core.GetPitch(), 0.5f);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
-            vm.PitchNormalCommand.Execute(window);
+            vm.Pitch = 1.0f;
             Thread.Sleep(1000);
             Assert.AreEqual(vm.Core.GetPitch(), 1.0f);
         }

@@ -5,108 +5,139 @@ using System.Windows.Input;
 using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace YorkTrail
 {
-    public class EffectCommandBase : ICommand
+    public static class CommandCollection
     {
+        private static readonly ReadOnlyDictionary<string, CommandBase> Commands = new ReadOnlyDictionary<string, CommandBase>(new Dictionary<string, CommandBase>
+        {
+            { nameof(PlayCommand), new PlayCommand() },
+            { nameof(StopCommand), new StopCommand() },
+            { nameof(PauseCommand), new PauseCommand() },
+            { nameof(FFCommand), new FFCommand() },
+            { nameof(FRCommand), new FRCommand() },
+            { nameof(ToPrevMarkerCommand), new ToPrevMarkerCommand() },
+            { nameof(ToNextMarkerCommand), new ToNextMarkerCommand() },
+            { nameof(ChannelCommand), new ChannelCommand() },
+            { nameof(PitchCommand), new PitchCommand() },
+            { nameof(TempoCommand), new TempoCommand() },
+            { nameof(ZoomInCommand), new ZoomInCommand() },
+            { nameof(ZoomOutCommand), new ZoomOutCommand() },
+            { nameof(LpfOnCommand), new LpfOnCommand() },
+            { nameof(HpfOnCommand), new HpfOnCommand() },
+            { nameof(BpfOnCommand), new BpfOnCommand() },
+            { nameof(BypassCommand), new BypassCommand() },
+            { nameof(LoopCommand), new LoopCommand() },
+            { nameof(AlwaysOnTopCommand), new AlwaysOnTopCommand() },
+            { nameof(ShowTimeAtMeasureCommand), new ShowTimeAtMeasureCommand() },
+            { nameof(SnapToTickCommand), new SnapToTickCommand() },
+            { nameof(OpenTempoCalcWindowCommand), new OpenTempoCalcWindowCommand() },
+            { nameof(FileOpenCommand), new FileOpenCommand() },
+            { nameof(FileCloseCommand), new FileCloseCommand() },
+            { nameof(ExitCommand), new ExitCommand() },
+            { nameof(ShowAboutCommand), new ShowAboutCommand() },
+            { nameof(OpenKeyCustomizeCommand), new OpenKeyCustomizeCommand() },
+            { nameof(OpenSettingWindowCommand), new OpenSettingWindowCommand() },
+            { nameof(SelectionResetCommand), new SelectionResetCommand() },
+            { nameof(CurrentToStartPositionCommand), new CurrentToStartPositionCommand() },
+            { nameof(CurrentToEndPositionCommand), new CurrentToEndPositionCommand() },
+            { nameof(OpenAddFilterPresetWindowCommand), new OpenAddFilterPresetWindowCommand() },
+            { nameof(FilterPresetDeleteCommand), new FilterPresetDeleteCommand() },
+            { nameof(FilterPresetRenameCommand), new FilterPresetRenameCommand() },
+            { nameof(FilterPresetMoveUpCommand), new FilterPresetMoveUpCommand() },
+            { nameof(FilterPresetMoveDownCommand), new FilterPresetMoveDownCommand() },
+            { nameof(AddMarkerCommand), new AddMarkerCommand() },
+            { nameof(ClearMarkerCommand), new ClearMarkerCommand() },
+            { nameof(LinkSlidersCommand), new LinkSlidersCommand() },
+        });
+
+        public static CommandBase Get(string cmd)
+        {
+            return Commands[cmd];
+        }
+
+        public static void SetWindowInstance(MainWindow w)
+        {
+            foreach (var c in Commands)
+            {
+                var cmd = c.Value;
+                cmd.Window = w;
+                cmd.ViewModel = (MainWindowViewModel)w.DataContext;
+            }
+        }
+    }
+
+    public class CommandBase : ICommand
+    {
+        public MainWindow Window { get; set; }
+        public MainWindowViewModel ViewModel { get; set; }
+
         public event EventHandler CanExecuteChanged
         {
             add { CommandManager.RequerySuggested += value; }
             remove { CommandManager.RequerySuggested -= value; }
         }
-        public bool CanExecute(object parameter)
+
+        public virtual bool CanExecute(object parameter)
         {
-            var window = parameter as MainWindow;
-            return !window?.BypassButton.IsChecked ?? true;
+            return true;
         }
+
         public virtual void Execute(object parameter)
         {
             // 何もしない
         }
     }
 
-    public class PlayCommand : ICommand
+    public class PlayCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Play();
+            ViewModel.Play();
         }
     }
-    public class StopCommand : ICommand
+
+    public class StopCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Stop();
+            ViewModel.Stop();
         }
     }
-    public class PauseCommand : ICommand
+
+    public class PauseCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Pause();
+            ViewModel.Pause();
         }
     }
-    public class FFCommand : ICommand
+
+    public class FFCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.SeekRelative(vm.Settings.SkipLengthMS);
+            ViewModel.SeekRelative(ViewModel.Settings.SkipLengthMS);
         }
     }
-    public class FRCommand : ICommand
+
+    public class FRCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.SeekRelative(-1 * vm.Settings.SkipLengthMS);
+            ViewModel.SeekRelative(-1 * ViewModel.Settings.SkipLengthMS);
         }
     }
-    public class ToStartCommand : ICommand
+
+    public class ToPrevMarkerCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
+            var window = Window;
+            var vm = ViewModel;
             double value = StaticMethods.GetClosePointInList(vm.MarkerList, vm.Position, vm.TotalMilliSeconds, true);
             value = Math.Max(window.SeekBar.Minimum, value);
             value = Math.Min(window.SeekBar.Maximum, value);
@@ -120,17 +151,13 @@ namespace YorkTrail
             vm.Position = value;
         }
     }
-    public class ToEndCommand : ICommand
+
+    public class ToNextMarkerCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
+            var window = Window;
+            var vm = ViewModel;
             double value = StaticMethods.GetClosePointInList(vm.MarkerList, vm.Position, vm.TotalMilliSeconds, false);
             value = Math.Max(window.SeekBar.Minimum, value);
             value = Math.Min(window.SeekBar.Maximum, value);
@@ -143,214 +170,40 @@ namespace YorkTrail
             vm.Position = value;
         }
     }
-    public class StereoCommand : ICommand
+
+    public class ChannelCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Channels = Channels.Stereo;
-        }
-    }
-    public class MonoCommand : ICommand
-    {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Channels = Channels.LPlusR;
-        }
-    }
-    public class LOnlyCommand : ICommand
-    {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Channels = Channels.L;
-        }
-    }
-    public class ROnlyCommand : ICommand
-    {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Channels = Channels.R;
-        }
-    }
-    public class LMinusRCommand : ICommand
-    {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Channels = Channels.LMinusR;
-        }
-    }
-    public class PitchQuadCommand : ICommand
-    {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Pitch = 4.0f;
-        }
-    }
-    public class PitchDoubleCommand : ICommand
-    {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Pitch = 2.0f;
-        }
-    }
-    public class PitchNormalCommand : ICommand
-    {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Pitch = 1.0f;
-        }
-    }
-    public class PitchHalfCommand : ICommand
-    {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Pitch = 0.5f;
-        }
-    }
-    public class TempoDoubleCommand : ICommand
-    {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Rate = 2.0f;
-        }
-    }
-    public class TempoNormalCommand : ICommand
-    {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Rate = 1.0f;
-        }
-    }
-    public class TempoHalfCommand : ICommand
-    {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Rate = 0.5f;
-        }
-    }
-    public class TempoOneThirdCommand : ICommand
-    {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Rate = 0.33f;
-        }
-    }
-    public class TempoQuarterCommand : ICommand
-    {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Rate = 0.25f;
+            var ch = (Channels)parameter;
+            ViewModel.Channels = ch;
         }
     }
 
-    public class ZoomInCommand : ICommand
+    public class PitchCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
+            var p = (float)parameter;
+            ViewModel.Pitch = p;
         }
-        public void Execute(object parameter)
+    }
+
+    public class TempoCommand : CommandBase
+    {
+        public override void Execute(object parameter)
         {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
+            var r = (float)parameter;
+            ViewModel.Rate = r;
+        }
+    }
+
+    public class ZoomInCommand : CommandBase
+    {
+        public override void Execute(object parameter)
+        {
+            var window = Window;
+            var vm = ViewModel;
             int initial = (int)Math.Pow(2, (int)((vm.EndPosition - vm.StartPosition) * 4));
             initial = Math.Max(initial, 4);
             vm.ZoomMultiplier = Math.Max(initial, vm.ZoomMultiplier * 2);
@@ -360,17 +213,12 @@ namespace YorkTrail
         }
     }
 
-    public class ZoomOutCommand : ICommand
+    public class ZoomOutCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
+            var window = Window;
+            var vm = ViewModel;
             int initial = (int)Math.Pow(2, (int)((vm.EndPosition - vm.StartPosition) * 4));
             initial = Math.Max(initial, 4);
             vm.ZoomMultiplier = (vm.ZoomMultiplier <= initial) ? 0 : vm.ZoomMultiplier / 2;
@@ -379,114 +227,75 @@ namespace YorkTrail
         }
     }
 
-    public class LpfOnCommand : EffectCommandBase
+    public class LpfOnCommand : CommandBase
     {
         public override void Execute(object parameter)
         {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.LpfEnabled = window?.LpfOnButton.IsChecked ?? false;
+            ViewModel.LpfEnabled = Window.LpfOnButton.IsChecked ?? false;
         }
     }
-    public class HpfOnCommand : EffectCommandBase
+
+    public class HpfOnCommand : CommandBase
     {
         public override void Execute(object parameter)
         {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.HpfEnabled = window?.HpfOnButton.IsChecked ?? false;
+            ViewModel.LpfEnabled = Window.HpfOnButton.IsChecked ?? false;
         }
     }
-    public class BpfOnCommand : EffectCommandBase
+
+    public class BpfOnCommand : CommandBase
     {
         public override void Execute(object parameter)
         {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.BpfEnabled = window?.BpfOnButton.IsChecked ?? false;
+            ViewModel.LpfEnabled = Window.BpfOnButton.IsChecked ?? false;
         }
     }
-    public class BypassCommand : ICommand
+    
+    public class BypassCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.IsBypass = !vm.IsBypass;
+            ViewModel.IsBypass = !ViewModel.IsBypass;
         }
     }
-    public class LoopCommand : ICommand
+
+    public class LoopCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.IsLoop = !vm.IsLoop;
+            ViewModel.IsLoop = !ViewModel.IsLoop;
         }
     }
-    public class AlwaysOnTopCommand : ICommand
+    public class AlwaysOnTopCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Settings.AlwaysOnTop = !vm.Settings.AlwaysOnTop;
+            ViewModel.Settings.AlwaysOnTop = !ViewModel.Settings.AlwaysOnTop;
         }
     }
-    public class ShowTimeAtMeasureCommand : ICommand
+    public class ShowTimeAtMeasureCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Settings.ShowTimeAtMeasure = !vm.Settings.ShowTimeAtMeasure;
+            ViewModel.Settings.ShowTimeAtMeasure = !ViewModel.Settings.ShowTimeAtMeasure;
         }
     }
-    public class SnapToTickCommand : ICommand
+
+    public class SnapToTickCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.Settings.SnapToTick = !vm.Settings.SnapToTick;
+            ViewModel.Settings.SnapToTick = !ViewModel.Settings.SnapToTick;
         }
     }
-    public class OpenTempoCalcWindowCommand : ICommand
+
+    public class OpenTempoCalcWindowCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
+            var window = Window;
+            var vm = ViewModel;
+
             if (vm.TempoCalcWindow == null || !vm.TempoCalcWindow.IsLoaded)
             {
                 var tcwindow = new TempoCalcWindow(vm);
@@ -508,17 +317,11 @@ namespace YorkTrail
             }
         }
     }
-    public class FileOpenCommand : ICommand
+    public class FileOpenCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
+            var vm = ViewModel;
             var ofd = new Microsoft.Win32.OpenFileDialog();
             ofd.Filter = "音声ファイル (*.wav;*.mp3;*.flac)|*.wav;*.mp3;*.flac";
             if (ofd.ShowDialog() == true)
@@ -528,57 +331,33 @@ namespace YorkTrail
             }
         }
     }
-    public class FileCloseCommand : ICommand
+
+    public class FileCloseCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged
+        public override bool CanExecute(object parameter)
         {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
+            return ViewModel?.Core.IsFileLoaded() ?? false;
         }
-        public bool CanExecute(object parameter)
+
+        public override void Execute(object parameter)
         {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            if (vm != null)
-            {
-                return vm.Core.IsFileLoaded();
-            }
-            else
-            {
-                return false;
-            }
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.FileClose();
-        }
-    }
-    public class ExitCommand : ICommand
-    {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            window.Close();
+            ViewModel.FileClose();
         }
     }
 
-    public class ShowAboutCommand : ICommand
+    public class ExitCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
+            Window.Close();
         }
-        public void Execute(object parameter)
+    }
+
+    public class ShowAboutCommand : CommandBase
+    {
+        public override void Execute(object parameter)
         {
-            var window = parameter as MainWindow;
+            var window = Window;
             var aboutWindow = new AboutWindow();
             aboutWindow.ShowActivated = true;
             aboutWindow.Topmost = window.Topmost;
@@ -587,17 +366,12 @@ namespace YorkTrail
         }
     }
 
-    public class OpenKeyCustomizeCommand : ICommand
+    public class OpenKeyCustomizeCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
+            var window = Window;
+            var vm = ViewModel;
             var kcwindow = new KeyCustomizeWindow(vm);
             kcwindow.ShowActivated = true;
             kcwindow.Owner = window;
@@ -605,117 +379,65 @@ namespace YorkTrail
         }
     }
 
-    public class OpenSettingWindowCommand : ICommand
+    public class OpenSettingWindowCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            var sw = new SettingWindow(vm);
+            var sw = new SettingWindow(ViewModel);
             sw.ShowActivated = true;
-            sw.Owner = window;
+            sw.Owner = Window;
             sw.ShowDialog();
         }
     }
 
-    public class SelectionResetCommand : ICommand
+    public class SelectionResetCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            /*
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            if (vm != null)
-            {
-                return vm.StartPosition != 0.0f || vm.EndPosition != 1.0f;
-            }
-            else
-            {
-                return false;
-            }
-            */
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            window.SeekBar.Minimum = 0.0;
-            window.SeekBar.Maximum = 1.0;
-            vm.StartPosition = 0.0;
-            vm.EndPosition = 1.0;
+            Window.SeekBar.Minimum = 0.0;
+            Window.SeekBar.Maximum = 1.0;
+            ViewModel.StartPosition = 0.0;
+            ViewModel.EndPosition = 1.0;
         }
     }
 
-    public class CurrentToStartPositionCommand : ICommand
+    public class CurrentToStartPositionCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
             // ValueChangedの中で値を変更しているので、バインドしているプロパティを直に変更すると
             // 呼び出し順の関係上、開始終了をリンクしているとき不整合が起きる
-            window.SeekBar.LowerSlider.Value = vm.Position;
+            Window.SeekBar.LowerSlider.Value = ViewModel.Position;
         }
     }
 
-    public class CurrentToEndPositionCommand : ICommand
+    public class CurrentToEndPositionCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            window.SeekBar.UpperSlider.Value = vm.Position;
+            Window.SeekBar.UpperSlider.Value = ViewModel.Position;
         }
     }
 
-    public class OpenAddFilterPresetWindowCommand : ICommand
+    public class OpenAddFilterPresetWindowCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            var afw = new PresetNameInputWindow(vm);
+            var afw = new PresetNameInputWindow(ViewModel);
             afw.ShowActivated = true;
-            afw.Owner = window;
+            afw.Owner = Window;
             bool dr = (bool)afw.ShowDialog();
             if (dr)
             {
                 string name = afw.PresetNameTextBox.Text;
-                vm.AddFilterPreset(name);
+                ViewModel.AddFilterPreset(name);
             }
         }
     }
 
-    public class FilterPresetDeleteCommand : ICommand
+    public class FilterPresetDeleteCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
+        public override void Execute(object parameter)
         {
             var window = parameter as SettingWindow;
             var vm = window?.DataContext as MainWindowViewModel;
@@ -725,14 +447,9 @@ namespace YorkTrail
         }
     }
 
-    public class FilterPresetRenameCommand : ICommand
+    public class FilterPresetRenameCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
+        public override void Execute(object parameter)
         {
             var window = parameter as SettingWindow;
             var vm = window?.DataContext as MainWindowViewModel;
@@ -750,14 +467,9 @@ namespace YorkTrail
         }
     }
 
-    public class FilterPresetMoveUpCommand : ICommand
+    public class FilterPresetMoveUpCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
+        public override void Execute(object parameter)
         {
             var window = parameter as SettingWindow;
             var vm = window?.DataContext as MainWindowViewModel;
@@ -771,14 +483,9 @@ namespace YorkTrail
         }
     }
 
-    public class FilterPresetMoveDownCommand : ICommand
+    public class FilterPresetMoveDownCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        public void Execute(object parameter)
+        public override void Execute(object parameter)
         {
             var window = parameter as SettingWindow;
             var vm = window?.DataContext as MainWindowViewModel;
@@ -792,17 +499,12 @@ namespace YorkTrail
         }
     }
 
-    public class AddMarkerCommand : ICommand
+    public class AddMarkerCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
-        }
-        public void Execute(object parameter)
-        {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
+            var window = Window;
+            var vm = ViewModel;
 
             if (vm.MarkerList.Count == 0)
             {
@@ -832,18 +534,19 @@ namespace YorkTrail
         }
     }
 
-    public class ClearMarkerCommand : ICommand
+    public class ClearMarkerCommand : CommandBase
     {
-        public event EventHandler CanExecuteChanged;
-        public bool CanExecute(object parameter)
+        public override void Execute(object parameter)
         {
-            return true;
+            ViewModel.MarkerList.Clear();
         }
-        public void Execute(object parameter)
+    }
+
+    public class LinkSlidersCommand : CommandBase
+    {
+        public override void Execute(object parameter)
         {
-            var window = parameter as MainWindow;
-            var vm = window?.DataContext as MainWindowViewModel;
-            vm.MarkerList.Clear();
+            ViewModel.Settings.IsSliderLinked = !ViewModel.Settings.IsSliderLinked;
         }
     }
 }

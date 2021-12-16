@@ -71,46 +71,7 @@ namespace YorkTrail
                         Window.TimeDisplay.Opacity = 1.0;
                     }
                 });
-
             };
-            /*
-            //時間はVMで補完しながら駆動する
-            _sw = new Stopwatch();
-            _timer = new Timer(50);
-            _timer.Elapsed += (sender, e) => {
-                if (Player.GetState() == State.Playing)
-                {
-                    long t = Player.Time;
-                    if (t != _playerTime)
-                    {
-                        _playerTime = t;
-                        _curTime = t;
-                        _sw.Restart();
-                    }
-                    else
-                    {
-                        if (!_sw.IsRunning)
-                        {
-                            _sw.Start();
-                        }
-
-                        _curTime = _playerTime + (long)(_sw.ElapsedMilliseconds * Player.Rate);
-                    }
-                    if (Player.GetState() == State.Playing)
-                    {
-                        NotifyPropertyChanged(nameof(Time));
-                    }
-                }
-                else
-                {
-                    if (_sw.IsRunning)
-                    {
-                        _sw.Reset();
-                    }
-                }
-            };
-            _timer.Start();
-            */
         }
 
         private const string applicationName = "YorkTrail";
@@ -295,54 +256,36 @@ namespace YorkTrail
         public MainWindow Window { get; set; }
         public TempoCalcWindow TempoCalcWindow { get; set; }
 
-        public PlayCommand PlayCommand { get; private set; } = new PlayCommand();
-        public StopCommand StopCommand { get; private set; } = new StopCommand();
-        public PauseCommand PauseCommand { get; private set; } = new PauseCommand();
-        public FFCommand FFCommand { get; private set; } = new FFCommand();
-        public FRCommand FRCommand { get; private set; } = new FRCommand();
-        public ToStartCommand ToStartCommand { get; private set; } = new ToStartCommand();
-        public ToEndCommand ToEndCommand { get; private set; } = new ToEndCommand();
-        public ZoomInCommand ZoomInCommand { get; private set; } = new ZoomInCommand();
-        public ZoomOutCommand ZoomOutCommand { get; private set; } = new ZoomOutCommand();
-        public LpfOnCommand LpfOnCommand { get; private set; } = new LpfOnCommand();
-        public HpfOnCommand HpfOnCommand { get; private set; } = new HpfOnCommand();
-        public BpfOnCommand BpfOnCommand { get; private set; } = new BpfOnCommand();
-        public BypassCommand BypassCommand { get; private set; } = new BypassCommand();
-        public FileOpenCommand FileOpenCommand { get; private set; } = new FileOpenCommand();
-        public OpenTempoCalcWindowCommand OpenTempoCalcWindowCommand { get; private set; } = new OpenTempoCalcWindowCommand();
-        public FileCloseCommand FileCloseCommand { get; private set; } = new FileCloseCommand();
-        public ExitCommand ExitCommand { get; private set; } = new ExitCommand();
-        public SelectionResetCommand SelectionResetCommand { get; private set; } = new SelectionResetCommand();
-        public ShowAboutCommand ShowAboutCommand { get; private set; } = new ShowAboutCommand();
-        public CurrentToStartPositionCommand CurrentToStartPositionCommand { get; private set; } = new CurrentToStartPositionCommand();
-        public CurrentToEndPositionCommand CurrentToEndPositionCommand { get; private set; } = new CurrentToEndPositionCommand();
-        public StereoCommand StereoCommand { get; private set; } = new StereoCommand();
-        public MonoCommand MonoCommand { get; private set; } = new MonoCommand();
-        public LOnlyCommand LOnlyCommand { get; private set; } = new LOnlyCommand();
-        public ROnlyCommand ROnlyCommand { get; private set; } = new ROnlyCommand();
-        public LMinusRCommand LMinusRCommand { get; private set; } = new LMinusRCommand();
-        public PitchQuadCommand PitchQuadCommand { get; private set; } = new PitchQuadCommand();
-        public PitchDoubleCommand PitchDoubleCommand { get; private set; } = new PitchDoubleCommand();
-        public PitchNormalCommand PitchNormalCommand { get; private set; } = new PitchNormalCommand();
-        public PitchHalfCommand PitchHalfCommand { get; private set; } = new PitchHalfCommand();
-        public TempoDoubleCommand TempoDoubleCommand { get; private set; } = new TempoDoubleCommand();
-        public TempoNormalCommand TempoNormalCommand { get; private set; } = new TempoNormalCommand();
-        public TempoHalfCommand TempoHalfCommand { get; private set; } = new TempoHalfCommand();
-        public TempoOneThirdCommand TempoOneThirdCommand { get; private set; } = new TempoOneThirdCommand();
-        public TempoQuarterCommand TempoQuarterCommand { get; private set; } = new TempoQuarterCommand();
-        public LoopCommand LoopCommand { get; private set; } = new LoopCommand();
-        public AlwaysOnTopCommand AlwaysOnTopCommand { get; private set; } = new AlwaysOnTopCommand();
-        public ShowTimeAtMeasureCommand ShowTimeAtMeasureCommand { get; private set; } = new ShowTimeAtMeasureCommand();
-        public SnapToTickCommand SnapToTickCommand { get; private set; } = new SnapToTickCommand();
-        public OpenKeyCustomizeCommand OpenKeyCustomizeCommand { get; private set; } = new OpenKeyCustomizeCommand();
-        public OpenSettingWindowCommand OpenSettingWindowCommand { get; private set; } = new OpenSettingWindowCommand();
-        public OpenAddFilterPresetWindowCommand OpenAddFilterPresetWindowCommand { get; private set; } = new OpenAddFilterPresetWindowCommand();
-        public FilterPresetDeleteCommand FilterPresetDeleteCommand { get; private set; } = new FilterPresetDeleteCommand();
-        public FilterPresetMoveUpCommand FilterPresetMoveUpCommand { get; private set; } = new FilterPresetMoveUpCommand();
-        public FilterPresetMoveDownCommand FilterPresetMoveDownCommand { get; private set; } = new FilterPresetMoveDownCommand();
-        public FilterPresetRenameCommand FilterPresetRenameCommand { get; private set; } = new FilterPresetRenameCommand();
-        public AddMarkerCommand AddMarkerCommand { get; private set; } = new AddMarkerCommand();
-        public ClearMarkerCommand ClearMarkerCommand { get; private set; } = new ClearMarkerCommand();
+        public PlayCommand PlayCommand { get; private set; } = (PlayCommand)CommandCollection.Get(nameof(PlayCommand));
+        public StopCommand StopCommand { get; private set; } = (StopCommand)CommandCollection.Get(nameof(StopCommand));
+        public PauseCommand PauseCommand { get; private set; } = (PauseCommand)CommandCollection.Get(nameof(PauseCommand));
+        public FFCommand FFCommand { get; private set; } = (FFCommand)CommandCollection.Get(nameof(FFCommand));
+        public FRCommand FRCommand { get; private set; } = (FRCommand)CommandCollection.Get(nameof(FRCommand));
+        public ToPrevMarkerCommand ToPrevMarkerCommand { get; private set; } = (ToPrevMarkerCommand)CommandCollection.Get(nameof(ToPrevMarkerCommand));
+        public ToNextMarkerCommand ToNextMarkerCommand { get; private set; } = (ToNextMarkerCommand)CommandCollection.Get(nameof(ToNextMarkerCommand));
+        public ZoomInCommand ZoomInCommand { get; private set; } = (ZoomInCommand)CommandCollection.Get(nameof(ZoomInCommand));
+        public ZoomOutCommand ZoomOutCommand { get; private set; } = (ZoomOutCommand)CommandCollection.Get(nameof(ZoomOutCommand));
+        public LpfOnCommand LpfOnCommand { get; private set; } = (LpfOnCommand)CommandCollection.Get(nameof(LpfOnCommand));
+        public HpfOnCommand HpfOnCommand { get; private set; } = (HpfOnCommand)CommandCollection.Get(nameof(HpfOnCommand));
+        public BpfOnCommand BpfOnCommand { get; private set; } = (BpfOnCommand)CommandCollection.Get(nameof(BpfOnCommand));
+        public BypassCommand BypassCommand { get; private set; } = (BypassCommand)CommandCollection.Get(nameof(BypassCommand));
+        public FileOpenCommand FileOpenCommand { get; private set; } = (FileOpenCommand)CommandCollection.Get(nameof(FileOpenCommand));
+        public OpenTempoCalcWindowCommand OpenTempoCalcWindowCommand { get; private set; } = (OpenTempoCalcWindowCommand)CommandCollection.Get(nameof(OpenTempoCalcWindowCommand));
+        public FileCloseCommand FileCloseCommand { get; private set; } = (FileCloseCommand)CommandCollection.Get(nameof(FileCloseCommand));
+        public ExitCommand ExitCommand { get; private set; } = (ExitCommand)CommandCollection.Get(nameof(ExitCommand));
+        public SelectionResetCommand SelectionResetCommand { get; private set; } = (SelectionResetCommand)CommandCollection.Get(nameof(SelectionResetCommand));
+        public ShowAboutCommand ShowAboutCommand { get; private set; } = (ShowAboutCommand)CommandCollection.Get(nameof(ShowAboutCommand));
+        public CurrentToStartPositionCommand CurrentToStartPositionCommand { get; private set; } = (CurrentToStartPositionCommand)CommandCollection.Get(nameof(CurrentToStartPositionCommand));
+        public CurrentToEndPositionCommand CurrentToEndPositionCommand { get; private set; } = (CurrentToEndPositionCommand)CommandCollection.Get(nameof(CurrentToEndPositionCommand));
+        public OpenKeyCustomizeCommand OpenKeyCustomizeCommand { get; private set; } = (OpenKeyCustomizeCommand)CommandCollection.Get(nameof(OpenKeyCustomizeCommand));
+        public OpenSettingWindowCommand OpenSettingWindowCommand { get; private set; } = (OpenSettingWindowCommand)CommandCollection.Get(nameof(OpenSettingWindowCommand));
+        public OpenAddFilterPresetWindowCommand OpenAddFilterPresetWindowCommand { get; private set; } = (OpenAddFilterPresetWindowCommand)CommandCollection.Get(nameof(OpenAddFilterPresetWindowCommand));
+        public FilterPresetDeleteCommand FilterPresetDeleteCommand { get; private set; } = (FilterPresetDeleteCommand)CommandCollection.Get(nameof(FilterPresetDeleteCommand));
+        public FilterPresetMoveUpCommand FilterPresetMoveUpCommand { get; private set; } = (FilterPresetMoveUpCommand)CommandCollection.Get(nameof(FilterPresetMoveUpCommand));
+        public FilterPresetMoveDownCommand FilterPresetMoveDownCommand { get; private set; } = (FilterPresetMoveDownCommand)CommandCollection.Get(nameof(FilterPresetMoveDownCommand));
+        public FilterPresetRenameCommand FilterPresetRenameCommand { get; private set; } = (FilterPresetRenameCommand)CommandCollection.Get(nameof(FilterPresetRenameCommand));
+        public AddMarkerCommand AddMarkerCommand { get; private set; } = (AddMarkerCommand)CommandCollection.Get(nameof(AddMarkerCommand));
+        public ClearMarkerCommand ClearMarkerCommand { get; private set; } = (ClearMarkerCommand)CommandCollection.Get(nameof(ClearMarkerCommand));
 
         public void DisplayUpdate()
         {
@@ -356,44 +299,10 @@ namespace YorkTrail
         {
             Window.InputBindings.Clear();
 
-            Window.InputBindings.Add(new KeyBinding() { Command = PlayCommand, CommandParameter = Window, Key = Settings.KeyBinds["Play"].Key, Modifiers = Settings.KeyBinds["Play"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = PauseCommand, CommandParameter = Window, Key = Settings.KeyBinds["Pause"].Key, Modifiers = Settings.KeyBinds["Pause"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = StopCommand, CommandParameter = Window, Key = Settings.KeyBinds["Stop"].Key, Modifiers = Settings.KeyBinds["Stop"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = FFCommand, CommandParameter = Window, Key = Settings.KeyBinds["FF"].Key, Modifiers = Settings.KeyBinds["FF"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = FRCommand, CommandParameter = Window, Key = Settings.KeyBinds["FR"].Key, Modifiers = Settings.KeyBinds["FR"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = ToStartCommand, CommandParameter = Window, Key = Settings.KeyBinds["ToStart"].Key, Modifiers = Settings.KeyBinds["ToStart"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = ToEndCommand, CommandParameter = Window, Key = Settings.KeyBinds["ToEnd"].Key, Modifiers = Settings.KeyBinds["ToEnd"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = CurrentToStartPositionCommand, CommandParameter = Window, Key = Settings.KeyBinds["CurrentToStartPosition"].Key, Modifiers = Settings.KeyBinds["CurrentToStartPosition"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = CurrentToEndPositionCommand, CommandParameter = Window, Key = Settings.KeyBinds["CurrentToEndPosition"].Key, Modifiers = Settings.KeyBinds["CurrentToEndPosition"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = PlayCommand, CommandParameter = Window, Key = Settings.KeyBinds["CurrentToStartPosition"].Key, Modifiers = Settings.KeyBinds["CurrentToStartPosition"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = StereoCommand, CommandParameter = Window, Key = Settings.KeyBinds["Stereo"].Key, Modifiers = Settings.KeyBinds["Stereo"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = MonoCommand, CommandParameter = Window, Key = Settings.KeyBinds["Mono"].Key, Modifiers = Settings.KeyBinds["Mono"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = LOnlyCommand, CommandParameter = Window, Key = Settings.KeyBinds["LOnly"].Key, Modifiers = Settings.KeyBinds["LOnly"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = ROnlyCommand, CommandParameter = Window, Key = Settings.KeyBinds["ROnly"].Key, Modifiers = Settings.KeyBinds["ROnly"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = LMinusRCommand, CommandParameter = Window, Key = Settings.KeyBinds["LMinusR"].Key, Modifiers = Settings.KeyBinds["LMinusR"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = LpfOnCommand, CommandParameter = Window, Key = Settings.KeyBinds["LpfOn"].Key, Modifiers = Settings.KeyBinds["LpfOn"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = HpfOnCommand, CommandParameter = Window, Key = Settings.KeyBinds["HpfOn"].Key, Modifiers = Settings.KeyBinds["HpfOn"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = BpfOnCommand, CommandParameter = Window, Key = Settings.KeyBinds["BpfOn"].Key, Modifiers = Settings.KeyBinds["BpfOn"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = PitchQuadCommand, CommandParameter = Window, Key = Settings.KeyBinds["PitchQuad"].Key, Modifiers = Settings.KeyBinds["PitchQuad"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = PitchDoubleCommand, CommandParameter = Window, Key = Settings.KeyBinds["PitchDouble"].Key, Modifiers = Settings.KeyBinds["PitchDouble"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = PitchNormalCommand, CommandParameter = Window, Key = Settings.KeyBinds["PitchNormal"].Key, Modifiers = Settings.KeyBinds["PitchNormal"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = PitchHalfCommand, CommandParameter = Window, Key = Settings.KeyBinds["PitchHalf"].Key, Modifiers = Settings.KeyBinds["PitchHalf"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = TempoDoubleCommand, CommandParameter = Window, Key = Settings.KeyBinds["TempoDouble"].Key, Modifiers = Settings.KeyBinds["TempoDouble"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = TempoNormalCommand, CommandParameter = Window, Key = Settings.KeyBinds["TempoNormal"].Key, Modifiers = Settings.KeyBinds["TempoNormal"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = TempoHalfCommand, CommandParameter = Window, Key = Settings.KeyBinds["TempoHalf"].Key, Modifiers = Settings.KeyBinds["TempoHalf"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = TempoOneThirdCommand, CommandParameter = Window, Key = Settings.KeyBinds["TempoOneThird"].Key, Modifiers = Settings.KeyBinds["TempoOneThird"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = TempoQuarterCommand, CommandParameter = Window, Key = Settings.KeyBinds["TempoQuarter"].Key, Modifiers = Settings.KeyBinds["TempoQuarter"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = BypassCommand, CommandParameter = Window, Key = Settings.KeyBinds["Bypass"].Key, Modifiers = Settings.KeyBinds["Bypass"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = FileOpenCommand, CommandParameter = Window, Key = Settings.KeyBinds["FileOpen"].Key, Modifiers = Settings.KeyBinds["FileOpen"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = LoopCommand, CommandParameter = Window, Key = Settings.KeyBinds["Loop"].Key, Modifiers = Settings.KeyBinds["Loop"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = SelectionResetCommand, CommandParameter = Window, Key = Settings.KeyBinds["SelectionReset"].Key, Modifiers = Settings.KeyBinds["SelectionReset"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = ZoomInCommand, CommandParameter = Window, Key = Settings.KeyBinds["ZoomIn"].Key, Modifiers = Settings.KeyBinds["ZoomIn"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = ZoomOutCommand, CommandParameter = Window, Key = Settings.KeyBinds["ZoomOut"].Key, Modifiers = Settings.KeyBinds["ZoomOut"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = OpenTempoCalcWindowCommand, CommandParameter = Window, Key = Settings.KeyBinds["OpenTempoCalcWindow"].Key, Modifiers = Settings.KeyBinds["OpenTempoCalcWindow"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = AlwaysOnTopCommand, CommandParameter = Window, Key = Settings.KeyBinds["AlwaysOnTop"].Key, Modifiers = Settings.KeyBinds["AlwaysOnTop"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = ShowTimeAtMeasureCommand, CommandParameter = Window, Key = Settings.KeyBinds["ShowTimeAtMeasure"].Key, Modifiers = Settings.KeyBinds["ShowTimeAtMeasure"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = SnapToTickCommand, CommandParameter = Window, Key = Settings.KeyBinds["SnapToTick"].Key, Modifiers = Settings.KeyBinds["SnapToTick"].Modifiers });
-            Window.InputBindings.Add(new KeyBinding() { Command = ExitCommand, CommandParameter = Window, Key = Settings.KeyBinds["Exit"].Key, Modifiers = Settings.KeyBinds["Exit"].Modifiers });
+            foreach(var kb in Settings.KeyBinds)
+            {
+                Window.InputBindings.Add(Settings.GetKeyBinding(kb.Key));
+            }
         }
 
         public void SaveWindowSettings()

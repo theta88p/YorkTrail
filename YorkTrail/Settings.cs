@@ -49,7 +49,7 @@ namespace YorkTrail
         public int IconToolBarBandIndex { get; set; }
         [DataMember]
         public double IconToolBarWidth { get; set; }
-        public Dictionary<string, ShortCutKey> KeyBinds { get; set; }
+        public Dictionary<CommandName, ShortCutKey> KeyBinds { get; set; }
         [DataMember]
         public Dictionary<string, string> KeyBindsSerializeable { get; set; }
         [DataMember]
@@ -194,10 +194,15 @@ namespace YorkTrail
 
                 foreach (var kb in settings.KeyBindsSerializeable)
                 {
-                    if (settings.KeyBinds.ContainsKey(kb.Key))
+                    CommandName cmd;
+                    if (Enum.TryParse(kb.Key, out cmd) && Enum.IsDefined(typeof(CommandName), cmd))
                     {
-                        settings.KeyBinds[kb.Key] = ShortCutKey.ConvertFromString(kb.Value);
+                        if (settings.KeyBinds.ContainsKey(cmd))
+                        {
+                            settings.KeyBinds[cmd] = ShortCutKey.ConvertFromString(kb.Value);
+                        }
                     }
+
                 }
                 // アップデートした時nullになるのでここで初期化
                 if (settings.FilterPresets == null)
@@ -238,61 +243,28 @@ namespace YorkTrail
             }
         }
 
-        private void SetDefaultKeyBinds()
-        {
-            var dic = new Dictionary<string, ShortCutKey>() {
-                { "Play",  new ShortCutKey(Key.Space, ModifierKeys.None) },
-                { "Pause", new ShortCutKey(Key.Enter, ModifierKeys.None) },
-                { "Stop", new ShortCutKey(Key.Escape, ModifierKeys.None) },
-                { "FF", new ShortCutKey(Key.Right, ModifierKeys.None) },
-                { "FR", new ShortCutKey(Key.Left, ModifierKeys.None) },
-                { "ToStart", new ShortCutKey(Key.Left, ModifierKeys.Shift) },
-                { "ToEnd", new ShortCutKey(Key.Right, ModifierKeys.Shift) },
-                { "CurrentToStartPosition", new ShortCutKey(Key.F9, ModifierKeys.None) },
-                { "CurrentToEndPosition", new ShortCutKey(Key.F10, ModifierKeys.None) },
-                { "Stereo", new ShortCutKey(Key.S, ModifierKeys.None) },
-                { "Mono", new ShortCutKey(Key.M, ModifierKeys.None) },
-                { "LOnly", new ShortCutKey(Key.L, ModifierKeys.None) },
-                { "ROnly", new ShortCutKey(Key.R, ModifierKeys.None) },
-                { "LMinusR", new ShortCutKey(Key.M, ModifierKeys.Shift) },
-                { "LpfOn", new ShortCutKey(Key.D0, ModifierKeys.None) },
-                { "HpfOn", new ShortCutKey(Key.D1, ModifierKeys.None) },
-                { "BpfOn", new ShortCutKey(Key.D2, ModifierKeys.None) },
-                { "PitchQuad", new ShortCutKey(Key.F2, ModifierKeys.Shift) },
-                { "PitchDouble", new ShortCutKey(Key.F2, ModifierKeys.None) },
-                { "PitchNormal", new ShortCutKey(Key.F3, ModifierKeys.None) },
-                { "PitchHalf", new ShortCutKey(Key.F4, ModifierKeys.None) },
-                { "TempoDouble", new ShortCutKey(Key.F5, ModifierKeys.None) },
-                { "TempoNormal", new ShortCutKey(Key.F6, ModifierKeys.None) },
-                { "TempoHalf", new ShortCutKey(Key.F7, ModifierKeys.None) },
-                { "TempoOneThird", new ShortCutKey(Key.F8, ModifierKeys.None) },
-                { "TempoQuarter", new ShortCutKey(Key.F8, ModifierKeys.Shift) },
-                { "Bypass", new ShortCutKey(Key.B, ModifierKeys.None) },
-                { "FileOpen", new ShortCutKey(Key.O, ModifierKeys.Control) },
-                { "FileClose", new ShortCutKey(Key.None, ModifierKeys.None) },
-                { "Loop", new ShortCutKey(Key.L, ModifierKeys.Control) },
-                { "SelectionReset", new ShortCutKey(Key.I, ModifierKeys.Control) },
-                { "ZoomIn", new ShortCutKey(Key.X, ModifierKeys.Control) },
-                { "ZoomOut", new ShortCutKey(Key.Z, ModifierKeys.Control) },
-                { "OpenTempoCalcWindow", new ShortCutKey(Key.T, ModifierKeys.Alt) },
-                { "AlwaysOnTop", new ShortCutKey(Key.T, ModifierKeys.Control) },
-                { "ShowTimeAtMeasure", new ShortCutKey(Key.None, ModifierKeys.None) },
-                { "SnapToTick", new ShortCutKey(Key.None, ModifierKeys.None) },
-                { "Exit", new ShortCutKey(Key.Q, ModifierKeys.Control) },
-            };
-
-            this.KeyBinds = dic;
-        }
-
-        private static Dictionary<string, string> KeyBindsToSerializeable(Dictionary<string, ShortCutKey> dic)
+        private static Dictionary<string, string> KeyBindsToSerializeable(Dictionary<CommandName, ShortCutKey> dic)
         {
             var ret = new Dictionary<string, string>();
 
             foreach (var kb in dic)
             {
-                ret.Add(kb.Key, ShortCutKey.ConvertToString(kb.Value));
+                ret.Add(kb.Key.ToString(), ShortCutKey.ConvertToString(kb.Value));
             }
             return ret;
         }
+
+        private void SetDefaultKeyBinds()
+        {
+            KeyBinds = DefaultKey.GetKeyBinds();
+        }
+
+        public KeyBinding GetKeyBinding(CommandName cname)
+        {
+            var cmd = DefaultKey.KeyCommands[cname].Command;
+            var param = DefaultKey.KeyCommands[cname].CommandParameter;
+            return new KeyBinding() { Command = cmd, CommandParameter = param, Key = KeyBinds[cname].Key, Modifiers = KeyBinds[cname].Modifiers };
+        }
+
     }
 }

@@ -13,13 +13,17 @@ namespace YorkTrail
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var dic = value as Dictionary<string, ShortCutKey>;
-            ShortCutKey kg;
+            var dic = (Dictionary<CommandName, ShortCutKey>)value;
+            CommandName cmd;
+            ShortCutKey key;
             string ret = "";
 
-            if (dic.TryGetValue(parameter as string, out kg))
+            if (Enum.TryParse((string)parameter, out cmd))
             {
-                ret = ShortCutKey.ConvertToString(kg);
+                if (dic.TryGetValue(cmd, out key))
+                {
+                    ret = ShortCutKey.ConvertToString(key);
+                }
             }
             return ret.Replace("Control", "Ctrl");
         }

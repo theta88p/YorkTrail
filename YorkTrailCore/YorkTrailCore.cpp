@@ -1034,19 +1034,19 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
         {
             switch (channels)
             {
-            case Channels::L:
+            case Channels::LOnly:
                 for (uint32_t i = 0; i < frameCount * pDecoder->outputChannels; i += 2)
                 {
                     processdFrames[i + 1] = processdFrames[i];
                 }
                 break;
-            case Channels::R:
+            case Channels::ROnly:
                 for (uint32_t i = 0; i < frameCount * pDecoder->outputChannels; i += 2)
                 {
                     processdFrames[i] = processdFrames[i + 1];
                 }
                 break;
-            case Channels::LPlusR:
+            case Channels::Mono:
                 for (uint32_t i = 0; i < frameCount * pDecoder->outputChannels; i += 2)
                 {
                     float val = (processdFrames[i] + processdFrames[i + 1]) / 2;
