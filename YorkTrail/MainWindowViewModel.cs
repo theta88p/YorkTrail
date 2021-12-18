@@ -298,11 +298,7 @@ namespace YorkTrail
         public void SetKeyBinds()
         {
             Window.InputBindings.Clear();
-
-            foreach(var kb in Settings.KeyBinds)
-            {
-                Window.InputBindings.Add(Settings.GetKeyBinding(kb.Key));
-            }
+            Window.InputBindings.AddRange(Settings.GetKeyBindings());
         }
 
         public void SaveWindowSettings()

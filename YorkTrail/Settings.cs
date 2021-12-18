@@ -259,11 +259,17 @@ namespace YorkTrail
             KeyBinds = DefaultKey.GetKeyBinds();
         }
 
-        public KeyBinding GetKeyBinding(CommandName cname)
+        public System.Collections.ICollection GetKeyBindings()
         {
-            var cmd = DefaultKey.KeyCommands[cname].Command;
-            var param = DefaultKey.KeyCommands[cname].CommandParameter;
-            return new KeyBinding() { Command = cmd, CommandParameter = param, Key = KeyBinds[cname].Key, Modifiers = KeyBinds[cname].Modifiers };
+            var collection = new List<KeyBinding>();
+            foreach (var binds in KeyBinds)
+            {
+                var cn = binds.Key;
+                var cmd = DefaultKey.KeyCommands[cn].Command;
+                var param = DefaultKey.KeyCommands[cn].CommandParameter;
+                collection.Add(new KeyBinding() { Command = cmd, CommandParameter = param, Key = KeyBinds[cn].Key, Modifiers = KeyBinds[cn].Modifiers });
+            }
+            return collection;
         }
 
     }
