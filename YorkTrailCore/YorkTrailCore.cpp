@@ -304,6 +304,7 @@ void YorkTrail::YorkTrailCore::FileClose()
         startFrame = 0;
         endFrame = 0;
         path = nullptr;
+        soundtouch_clear(hSoundTouch);
         NotifyTimeChanged();
     }
 }
@@ -320,15 +321,21 @@ void YorkTrail::YorkTrailCore::DeviceClose()
 void YorkTrail::YorkTrailCore::Pause()
 {
     if (state == State::Playing)
+    {
         state = State::Pausing;
+    }
 }
 
 void YorkTrail::YorkTrailCore::Stop()
 {
     if (state == State::Pausing)
+    {
         state = State::Stopped;
+    }
     else if (state == State::Playing)
+    {
         state = State::Stopping;
+    }
 }
 
 void YorkTrail::YorkTrailCore::ResetRMS()
@@ -351,6 +358,7 @@ void YorkTrail::YorkTrailCore::Seek(int64_t frame)
             throwError("ma_decoder", "シーク時にエラーが発生しました");
         }
         curFrame = (uint64_t)frame;
+        soundtouch_clear(hSoundTouch);
         ma_mutex_unlock(pMutex);
     }
 }
@@ -452,10 +460,15 @@ void YorkTrail::YorkTrailCore::SetRate(float rate)
     if (pDevice != nullptr)
     {
         ma_mutex_lock(pMutex);
+        playbackRate = rate;
+        soundtouch_clear(hSoundTouch);
         soundtouch_setTempo(hSoundTouch, rate);
         ma_mutex_unlock(pMutex);
     }
-    playbackRate = rate;
+    else
+    {
+        playbackRate = rate;
+    }
 }
 
 float YorkTrail::YorkTrailCore::GetRate()
@@ -468,10 +481,15 @@ void YorkTrail::YorkTrailCore::SetPitch(float pitch)
     if (pDevice != nullptr)
     {
         ma_mutex_lock(pMutex);
+        playbackPitch = pitch;
+        soundtouch_clear(hSoundTouch);
         soundtouch_setPitch(hSoundTouch, pitch);
         ma_mutex_unlock(pMutex);
     }
-    playbackPitch = pitch;
+    else
+    {
+        playbackPitch = pitch;
+    }
 }
 
 float YorkTrail::YorkTrailCore::GetPitch()
@@ -538,16 +556,9 @@ void YorkTrail::YorkTrailCore::SetBypass(bool value)
 
 void YorkTrail::YorkTrailCore::SetChannels(Channels ch)
 {
-    if (pDevice != nullptr)
-    {
-        ma_mutex_lock(pMutex);
-        channels = ch;
-        ma_mutex_unlock(pMutex);
-    }
-    else
-    {
-        channels = ch;
-    }
+    ma_mutex_lock(pMutex);
+    channels = ch;
+    ma_mutex_unlock(pMutex);
 }
 
 YorkTrail::Channels YorkTrail::YorkTrailCore::GetChannels()
@@ -744,7 +755,6 @@ float YorkTrail::YorkTrailCore::lerp(float v1, float v2, float t)
     //三次補完
     float rate = t * t * (3.0f - 2.0f * t);
     return (1.0f - rate) * v1 + rate * v2;
-    //return (1.0f - t) * v1 + t * v2;
 }
 
 void YorkTrail::YorkTrailCore::toSplited(std::vector<float>& input, std::vector<float>& outputL, std::vector<float>& outputR)
@@ -809,8 +819,7 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
     ma_uint32 bufferSize = frameCount * pDecoder->outputChannels;
     std::vector<float> decodedFrames(bufferSize * 2, 0.0f);
     std::vector<float> processdFrames(bufferSize * 2, 0.0f);
-    ma_uint64 framesRead;
-    ma_uint64 framesProcessed;
+    ma_uint32 framesRead;
 
     if (isBypass)
     {
@@ -850,9 +859,10 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
         if (playbackPitch != 1.0f || playbackRate != 1.0f)
         {
             soundtouch_putSamples(hSoundTouch, decodedFrames.data(), frameCount * playbackRate);
-            framesProcessed = soundtouch_receiveSamples(hSoundTouch, processdFrames.data(), frameCount);
-            if (framesProcessed == 0)
+            ma_uint64 framesProcessed = soundtouch_receiveSamples(hSoundTouch, processdFrames.data(), frameCount);
+            if (framesProcessed < frameCount)
             {
+                Debug::WriteLine("SoundTouch processed: {0}/{1} frames", framesProcessed, frameCount);
                 ma_mutex_unlock(pMutex);
                 return;
             }
