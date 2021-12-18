@@ -13,6 +13,7 @@
 #include "miniaudio.h"
 
 #include "source/SoundTouchDLL/SoundTouchDLL.h"
+#include "rubberband/RubberBandStretcher.h"
 
 using namespace System;
 using namespace System::Text;
@@ -23,9 +24,6 @@ using namespace msclr::interop;
 using namespace System::Collections::Generic;
 using namespace System::Threading;
 using namespace System::Threading::Tasks;
-
-// mp3でトータルフレーム数が合わないので係数をかけて少なめにする
-constexpr float TotalFrameFactor = 0.9995;
 
 namespace YorkTrail
 {
@@ -67,7 +65,6 @@ namespace YorkTrail
 		bool HpfEnabled = false;
 		bool BpfEnabled = false;
 		bool isLoop = false;
-		uint32_t displayUpdateCycle = 2;// 画面更新の頻度 (値xレイテンシ)
 
 		YorkTrailCore();
 		~YorkTrailCore();
@@ -112,8 +109,6 @@ namespace YorkTrail
 		event NotifyTimeChangedEventHandler^ NotifyTimeChanged;
 
 	private:
-		//Task^ playerTask;
-
 		HANDLE hSoundTouch;
 		ma_decoder* pDecoder;
 		ma_device* pDevice;
@@ -138,8 +133,8 @@ namespace YorkTrail
 		float playbackRate = 1.0f;
 		float playbackPitch = 1.0f;
 		bool isBypass = false;
-
-		//std::chrono::system_clock::time_point*  startTime;
+		// 画面更新の頻度 (値xレイテンシ)
+		uint32_t displayUpdateCycle = 2;
 
 		uint64_t posToFrame(double pos);
 		uint64_t frameToMillisecs(uint64_t frames);
@@ -152,12 +147,6 @@ namespace YorkTrail
 		void calcVolume(float vol, std::vector<float> &input);
 		void calcRMS(std::vector<float>& input, float& outputL, float& outputR);
 		void throwError(String^ loc, String^ msg);
-
-		// 以下コールバックを渡すのに必要な設定
-		//using callback_type = void(__stdcall*)(void);
-		//delegate void miniaudioStartCallbackDelegate(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
-		//miniaudioStartCallbackDelegate^ hDeleg;
-		//GCHandle delegGCH;
 	};
 
 	public ref class YorkTrailHandleHolder

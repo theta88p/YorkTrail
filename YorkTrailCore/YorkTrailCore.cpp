@@ -2,12 +2,6 @@
 
 YorkTrail::YorkTrailCore::YorkTrailCore()
 {
-    // デリゲートのハンドルを取得して固定
-    //hDeleg = gcnew miniaudioStartCallbackDelegate(&YorkTrailCore::miniaudioStartCallback);
-    //delegGCH = GCHandle::Alloc(hDeleg);
-
-    //hMutex = CreateMutex(NULL, FALSE, NULL);
-    //hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
     pMutex = new ma_mutex();
     ma_mutex_init(pMutex);
     hSoundTouch = soundtouch_createInstance();
@@ -16,14 +10,6 @@ YorkTrail::YorkTrailCore::YorkTrailCore()
 
 YorkTrail::YorkTrailCore::~YorkTrailCore()
 {
-    /*
-    // デリゲートのハンドルを固定解除して削除
-    if (delegGCH.IsAllocated)
-    {
-        delegGCH.Free();
-        delete hDeleg;
-    }
-    */
 }
 
 YorkTrail::YorkTrailCore::!YorkTrailCore()
@@ -50,12 +36,6 @@ void YorkTrail::YorkTrailCore::throwError(String^ loc, String^ msg)
 {
     Debug::WriteLine(loc + ": " + msg);
     System::Windows::MessageBox::Show(loc + ": " + msg, "Error", MessageBoxButton::OK, MessageBoxImage::Error);
-    //MessageBox::Show(loc + ": " + msg, "Error");
-    /*
-    Exception^ exc = gcnew Exception("Error");
-    throw exc;
-    delete exc;
-    */
 }
 
 uint64_t YorkTrail::YorkTrailCore::posToFrame(double pos)
@@ -91,20 +71,6 @@ uint64_t YorkTrail::YorkTrailCore::frameToMillisecs(uint64_t frame)
 
 List<String^>^ YorkTrail::YorkTrailCore::GetPlaybackDeviceList()
 {
-    /*
-    ma_backend backends[] = {
-    ma_backend_wasapi,
-    ma_backend_dsound,
-    ma_backend_winmm
-    };
-
-    ma_context_config config = ma_context_config_init();
-    ma_context context;
-    if (ma_context_init(backends, sizeof(backends) / sizeof(backends[0]), &config, &context) != MA_SUCCESS) {
-        throwError("ma_context", "コンテキスト初期化エラー");
-        return nullptr;
-    }
-    */
     ma_context context;
     if (ma_context_init(NULL, 0, NULL, &context) != MA_SUCCESS) {
         throwError("ma_context", "コンテキスト初期化エラー");
@@ -238,11 +204,6 @@ bool YorkTrail::YorkTrailCore::DeviceOpen()
         return false;
     }
 
-    /*
-  // 固定したデリゲートのハンドルを指定
-   using namespace System::Runtime::InteropServices;
-   IntPtr ptr = Marshal::GetFunctionPointerForDelegate(hDeleg);
-   */
     ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
     deviceConfig.playback.format = pDecoder->outputFormat;
     deviceConfig.playback.channels = pDecoder->outputChannels;
@@ -356,27 +317,6 @@ void YorkTrail::YorkTrailCore::DeviceClose()
     }
 }
 
-/*
-void YorkTrail::YorkTrailCore::Start()
-{
-    if (playerTask != nullptr && playerTask->Status == TaskStatus::Running)
-    {
-        SetPosition(startPos);
-    }
-    else if (path != nullptr)
-    {
-        if (state != State::Pausing)
-        {
-            SetPosition(startPos);
-        }
-        state = State::Playing;
-        auto action = gcnew System::Action(this, &YorkTrailCore::Play);
-        playerTask = gcnew Task(action);
-        playerTask->Start();
-    }
-}
-
-*/
 void YorkTrail::YorkTrailCore::Pause()
 {
     if (state == State::Playing)
@@ -630,7 +570,6 @@ void YorkTrail::YorkTrailCore::Start()
 
     state = State::Playing;
     ma_result result;
-    //startTime = &std::chrono::system_clock::now();
 
     if (ma_device_start(pDevice) != MA_SUCCESS)
     {
@@ -642,6 +581,7 @@ void YorkTrail::YorkTrailCore::Start()
     {
         if (!ma_device_is_started(pDevice))
         {
+            // 再スタートしたときの処理
             bool started = false;
             for (int i = 0; i < 100; i++)
             {
@@ -798,102 +738,7 @@ void YorkTrail::YorkTrailCore::timeStretch(std::vector<float> &frames, std::vect
         }
     }
 }
-/*
-void YorkTrail::YorkTrailCore::pitchShift(std::vector<float> &frames, float pitch, float mix)
-{
-    // エフェクターのパラメーター
-    //float mix = 1.0f;  // ピッチシフターの効き具合。0.0～1.0の間
-    //float pitch = 12.0f; // どれだけ音を高く(低く)するか。-12～12程度
 
-    // リングバッファのinteravalを設定する
-    // とりあえず1000サンプル程度とする
-    // (intervalはリングバッファ(https://vstcpp.wpblog.jp/?p=1505 より)
-    int delaysample = frames.size() / 2;
-    ringbufL->SetInterval(delaysample * 2);
-    ringbufR->SetInterval(delaysample * 2);
-
-    // 読み込み速度を速めた後の読み込み位置
-    float pos1 = 0.0f;
-    float pos2 = 0.0f;
-
-    // ピッチから読み込み速度を計算
-    // -12半音(1オクターブ下)で-0.5、12半音(1オクターブ上)で1となるようにする
-    float speed = pow(2.0f, pitch / 12.0f) - 1.0f;
-
-    // 入力信号をピッチシフトする
-    for (int i = 0; i < frames.size(); i += 2)
-    {
-        // 読み込み位置を移動した際の前後の整数値を取得(あとで線形補間するため)
-        int a1 = (int)pos1;
-        int a2 = pos1 + 1;
-        int b1 = (int)pos2;
-        int b2 = pos2 + 1;
-
-        // 前後の整数値から読み込み位置の値を線形補間で割り出す
-        // 線形補間で割り出した結果はピッチシフト後の信号となる
-        float lerpL1 = lerp(ringbufL->Read(a1), ringbufL->Read(a2), pos1 - (float)a1);
-        float lerpR1 = lerp(ringbufR->Read(a1), ringbufR->Read(a2), pos1 - (float)a1);
-        float lerpL2 = lerp(ringbufL->Read(b1), ringbufL->Read(b2), pos2 - (float)b1);
-        float lerpR2 = lerp(ringbufR->Read(b1), ringbufR->Read(b2), pos2 - (float)b1);
-
-        // 読み込み位置を更新する
-        // posが大きく(小さく)なりすぎないように定期的に 0 に戻す
-        // 大きくなった時にリングバッファのintervalを超えてはいけないので、
-        // とりあえずdelaysample* 0.9とする。
-        pos1 += speed;
-        pos2 += speed;
-
-        float w1, w2;
-        int fadesample = 4;
-
-        // Interleaveなのでサンプル数/2
-        if (abs(pos1) >= delaysample)
-        {
-            w1 = 0.0f;
-            pos1 = 0.0f;
-        }
-        else if (abs(pos1) >= delaysample / 2)
-        {
-            w1 = 0.0f;
-        }
-        else if (abs(pos1) >= delaysample / 2 - fadesample)
-        {
-            w1 = -1.0f / fadesample * (pos1 - delaysample / 2);
-        }
-        else if (abs(pos1) >= fadesample && abs(pos1) < delaysample / 2 - fadesample)
-        {
-            w1 = 1.0f;
-        }
-        else if (abs(pos1) < fadesample && abs(pos1) >= 0)
-        {
-            w1 = 1.0f / fadesample * pos1;
-        }
-
-        if (abs(pos2) >= delaysample)
-        {
-            pos2 = 0.0f;
-        }
-        w2 = 1.0f - w1;
-
-        lerpL1 = lerpL1 * w1;
-        lerpR1 = lerpR1 * w1;
-        lerpL2 = lerpL2 * w2;
-        lerpR2 = lerpR2 * w2;
-
-        // ディレイ信号として入力信号をリングバッファに書き込み
-        ringbufL->Write(frames[i]);
-        ringbufR->Write(frames[i + 1]);
-
-        // リングバッファの状態を更新する
-        ringbufL->Update();
-        ringbufR->Update();
-
-        // 入力信号にピッチシフト信号を混ぜて出力する
-        frames[i] = (1.0f - mix) * frames[i] + mix * (lerpL1 + lerpL2);
-        frames[i + 1] = (1.0f - mix) * frames[i + 1] + mix * (lerpR1 + lerpR2);
-    }
-}
-*/
 float YorkTrail::YorkTrailCore::lerp(float v1, float v2, float t)
 {
     //三次補完
@@ -1076,18 +921,6 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
     rmsR = r;
 
     std::memcpy(pOutput, processdFrames.data(), sizeof(float) * frameCount * pDecoder->outputChannels);
-
-    /*
-    if (startTime != nullptr)
-    {
-        std::chrono::system_clock::time_point end;
-        end = std::chrono::system_clock::now();
-        double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - *startTime).count();
-        Debug::WriteLine(elapsed.ToString());
-        //delete startTime;
-        //startTime = nullptr;
-    }
-    */
 
     ma_mutex_unlock(pMutex);
 }
