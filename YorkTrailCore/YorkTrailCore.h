@@ -13,6 +13,7 @@
 #include "miniaudio.h"
 
 #include "source/SoundTouchDLL/SoundTouchDLL.h"
+#include "rubberband/RubberBandStretcher.h"
 
 using namespace System;
 using namespace System::Text;
