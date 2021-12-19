@@ -126,7 +126,7 @@ namespace YorkTrail
         [DataMember]
         public float Pitch { get; set; }
         [DataMember]
-        public float Rate { get; set; }
+        public float Ratio { get; set; }
         [DataMember]
         public bool IsBypass { get; set; }
         [DataMember]

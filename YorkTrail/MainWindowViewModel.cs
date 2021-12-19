@@ -179,11 +179,11 @@ namespace YorkTrail
                 RaisePropertyChanged(nameof(Pitch));
             }
         }
-        public float Rate {
-            get { return Core.GetRate(); }
+        public float Ratio {
+            get { return Core.GetRatio(); }
             set {
-                Core.SetRate(value);
-                RaisePropertyChanged(nameof(Rate));
+                Core.SetRatio(value);
+                RaisePropertyChanged(nameof(Ratio));
             }
         }
         public bool IsBypass {
@@ -338,7 +338,7 @@ namespace YorkTrail
             Settings.EndPosition = EndPosition;
             Settings.Channels = Channels;
             Settings.Pitch = Pitch;
-            Settings.Rate = Rate;
+            Settings.Ratio = Ratio;
             Settings.IsBypass = IsBypass;
             Settings.IsLoop = IsLoop;
             Settings.LpfEnabled = LpfEnabled;
@@ -376,8 +376,8 @@ namespace YorkTrail
                 }
             }
             Channels = Settings.Channels;
-            Pitch = Settings.Pitch;
-            Rate = Settings.Rate;
+            Pitch = (Settings.Pitch == 0) ? 1 : Settings.Pitch;
+            Ratio = (Settings.Ratio == 0) ? 1 : Settings.Ratio;
             IsBypass = Settings.IsBypass;
             IsLoop = Settings.IsLoop;
             LpfEnabled = Settings.LpfEnabled;

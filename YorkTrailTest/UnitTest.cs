@@ -1,5 +1,7 @@
 using NUnit.Framework;
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using YorkTrail;
 
@@ -16,13 +18,13 @@ namespace YorkTrailTest
         {
             window = new MainWindow();
             vm = (MainWindowViewModel)window.DataContext;
-            vm.FileOpen(@"D:\Music\CD音源\アニメ＆ゲーム\非可逆\下川みくに - それが、愛でしょう\01 下川みくに - それが、愛でしょう.mp3");
+            vm.FileOpen("test.flac");
         }
 
         [Test]
         public void FileOpenTest()
         {
-            Assert.IsTrue(vm.FileOpen(@"D:\Music\CD音源\アニメ＆ゲーム\非可逆\下川みくに - それが、愛でしょう\01 下川みくに - それが、愛でしょう.mp3"));
+            Assert.IsTrue(vm.FileOpen("test.flac"));
             vm.FileClose();
             Assert.IsNull(vm.FilePath);
         }
@@ -78,25 +80,25 @@ namespace YorkTrailTest
         public void TempoTest()
         {
             vm.PlayCommand.Execute(window);
-            vm.Rate = 2.0f;
+            vm.Ratio = 2.0f;
             Thread.Sleep(1000);
-            Assert.AreEqual(vm.Core.GetRate(), 2.0f);
+            Assert.AreEqual(vm.Core.GetRatio(), 2.0f);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
-            vm.Rate = 1.0f;
+            vm.Ratio = 1.0f;
             Thread.Sleep(1000);
-            Assert.AreEqual(vm.Core.GetRate(), 1.0f);
+            Assert.AreEqual(vm.Core.GetRatio(), 1.0f);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
-            vm.Rate = 0.5f;
+            vm.Ratio = 0.5f;
             Thread.Sleep(1000);
-            Assert.AreEqual(vm.Core.GetRate(), 0.5f);
+            Assert.AreEqual(vm.Core.GetRatio(), 0.5f);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
-            vm.Rate = 0.33f;
+            vm.Ratio = 0.33f;
             Thread.Sleep(1000);
-            Assert.AreEqual(vm.Core.GetRate(), 0.33f);
+            Assert.AreEqual(vm.Core.GetRatio(), 0.33f);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
-            vm.Rate = 0.25f;
+            vm.Ratio = 0.25f;
             Thread.Sleep(1000);
-            Assert.AreEqual(vm.Core.GetRate(), 0.25f);
+            Assert.AreEqual(vm.Core.GetRatio(), 0.25f);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
         }
 

@@ -194,7 +194,7 @@ namespace YorkTrail
         public override void Execute(object parameter)
         {
             var r = (float)parameter;
-            ViewModel.Rate = r;
+            ViewModel.Ratio = r;
         }
     }
 
