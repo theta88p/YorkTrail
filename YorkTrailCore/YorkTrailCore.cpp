@@ -180,6 +180,9 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
     pRubberBand = new RubberBand::RubberBandStretcher((size_t)pDecoder->outputSampleRate, (size_t)pDecoder->outputChannels
         , RubberBand::RubberBandStretcher::OptionProcessRealTime | RubberBand::RubberBandStretcher::OptionPitchHighQuality);
 
+    SetRate(playbackRate);
+    SetPitch(playbackPitch);
+
     return true;
 }
 

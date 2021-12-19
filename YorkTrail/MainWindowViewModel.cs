@@ -106,7 +106,7 @@ namespace YorkTrail
                     int measure = (int)(offsetCur / msOfMeasure);
                     int beat = (offsetCur < 0) ? (int)(offsetCur / msOfBeat % TimeSignature) : (int)(offsetCur / msOfBeat % TimeSignature + 1);
                     int ms = (int)(cur % msOfBeat / 10);
-                    ms = (ms < 1000) ? ms : ms /= 10;
+                    ms = ms % 100;
                     return string.Format(@"{0,3:0000}:{1,2:00}:{2,2:00}", measure, beat, ms);
                 }
                 else
