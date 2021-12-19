@@ -6,6 +6,8 @@ YorkTrail::YorkTrailCore::YorkTrailCore()
     ma_mutex_init(pMutex);
     hSoundTouch = soundtouch_createInstance();
     SetSoundTouchParam(80, 30, 8);
+    pRubberBand = nullptr;
+    stretchMethod = StretchMethod::SoundTouch;
 }
 
 YorkTrail::YorkTrailCore::~YorkTrailCore()
@@ -175,6 +177,8 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
 
     soundtouch_setChannels(hSoundTouch, pDecoder->outputChannels);
     soundtouch_setSampleRate(hSoundTouch, pDecoder->outputSampleRate);
+    pRubberBand = new RubberBand::RubberBandStretcher((size_t)pDecoder->outputSampleRate, (size_t)pDecoder->outputChannels
+        , RubberBand::RubberBandStretcher::OptionProcessRealTime | RubberBand::RubberBandStretcher::OptionPitchHighQuality);
 
     return true;
 }
@@ -305,6 +309,8 @@ void YorkTrail::YorkTrailCore::FileClose()
         endFrame = 0;
         path = nullptr;
         soundtouch_clear(hSoundTouch);
+        pRubberBand->~RubberBandStretcher();
+        pRubberBand = nullptr;
         NotifyTimeChanged();
     }
 }
@@ -358,7 +364,6 @@ void YorkTrail::YorkTrailCore::Seek(int64_t frame)
             throwError("ma_decoder", "シーク時にエラーが発生しました");
         }
         curFrame = (uint64_t)frame;
-        soundtouch_clear(hSoundTouch);
         ma_mutex_unlock(pMutex);
     }
 }
@@ -455,35 +460,51 @@ float YorkTrail::YorkTrailCore::GetVolume()
     return vol;
 }
 
-void YorkTrail::YorkTrailCore::SetRate(float rate)
+void YorkTrail::YorkTrailCore::SetRatio(float ratio)
 {
-    if (pDevice != nullptr)
+    if (pDecoder != nullptr)
     {
         ma_mutex_lock(pMutex);
-        playbackRate = rate;
-        soundtouch_clear(hSoundTouch);
-        soundtouch_setTempo(hSoundTouch, rate);
+        playbackRatio = ratio;
+        if (stretchMethod == StretchMethod::SoundTouch)
+        {
+            soundtouch_clear(hSoundTouch);
+            soundtouch_setTempo(hSoundTouch, ratio);
+        }
+        else if (stretchMethod == StretchMethod::RubberBand)
+        {
+            //pRubberBand->reset();
+            pRubberBand->setTimeRatio(1.0 / (double)ratio);
+        }
         ma_mutex_unlock(pMutex);
     }
     else
     {
-        playbackRate = rate;
+        playbackRatio = ratio;
     }
 }
 
-float YorkTrail::YorkTrailCore::GetRate()
+float YorkTrail::YorkTrailCore::GetRatio()
 {
-    return playbackRate;
+    return playbackRatio;
 }
 
 void YorkTrail::YorkTrailCore::SetPitch(float pitch)
 {
-    if (pDevice != nullptr)
+    if (pDecoder != nullptr)
     {
         ma_mutex_lock(pMutex);
         playbackPitch = pitch;
-        soundtouch_clear(hSoundTouch);
-        soundtouch_setPitch(hSoundTouch, pitch);
+        if (stretchMethod == StretchMethod::SoundTouch)
+        {
+            soundtouch_clear(hSoundTouch);
+            soundtouch_setPitch(hSoundTouch, pitch);
+        }
+        else if (stretchMethod == StretchMethod::RubberBand)
+        {
+            //pRubberBand->reset();
+            pRubberBand->setPitchScale((double)pitch);
+        }
         ma_mutex_unlock(pMutex);
     }
     else
@@ -631,7 +652,9 @@ void YorkTrail::YorkTrailCore::Start()
     }
 
     if (state != State::Pausing)
+    {
         state = State::Stopped;
+    }
 }
 
 void YorkTrail::YorkTrailCore::timeStretch(std::vector<float> &frames, std::vector<float> &output, float rate)
@@ -757,59 +780,70 @@ float YorkTrail::YorkTrailCore::lerp(float v1, float v2, float t)
     return (1.0f - rate) * v1 + rate * v2;
 }
 
-void YorkTrail::YorkTrailCore::toSplited(std::vector<float>& input, std::vector<float>& outputL, std::vector<float>& outputR)
+void YorkTrail::YorkTrailCore::toDeinterleaved(std::vector<float>& input, float* const* output, int channels, int frameCount)
 {
-    if (!outputL.empty())
+    for (int i = 0; i < frameCount; i++)
     {
-        outputL.clear();
-    }
-    if (!outputR.empty())
-    {
-        outputR.clear();
-    }
-
-    for (int i = 0; i < input.size(); i += 2)
-    {
-        outputL.push_back(input[i]);
-        outputR.push_back(input[i + 1]);
+        for (int j = 0; j < channels; j++)
+        {
+            output[j][i] = input[i * 2 + j];
+        }
     }
 }
 
-void YorkTrail::YorkTrailCore::toInterleaved(std::vector<float>& inputL, std::vector<float>& inputR, std::vector<float>& output)
+void YorkTrail::YorkTrailCore::toInterleaved(const float* const* input, std::vector<float>& output, int channels, int frameCount)
 {
     if (!output.empty())
     {
         output.clear();
     }
-    for (int i = 0; i < inputL.size(); i++)
+    for (int i = 0; i < frameCount; i++)
     {
-        output.push_back(inputL[i]);
-        output.push_back(inputR[i]);
+        for (int j = 0; j < channels; j++)
+        {
+            output.push_back(input[j][i]);
+        }
     }
 }
 
 void YorkTrail::YorkTrailCore::calcVolume(float vol, std::vector<float> &input)
 {
-    for (uint64_t i = 0; i < input.size(); i++)
+    for (int i = 0; i < input.size(); i++)
     {
         input[i] *= vol;
     }
 }
 
-void YorkTrail::YorkTrailCore::calcRMS(std::vector<float> &input, float &outputL, float &outputR)
+void YorkTrail::YorkTrailCore::calcRMS(std::vector<float> &input, int frameCount, int channels, float &outputL, float &outputR)
 {
-    float volL = 0;
-    float volR = 0;
-    for (uint64_t i = 0; i < input.size(); i += 2)
+    int requireCh = min(channels, 2);
+    std::vector<float> sum(requireCh);
+    std::vector<float> val(requireCh);
+    int bufferSize = frameCount * channels;
+
+    for (int i = 0; i < bufferSize; i += channels)
     {
-        volL += pow(input[i], 2);
-        volR += pow(input[i + 1], 2);
+        for (int j = 0; j < requireCh; j++)
+        {
+            sum[j] += pow(input[i + j], 2);
+        }
     }
-    float valL = 20.0f * log10(sqrt(volL / input.size()));
-    float valR = 20.0f * log10(sqrt(volR / input.size()));
+
+    for (int i = 0; i < requireCh; i++)
+    {
+        val[i] = 20.0 * log10(sqrt(sum[i] / frameCount));
+    }
     
-    outputL = (std::isinf(valL)) ? -100.0f : valL;
-    outputR = (std::isinf(valR)) ? -100.0f : valR;
+    if (requireCh < 2)
+    {
+        outputL = (std::isinf(val[0])) ? -100.0f : val[0];
+        outputR = outputL;
+    }
+    else
+    {
+        outputL = (std::isinf(val[0])) ? -100.0f : val[0];
+        outputR = (std::isinf(val[1])) ? -100.0f : val[1];
+    }
 }
 
 void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
@@ -817,33 +851,35 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
     ma_mutex_lock(pMutex);
 
     ma_uint32 bufferSize = frameCount * pDecoder->outputChannels;
-    std::vector<float> decodedFrames(bufferSize * 2, 0.0f);
+    std::vector<float> decodedFrames(bufferSize * playbackRatio * 2, 0.0f);
     std::vector<float> processdFrames(bufferSize * 2, 0.0f);
-    ma_uint32 framesRead;
+    ma_uint32 frameRead;
+    ma_uint32 frameProcessed;
 
     if (isBypass)
     {
-        framesRead = ma_decoder_read_pcm_frames(pDecoder, decodedFrames.data(), frameCount);
-        if (framesRead < frameCount) {
+        frameRead = ma_decoder_read_pcm_frames(pDecoder, decodedFrames.data(), frameCount);
+        if (frameRead < frameCount) {
             // Reached the end.
-            Debug::WriteLine("Cur:{0}\r\nRead:{1}\r\nTotal:{2}", curFrame, framesRead, totalPCMFrames);
-            //totalPCMFrames = min(curFrame + framesRead, totalPCMFrames);
+            Debug::WriteLine("Cur:{0}\r\nRead:{1}\r\nTotal:{2}", curFrame, frameRead, totalPCMFrames);
+            //totalPCMFrames = min(curFrame + frameRead, totalPCMFrames);
             state = State::Stopping;
         }
     }
     else
     {
-        ma_uint64 requireFrames = frameCount * playbackRate;
-        framesRead = ma_decoder_read_pcm_frames(pDecoder, decodedFrames.data(), requireFrames);
-        if (framesRead < requireFrames) {
+        ma_uint64 requireFrames = frameCount * playbackRatio;
+        frameRead = ma_decoder_read_pcm_frames(pDecoder, decodedFrames.data(), requireFrames);
+        if (frameRead < requireFrames) {
             // Reached the end.
-            Debug::WriteLine("Cur:{0} Count:{1} Read:{2} Total:{3}", curFrame, requireFrames, framesRead, totalPCMFrames);
-            //totalPCMFrames = curFrame + framesRead;
+            Debug::WriteLine("Cur:{0} Count:{1} Read:{2} Total:{3}", curFrame, requireFrames, frameRead, totalPCMFrames);
+            //totalPCMFrames = curFrame + frameRead;
             state = State::Stopping;
         }
     }
 
-    curFrame += framesRead;
+    frameProcessed = frameRead;
+    curFrame += frameRead;
     if (displayUpdateCounter >= displayUpdateCycle - 1)
     {
         NotifyTimeChanged();
@@ -856,15 +892,57 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
 
     if (!isBypass)
     {
-        if (playbackPitch != 1.0f || playbackRate != 1.0f)
+        if (playbackPitch != 1.0f || playbackRatio != 1.0f)
         {
-            soundtouch_putSamples(hSoundTouch, decodedFrames.data(), frameCount * playbackRate);
-            ma_uint64 framesProcessed = soundtouch_receiveSamples(hSoundTouch, processdFrames.data(), frameCount);
-            if (framesProcessed < frameCount)
+            if (stretchMethod == StretchMethod::RubberBand)
             {
-                Debug::WriteLine("SoundTouch processed: {0}/{1} frames", framesProcessed, frameCount);
-                ma_mutex_unlock(pMutex);
-                return;
+                float** deintInputFrames = new float* [pDecoder->outputChannels];
+                float** deintOutputFrames = new float* [pDecoder->outputChannels];
+
+                for (int i = 0; i < pDecoder->outputChannels; i++)
+                {
+                    deintInputFrames[i] = new float[frameRead * 2];
+                    deintOutputFrames[i] = new float[frameCount * 2];
+                }
+
+                toDeinterleaved(decodedFrames, deintInputFrames, pDecoder->outputChannels, frameRead);
+                pRubberBand->process(deintInputFrames, frameRead, false);
+                size_t frameRequired = pRubberBand->getSamplesRequired();
+                int available = pRubberBand->available();
+                if (available < frameCount)
+                {
+                    Debug::WriteLine("Rubber Band processed: {0}/{1} frames", frameRequired, frameCount);
+                    for (int i = 0; i < pDecoder->outputChannels; i++)
+                    {
+                        delete deintInputFrames[i];
+                        delete deintOutputFrames[i];
+                    }
+                    delete deintInputFrames;
+                    delete deintOutputFrames;
+                    ma_mutex_unlock(pMutex);
+                    return;
+                }
+                frameProcessed = pRubberBand->retrieve(deintOutputFrames, frameCount);
+                toInterleaved(deintOutputFrames, processdFrames, pDecoder->outputChannels, frameProcessed);
+
+                for (int i = 0; i < pDecoder->outputChannels; i++)
+                {
+                    delete deintInputFrames[i];
+                    delete deintOutputFrames[i];
+                }
+                delete deintInputFrames;
+                delete deintOutputFrames;
+            }
+            else
+            {
+                soundtouch_putSamples(hSoundTouch, decodedFrames.data(), frameRead);
+                frameProcessed = soundtouch_receiveSamples(hSoundTouch, processdFrames.data(), frameCount);
+                if (frameProcessed < frameCount)
+                {
+                    Debug::WriteLine("SoundTouch processed: {0}/{1} frames", frameProcessed, frameCount);
+                    ma_mutex_unlock(pMutex);
+                    return;
+                }
             }
         }
         else
@@ -890,26 +968,26 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
             switch (channels)
             {
             case Channels::LOnly:
-                for (uint32_t i = 0; i < frameCount * pDecoder->outputChannels; i += 2)
+                for (int i = 0; i < frameCount * pDecoder->outputChannels; i += 2)
                 {
                     processdFrames[i + 1] = processdFrames[i];
                 }
                 break;
             case Channels::ROnly:
-                for (uint32_t i = 0; i < frameCount * pDecoder->outputChannels; i += 2)
+                for (int i = 0; i < frameCount * pDecoder->outputChannels; i += 2)
                 {
                     processdFrames[i] = processdFrames[i + 1];
                 }
                 break;
             case Channels::Mono:
-                for (uint32_t i = 0; i < frameCount * pDecoder->outputChannels; i += 2)
+                for (int i = 0; i < frameCount * pDecoder->outputChannels; i += 2)
                 {
                     float val = (processdFrames[i] + processdFrames[i + 1]) / 2;
                     processdFrames[i] = processdFrames[i + 1] = val;
                 }
                 break;
             case Channels::LMinusR:
-                for (uint32_t i = 0; i < frameCount * pDecoder->outputChannels; i += 2)
+                for (int i = 0; i < frameCount * pDecoder->outputChannels; i += 2)
                 {
                     float val = (processdFrames[i] - processdFrames[i + 1]) / 2;
                     processdFrames[i] = processdFrames[i + 1] = val;
@@ -926,11 +1004,11 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
     }
 
     float l, r;
-    calcRMS(processdFrames, l, r);
+    calcRMS(processdFrames, frameCount, pDecoder->outputChannels, l, r);
     rmsL = l;
     rmsR = r;
 
-    std::memcpy(pOutput, processdFrames.data(), sizeof(float) * frameCount * pDecoder->outputChannels);
+    std::memcpy(pOutput, processdFrames.data(), sizeof(float) * frameProcessed * pDecoder->outputChannels);
 
     ma_mutex_unlock(pMutex);
 }

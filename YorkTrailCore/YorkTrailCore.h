@@ -52,6 +52,13 @@ namespace YorkTrail
 		LMinusR
 	};
 
+	public enum class StretchMethod
+	{
+		SoundTouch,
+		RubberBand,
+		Internal
+	};
+
 	public ref class YorkTrailCore
 	{
 	public:
@@ -90,8 +97,8 @@ namespace YorkTrail
 		void SetEndPosition(double pos);
 		void SetVolume(float vol);
 		float GetVolume();
-		void SetRate(float rate);
-		float GetRate();
+		void SetRatio(float ratio);
+		float GetRatio();
 		void SetPitch(float pitch);
 		float GetPitch();
 		void SetLPF(float freq);
@@ -110,6 +117,7 @@ namespace YorkTrail
 
 	private:
 		HANDLE hSoundTouch;
+		RubberBand::RubberBandStretcher* pRubberBand;
 		ma_decoder* pDecoder;
 		ma_device* pDevice;
 		ma_lpf* pLpf;
@@ -130,22 +138,24 @@ namespace YorkTrail
 		uint64_t startFrame = 0;
 		uint64_t endFrame = 0;
 		Channels channels = Channels::Stereo;
-		float playbackRate = 1.0f;
+		float playbackRatio = 1.0f;
 		float playbackPitch = 1.0f;
 		bool isBypass = false;
 		// 画面更新の頻度 (値xレイテンシ)
 		uint32_t displayUpdateCycle = 2;
+		StretchMethod stretchMethod;
+
 
 		uint64_t posToFrame(double pos);
 		uint64_t frameToMillisecs(uint64_t frames);
 		void Seek(int64_t frames);
-		void timeStretch(std::vector<float> &frames, std::vector<float> &ouput, float rate);
+		void timeStretch(std::vector<float> &frames, std::vector<float> &ouput, float ratio);
 		//void pitchShift(std::vector<float> &frames, float pitch, float mix);
 		float lerp(float v1, float v2, float t);
-		void toSplited(std::vector<float>& input, std::vector<float>& outputL, std::vector<float>& outputR);
-		void toInterleaved(std::vector<float> &inputL, std::vector<float>& inputR, std::vector<float> &output);
+		void toDeinterleaved(std::vector<float>& input, float* const* output, int channels, int frameCount);
+		void toInterleaved(const float* const* input, std::vector<float> &output, int channels, int frameCount);
 		void calcVolume(float vol, std::vector<float> &input);
-		void calcRMS(std::vector<float>& input, float& outputL, float& outputR);
+		void calcRMS(std::vector<float>& input, int frameCount, int channels, float& outputL, float& outputR);
 		void throwError(String^ loc, String^ msg);
 	};
 
