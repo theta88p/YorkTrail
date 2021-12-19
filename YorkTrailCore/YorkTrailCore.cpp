@@ -176,6 +176,9 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
     soundtouch_setChannels(hSoundTouch, pDecoder->outputChannels);
     soundtouch_setSampleRate(hSoundTouch, pDecoder->outputSampleRate);
 
+    SetRate(playbackRate);
+    SetPitch(playbackPitch);
+
     return true;
 }
 
