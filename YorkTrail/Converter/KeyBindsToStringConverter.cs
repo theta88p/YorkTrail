@@ -9,7 +9,7 @@ using System.Windows.Input;
 
 namespace YorkTrail
 {
-    class KeyBindsToString : IValueConverter
+    class KeyBindsToStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
