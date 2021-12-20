@@ -56,23 +56,12 @@ namespace YorkTrail
 	{
 		SoundTouch,
 		RubberBand,
-		Internal
+		//Internal
 	};
 
 	public ref class YorkTrailCore
 	{
 	public:
-		int playbackDevice = 0;
-		float rmsL = -100.0f;
-		float rmsR = -100.0f;
-		float lpfFreq = 22000.0f;
-		float hpfFreq = 10.0f;
-		float bpfFreq = 400.0f;
-		bool LpfEnabled = false;
-		bool HpfEnabled = false;
-		bool BpfEnabled = false;
-		bool isLoop = false;
-
 		YorkTrailCore();
 		~YorkTrailCore();
 		!YorkTrailCore();
@@ -101,14 +90,31 @@ namespace YorkTrail
 		float GetRatio();
 		void SetPitch(float pitch);
 		float GetPitch();
-		void SetLPF(float freq);
-		void SetHPF(float freq);
-		void SetBPF(float freq);
+		void SetLpfFreq(float freq);
+		void SetHpfFreq(float freq);
+		void SetBpfFreq(float freq);
+		float GetLpfFreq();
+		float GetHpfFreq();
+		float GetBpfFreq();
+		void SetLpfEnabled(bool value);
+		void SetHpfEnabled(bool value);
+		void SetBpfEnabled(bool value);
+		bool GetLpfEnabled();
+		bool GetHpfEnabled();
+		bool GetBpfEnabled();
 		bool GetBypass();
 		void SetBypass(bool bypass);
 		void SetChannels(Channels ch);
 		Channels GetChannels();
 		List<String^>^ GetPlaybackDeviceList();
+		void SetPlaybackDevice(int index);
+		int GetPlaybackDevice();
+		float GetRmsL();
+		float GetRmsR();
+		void SetLoop(bool value);
+		bool GetLoop();
+		StretchMethod GetStretchMethod();
+		void SetStretchMethod(StretchMethod value);
 		void SetSoundTouchParam(int seq, int window, int overlap);
 		void miniaudioStartCallback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
 
@@ -140,11 +146,20 @@ namespace YorkTrail
 		Channels channels = Channels::Stereo;
 		float playbackRatio = 1.0f;
 		float playbackPitch = 1.0f;
+		int playbackDevice = 0;
+		float rmsL = -100.0f;
+		float rmsR = -100.0f;
+		float lpfFreq = 22000.0f;
+		float hpfFreq = 10.0f;
+		float bpfFreq = 400.0f;
+		bool lpfEnabled = false;
+		bool hpfEnabled = false;
+		bool bpfEnabled = false;
+		bool isLoop = false;
 		bool isBypass = false;
 		// 画面更新の頻度 (値xレイテンシ)
 		uint32_t displayUpdateCycle = 2;
 		StretchMethod stretchMethod;
-
 
 		uint64_t posToFrame(double pos);
 		uint64_t frameToMillisecs(uint64_t frames);

@@ -129,15 +129,15 @@ namespace YorkTrailTest
             vm.PlayCommand.Execute(window);
             vm.LpfEnabled = true;
             Thread.Sleep(1000);
-            Assert.AreEqual(vm.Core.LpfEnabled, true);
+            Assert.AreEqual(vm.Core.GetLpfEnabled(), true);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
             vm.HpfEnabled = true;
             Thread.Sleep(1000);
-            Assert.AreEqual(vm.Core.HpfEnabled, true);
+            Assert.AreEqual(vm.Core.GetHpfEnabled(), true);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
             vm.BpfEnabled = true;
             Thread.Sleep(1000);
-            Assert.AreEqual(vm.Core.BpfEnabled, true);
+            Assert.AreEqual(vm.Core.GetBpfEnabled(), true);
             Assert.AreEqual(vm.Core.GetState(), State.Playing);
         }
     }

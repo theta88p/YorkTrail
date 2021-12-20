@@ -34,6 +34,7 @@ namespace YorkTrail
             {
                 // 無条件で復元する
                 Volume = Settings.Volume;
+                StretchMethod = Settings.StretchMethod;
                 Core.SetSoundTouchParam(Settings.SoundTouchSequenceMS, Settings.SoundTouchSeekWindowMS, Settings.SoundTouchOverlapMS);
 
                 // デバイス構成が前回と違っていたら復元しない
@@ -116,37 +117,44 @@ namespace YorkTrail
             }
         }
 
-        public ulong TotalMilliSeconds { 
+        public ulong TotalMilliSeconds
+        { 
             get { return Core.GetTotalMilliSeconds(); }
         }
 
-        public double Position {
+        public double Position
+        {
             get { return Core.GetPosition(); }
             set {
                 Core.SetPosition(value);
                 RaisePropertyChanged(nameof(Position));
             }
         }
-        public int PlaybackDevice {
-            get { return Core.playbackDevice; }
+
+        public int PlaybackDevice
+        {
+            get { return Core.GetPlaybackDevice(); }
             set {
-                Core.playbackDevice = value;
+                Core.SetPlaybackDevice(value);
                 Settings.DeviceIndex = value;
                 Settings.DeviceName = DeviceList[value];
                 RaisePropertyChanged(nameof(PlaybackDevice));
             }
         }
+
         private string _statusText;
-        public string StatusText {
+        public string StatusText
+        {
             get { return _statusText; }
-            set
-            {
+            set {
                 _statusText = value;
                 RaisePropertyChanged(nameof(StatusText));
             }
         }
+        
         private double _startPosition;
-        public double StartPosition {
+        public double StartPosition
+        {
             get { return _startPosition; }
             set {
                 _startPosition = value;
@@ -154,59 +162,76 @@ namespace YorkTrail
                 RaisePropertyChanged(nameof(StartPosition));
             }
         }
+        
         private double _endPosition;
-        public double EndPosition {
+        public double EndPosition
+        {
             get { return _endPosition; }
-            set
-            {
+            set {
                 _endPosition = value;
                 Core.SetEndPosition(value);
                 RaisePropertyChanged(nameof(EndPosition));
             }
         }
 
-        public Channels Channels {
+        public Channels Channels
+        {
             get { return Core.GetChannels(); }
             set {
                 Core.SetChannels(value);
                 RaisePropertyChanged(nameof(Channels));
             }
         }
-        public float Pitch {
+        public float Pitch
+        {
             get { return Core.GetPitch(); }
             set {
                 Core.SetPitch(value);
                 RaisePropertyChanged(nameof(Pitch));
             }
         }
-        public float Ratio {
+        
+        public float Ratio
+        {
             get { return Core.GetRatio(); }
             set {
                 Core.SetRatio(value);
                 RaisePropertyChanged(nameof(Ratio));
             }
         }
-        public bool IsBypass {
+
+        public bool IsBypass
+        {
             get { return Core.GetBypass(); }
             set {
                 Core.SetBypass(value);
                 RaisePropertyChanged(nameof(IsBypass));
             }
         }
-        public bool IsLoop {
-            get { return Core.isLoop; }
+        public bool IsLoop
+        {
+            get { return Core.GetLoop(); }
             set {
-                Core.isLoop = value;
+                Core.SetLoop(value);
                 RaisePropertyChanged(nameof(IsLoop));
             }
         }
-        public float Volume {
-            get {
-                return Settings?.Volume ?? Core.GetVolume();
-            }
+        
+        public float Volume
+        {
+            get { return Core.GetVolume(); }
             set {
                 Settings.Volume = value;
                 Core.SetVolume(value);
+            }
+        }
+
+        public StretchMethod StretchMethod
+        {
+            get { return Core.GetStretchMethod(); }
+            set {
+                Settings.StretchMethod = value;
+                Core.SetStretchMethod(value);
             }
         }
 
@@ -242,14 +267,14 @@ namespace YorkTrail
         }
 
         public YorkTrailCore Core { get; private set; } = YorkTrailHandleHolder.hYorkTrailCore;
-        public float RMSL { get { return Core.rmsL; } }
-        public float RMSR { get { return Core.rmsR; } }
-        public bool LpfEnabled { get { return Core.LpfEnabled; } set { Core.LpfEnabled = value; RaisePropertyChanged(nameof(LpfEnabled)); } }
-        public bool HpfEnabled { get { return Core.HpfEnabled; } set { Core.HpfEnabled = value; RaisePropertyChanged(nameof(HpfEnabled)); } }
-        public bool BpfEnabled { get { return Core.BpfEnabled; } set { Core.BpfEnabled = value; RaisePropertyChanged(nameof(BpfEnabled)); } }
-        public float LpfFreq { get { return Core.lpfFreq; } set { Core.SetLPF((float)value); RaisePropertyChanged(nameof(LpfFreq)); } }
-        public float HpfFreq { get { return Core.hpfFreq; } set { Core.SetHPF(value); RaisePropertyChanged(nameof(HpfFreq)); } }
-        public float BpfFreq { get { return Core.bpfFreq; } set { Core.SetBPF(value); RaisePropertyChanged(nameof(BpfFreq)); } }
+        public float RMSL { get { return Core.GetRmsL(); } }
+        public float RMSR { get { return Core.GetRmsR(); } }
+        public bool LpfEnabled { get { return Core.GetLpfEnabled(); } set { Core.SetLpfEnabled(value); RaisePropertyChanged(nameof(LpfEnabled)); } }
+        public bool HpfEnabled { get { return Core.GetHpfEnabled(); } set { Core.SetHpfEnabled(value); RaisePropertyChanged(nameof(HpfEnabled)); } }
+        public bool BpfEnabled { get { return Core.GetBpfEnabled(); }  set { Core.SetBpfEnabled(value); RaisePropertyChanged(nameof(BpfEnabled)); } }
+        public float LpfFreq { get { return Core.GetLpfFreq(); } set { Core.SetLpfFreq(value); RaisePropertyChanged(nameof(LpfFreq)); } }
+        public float HpfFreq { get { return Core.GetHpfFreq(); } set { Core.SetHpfFreq(value); RaisePropertyChanged(nameof(HpfFreq)); } }
+        public float BpfFreq { get { return Core.GetBpfFreq(); } set { Core.SetBpfFreq(value); RaisePropertyChanged(nameof(BpfFreq)); } }
         public List<string> DeviceList { get; private set; }
         public Settings Settings { get; private set; }
 
@@ -520,7 +545,7 @@ namespace YorkTrail
                 Stop();
                 Core.FileClose();
                 FilePath = null;
-                SelectionResetCommand.Execute(Window);
+                SelectionResetCommand.Execute(null);
                 Window.Title = applicationName;
                 StatusText = "";
             }
@@ -672,17 +697,7 @@ namespace YorkTrail
             {
                 if (DeviceList[i] == device)
                 {
-                    if (Core.IsFileLoaded())
-                    {
-                        Stop();
-                        Core.DeviceClose();
-                        PlaybackDevice = i;
-                        Core.DeviceOpen();
-                    }
-                    else
-                    {
-                        PlaybackDevice = i;
-                    }
+                    PlaybackDevice = i;
                 }
             }
         }

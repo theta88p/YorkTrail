@@ -7,7 +7,7 @@ YorkTrail::YorkTrailCore::YorkTrailCore()
     hSoundTouch = soundtouch_createInstance();
     SetSoundTouchParam(80, 30, 8);
     pRubberBand = nullptr;
-    stretchMethod = StretchMethod::SoundTouch;
+    stretchMethod = StretchMethod::RubberBand;
 }
 
 YorkTrail::YorkTrailCore::~YorkTrailCore()
@@ -99,6 +99,29 @@ List<String^>^ YorkTrail::YorkTrailCore::GetPlaybackDeviceList()
     return deviceList;
 }
 
+void YorkTrail::YorkTrailCore::SetPlaybackDevice(int index)
+{
+    if (pDevice != nullptr)
+    {
+        if (pDecoder != nullptr)
+        {
+            Stop();
+        }
+        DeviceClose();
+        playbackDevice = index;
+        DeviceOpen();
+    }
+    else
+    {
+        playbackDevice = index;
+    }
+}
+
+int YorkTrail::YorkTrailCore::GetPlaybackDevice()
+{
+    return playbackDevice;
+}
+
 bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
 {
     extension = System::IO::Path::GetExtension(p);
@@ -171,16 +194,16 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
     {
         pBpf = new ma_bpf();
     }
-    SetLPF(lpfFreq);
-    SetHPF(hpfFreq);
-    SetBPF(bpfFreq);
+    SetLpfFreq(lpfFreq);
+    SetHpfFreq(hpfFreq);
+    SetBpfFreq(bpfFreq);
 
     soundtouch_setChannels(hSoundTouch, pDecoder->outputChannels);
     soundtouch_setSampleRate(hSoundTouch, pDecoder->outputSampleRate);
     pRubberBand = new RubberBand::RubberBandStretcher((size_t)pDecoder->outputSampleRate, (size_t)pDecoder->outputChannels
         , RubberBand::RubberBandStretcher::OptionProcessRealTime | RubberBand::RubberBandStretcher::OptionPitchHighQuality);
 
-    SetRate(playbackRate);
+    SetRatio(playbackRatio);
     SetPitch(playbackPitch);
 
     return true;
@@ -469,16 +492,10 @@ void YorkTrail::YorkTrailCore::SetRatio(float ratio)
     {
         ma_mutex_lock(pMutex);
         playbackRatio = ratio;
-        if (stretchMethod == StretchMethod::SoundTouch)
-        {
-            soundtouch_clear(hSoundTouch);
-            soundtouch_setTempo(hSoundTouch, ratio);
-        }
-        else if (stretchMethod == StretchMethod::RubberBand)
-        {
-            //pRubberBand->reset();
-            pRubberBand->setTimeRatio(1.0 / (double)ratio);
-        }
+        soundtouch_clear(hSoundTouch);
+        soundtouch_setTempo(hSoundTouch, ratio);
+        pRubberBand->reset();
+        pRubberBand->setTimeRatio(1.0 / (double)ratio);
         ma_mutex_unlock(pMutex);
     }
     else
@@ -498,16 +515,10 @@ void YorkTrail::YorkTrailCore::SetPitch(float pitch)
     {
         ma_mutex_lock(pMutex);
         playbackPitch = pitch;
-        if (stretchMethod == StretchMethod::SoundTouch)
-        {
-            soundtouch_clear(hSoundTouch);
-            soundtouch_setPitch(hSoundTouch, pitch);
-        }
-        else if (stretchMethod == StretchMethod::RubberBand)
-        {
-            //pRubberBand->reset();
-            pRubberBand->setPitchScale((double)pitch);
-        }
+        soundtouch_clear(hSoundTouch);
+        soundtouch_setPitch(hSoundTouch, pitch);
+        pRubberBand->reset();
+        pRubberBand->setPitchScale((double)pitch);
         ma_mutex_unlock(pMutex);
     }
     else
@@ -521,7 +532,7 @@ float YorkTrail::YorkTrailCore::GetPitch()
     return playbackPitch;
 }
 
-void YorkTrail::YorkTrailCore::SetLPF(float value)
+void YorkTrail::YorkTrailCore::SetLpfFreq(float value)
 {
     if (pDecoder != nullptr)
     {
@@ -536,7 +547,7 @@ void YorkTrail::YorkTrailCore::SetLPF(float value)
     lpfFreq = value;
 }
 
-void YorkTrail::YorkTrailCore::SetHPF(float value)
+void YorkTrail::YorkTrailCore::SetHpfFreq(float value)
 {
     if (pDecoder != nullptr)
     {
@@ -551,7 +562,7 @@ void YorkTrail::YorkTrailCore::SetHPF(float value)
     hpfFreq = value;
 }
 
-void YorkTrail::YorkTrailCore::SetBPF(float value)
+void YorkTrail::YorkTrailCore::SetBpfFreq(float value)
 {
     if (pDecoder != nullptr)
     {
@@ -566,9 +577,69 @@ void YorkTrail::YorkTrailCore::SetBPF(float value)
     bpfFreq = value;
 }
 
-bool YorkTrail::YorkTrailCore::GetBypass()
+float YorkTrail::YorkTrailCore::GetLpfFreq()
 {
-    return isBypass;
+    return lpfFreq;
+}
+
+float YorkTrail::YorkTrailCore::GetHpfFreq()
+{
+    return hpfFreq;
+}
+
+float YorkTrail::YorkTrailCore::GetBpfFreq()
+{
+    return bpfFreq;
+}
+
+void YorkTrail::YorkTrailCore::SetLpfEnabled(bool value)
+{
+    lpfEnabled = value;
+}
+
+void YorkTrail::YorkTrailCore::SetHpfEnabled(bool value)
+{
+    hpfEnabled = value;
+}
+
+void YorkTrail::YorkTrailCore::SetBpfEnabled(bool value)
+{
+    bpfEnabled = value;
+}
+
+bool YorkTrail::YorkTrailCore::GetLpfEnabled()
+{
+    return lpfEnabled;
+}
+
+bool YorkTrail::YorkTrailCore::GetHpfEnabled()
+{
+    return hpfEnabled;
+}
+
+bool YorkTrail::YorkTrailCore::GetBpfEnabled()
+{
+    return bpfEnabled;
+}
+
+void YorkTrail::YorkTrailCore::SetLoop(bool value)
+{
+    isLoop = value;
+}
+
+bool YorkTrail::YorkTrailCore::GetLoop()
+{
+    return isLoop;
+}
+
+float YorkTrail::YorkTrailCore::GetRmsL()
+{
+    return rmsL;
+}
+
+float YorkTrail::YorkTrailCore::GetRmsR()
+{
+    return rmsR;
 }
 
 void YorkTrail::YorkTrailCore::SetBypass(bool value)
@@ -576,6 +647,11 @@ void YorkTrail::YorkTrailCore::SetBypass(bool value)
     ma_mutex_lock(pMutex);
     isBypass = value;
     ma_mutex_unlock(pMutex);
+}
+
+bool YorkTrail::YorkTrailCore::GetBypass()
+{
+    return isBypass;
 }
 
 void YorkTrail::YorkTrailCore::SetChannels(Channels ch)
@@ -588,6 +664,18 @@ void YorkTrail::YorkTrailCore::SetChannels(Channels ch)
 YorkTrail::Channels YorkTrail::YorkTrailCore::GetChannels()
 {
     return channels;
+}
+
+void YorkTrail::YorkTrailCore::SetStretchMethod(YorkTrail::StretchMethod value)
+{
+    ma_mutex_lock(pMutex);
+    stretchMethod = value;
+    ma_mutex_unlock(pMutex);
+}
+
+YorkTrail::StretchMethod YorkTrail::YorkTrailCore::GetStretchMethod()
+{
+    return stretchMethod;
 }
 
 void YorkTrail::YorkTrailCore::SetSoundTouchParam(int seq, int window, int overlap)
@@ -953,15 +1041,15 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
             std::copy(decodedFrames.begin(), decodedFrames.end(), processdFrames.begin());
         }
 
-        if (LpfEnabled)
+        if (lpfEnabled)
         {
             ma_lpf_process_pcm_frames(pLpf, processdFrames.data(), processdFrames.data(), frameCount);
         }
-        if (HpfEnabled)
+        if (hpfEnabled)
         {
             ma_hpf_process_pcm_frames(pHpf, processdFrames.data(), processdFrames.data(), frameCount);
         }
-        if (BpfEnabled)
+        if (bpfEnabled)
         {
             ma_bpf_process_pcm_frames(pBpf, processdFrames.data(), processdFrames.data(), frameCount);
         }
