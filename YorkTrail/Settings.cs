@@ -82,8 +82,7 @@ namespace YorkTrail
         public bool SnapToTick
         {
             get { return _snapToTick; }
-            set
-            {
+            set {
                 _snapToTick = value;
                 RaisePropertyChanged(nameof(SnapToTick));
             }
@@ -94,8 +93,7 @@ namespace YorkTrail
         public bool IsSliderLinked
         {
             get { return _isSliderLinked; }
-            set
-            {
+            set {
                 _isSliderLinked = value;
                 RaisePropertyChanged(nameof(IsSliderLinked));
             }
@@ -109,6 +107,8 @@ namespace YorkTrail
         public int SoundTouchSeekWindowMS { get; set; } = 30;
         [DataMember]
         public int SoundTouchOverlapMS { get; set; } = 8;
+        [DataMember]
+        public StretchMethod StretchMethod { get; set; } = StretchMethod.RubberBand;
 
         // 状態保存のためのプロパティ
         [DataMember]
