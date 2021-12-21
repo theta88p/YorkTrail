@@ -23,8 +23,5 @@
     <ClInclude Include="YorkTrailCore.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\miniaudio\miniaudio.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
