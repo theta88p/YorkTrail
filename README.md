@@ -15,6 +15,8 @@ theta
 <https://twitter.com/theta88p>
  
 ## License
+GPL v3.0  
+
     YorkTrail - Music Player for Transcription
     Copyright (C) 2020-2021 theta
 
