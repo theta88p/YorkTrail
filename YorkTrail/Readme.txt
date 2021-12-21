@@ -24,6 +24,10 @@ Copylight(c) 2021 theta
   マーカーを設置するとマーカー間移動ができます。
   あと区間固定とかティックにスナップとかもできます。
 
+・タイムストレッチ方式の設定について
+  SoundTouchとRubber Bandから選択できます。（デフォルトはRubber Band）
+  音質・CPU負荷共に SoundTouch < Rubber Band です。
+
 ・SoundTouchの設定について
   値を変更することで、速度やピッチ変更時の品質を調整することができます。
   基本的に値を大きくするとスロー再生向けに、小さくすると早送り向けになりますが
@@ -41,6 +45,9 @@ Copylight(c) 2021 theta
 
 
 ・使用ライブラリ
+  Rubber Band Audio Time Stretcher Library
+  https://breakfastquay.com/rubberband/
+
   SoundTouch Audio Processing Library
   https://www.surina.net/soundtouch/
   
@@ -65,6 +72,15 @@ Copylight(c) 2021 theta
 
 
 ・更新履歴
+  v0.6.9beta     2021/12/22
+    タイムストレッチ方式にRubber Bandを追加
+    ライセンスをGPLに変更
+
+　v0.6.8beta     2021/12/20
+    小節で表示の時、拍未満を2桁に固定
+    ファイルを開いていない状態でピッチとテンポを操作すると、ファイルを開いたとき
+    正しく反映されないのを修正
+
 　v0.6.7         2021/12/19
     正式版に昇格
 

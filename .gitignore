@@ -339,3 +339,9 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /YorkTrail.sln.licenseheader
+/YorkTrailCore/Filter.cpp
+/YorkTrailCore/Filter.h
+/YorkTrailCore/RingBuffer.cpp
+/YorkTrailCore/RingBuffer.h
+/YorkTrailCore/SampleRateConverter.cpp
+/YorkTrailCore/SampleRateConverter.h
