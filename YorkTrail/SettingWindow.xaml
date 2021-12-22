@@ -22,6 +22,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:YorkTrail"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance local:MainWindowViewModel, IsDesignTimeCreatable=True}"
         x:Name="settingWindow"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
@@ -33,9 +34,6 @@
             <local:IntToStringConverter x:Key="IntToStringConverter"/>
         </ResourceDictionary>
     </Window.Resources>
-    <Window.DataContext>
-        <local:MainWindowViewModel/>
-    </Window.DataContext>
     <Grid>
         <TabControl Height="260" VerticalAlignment="Top">
             <TabItem Header="全般">
@@ -58,7 +56,7 @@
                         <Grid Margin="0,4,0,0" >
                             <Label Content="タイムストレッチ方式"/>
                             <ComboBox Width="100" HorizontalAlignment="Right" Margin="0,0,20,0" ItemsSource="{Binding Source={x:Static local:EnumNameDictionary.StretchMethodDictionary}}"
-                                      DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding StretchMethod, Mode=TwoWay}"/>
+                                      DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding StretchMethod}"/>
                         </Grid>
                         <GroupBox Header="SoundTouchの設定" Height="120" Margin="0,8,0,0">
                             <StackPanel Margin="0,10,0,0">

@@ -22,13 +22,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:YorkTrail"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance local:MainWindowViewModel, IsDesignTimeCreatable=True}"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
         Title="フィルタプリセット" Height="130" Width="350">
 
-    <Window.DataContext>
-        <local:MainWindowViewModel/>
-    </Window.DataContext>
     <Grid>
         <Label Content="プリセット名" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="PresetNameTextBox" HorizontalAlignment="Left" Margin="80,14,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="230"/>
