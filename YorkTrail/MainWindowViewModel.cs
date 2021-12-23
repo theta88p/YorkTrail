@@ -653,7 +653,7 @@ namespace YorkTrail
             }
         }
 
-        public void RangeSlider_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        internal void RangeSlider_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (Core.IsFileLoaded())
             {
@@ -665,7 +665,7 @@ namespace YorkTrail
             }
         }
 
-        public void RangeSlider_LowerValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        internal void RangeSlider_LowerValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (Core.IsFileLoaded())
             {
@@ -677,7 +677,7 @@ namespace YorkTrail
             }
         }
         
-        public void RangeSlider_LowerSliderDragCompleted(object sender, DragCompletedEventArgs e)
+        internal void RangeSlider_LowerSliderDragCompleted(object sender, DragCompletedEventArgs e)
         {
             if (Core.IsFileLoaded())
             {
@@ -698,7 +698,7 @@ namespace YorkTrail
         }
 
 
-        public void RecentFile_Clicked(object sender, ExecutedRoutedEventArgs e)
+        internal void RecentFile_Clicked(object sender, ExecutedRoutedEventArgs e)
         {
             string path = (string)e.Parameter;
             if (FileOpen(path))
@@ -707,7 +707,7 @@ namespace YorkTrail
             }
         }
         
-        public void PlaybackDevice_Clicked(object sender, ExecutedRoutedEventArgs e)
+        internal void PlaybackDevice_Clicked(object sender, ExecutedRoutedEventArgs e)
         {
             string device = (string)e.Parameter;
             for (int i = 0; i < DeviceList.Count; i++)
@@ -736,7 +736,7 @@ namespace YorkTrail
             SetKeyBinds();
         }
 
-        public void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        internal void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (Core.GetState() == State.Playing)
             {
@@ -753,7 +753,7 @@ namespace YorkTrail
             Settings.WriteSettingsToFile(Settings);
         }
 
-        public void FilterPreset_Clicked(object sender, ExecutedRoutedEventArgs e)
+        internal void FilterPreset_Clicked(object sender, ExecutedRoutedEventArgs e)
         {
             FilterPreset fp = (FilterPreset)e.Parameter;
             LpfEnabled = fp.LpfEnabled;
@@ -762,6 +762,16 @@ namespace YorkTrail
             LpfFreq = fp.LpfFreq;
             HpfFreq = fp.HpfFreq;
             BpfFreq = fp.BpfFreq;
+        }
+
+        internal void PitchStackPanel_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Window.PitchSliderPopup.IsOpen = true;
+        }
+
+        internal void RatioStackPanel_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Window.RatioSliderPopup.IsOpen = true;
         }
     }
 }

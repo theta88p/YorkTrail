@@ -89,5 +89,15 @@ namespace YorkTrail
         {
             ((MainWindowViewModel)this.DataContext).SeekBar_DisplayValueTickBarMouseLeftButtonUp(sender, e);
         }
+
+        private void PitchStackPanel_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ((MainWindowViewModel)this.DataContext).PitchStackPanel_MouseRightButtonUp(sender, e);
+        }
+
+        private void RatioStackPanel_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ((MainWindowViewModel)this.DataContext).RatioStackPanel_MouseRightButtonUp(sender, e);
+        }
     }
 }

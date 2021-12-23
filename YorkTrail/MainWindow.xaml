@@ -733,17 +733,35 @@
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Pitch" Width="110" Margin="0,-5,0,-2" IsEnabled="{Binding IsBypass, Converter={StaticResource BooleanNegativeConverter}}">
-                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" MouseRightButtonUp="PitchStackPanel_MouseRightButtonUp">
                     <RadioButton Content="x2" IsChecked="{Binding Pitch, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=2.0}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="1オクターブ上" Focusable="False"/>
                     <RadioButton Content="x1" IsChecked="{Binding Pitch, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=1.0}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20"  ToolTip="通常" Focusable="False"/>
                     <RadioButton Content="1/2" IsChecked="{Binding Pitch, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=0.5}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="1オクターブ下" Focusable="False"/>
+                    <Popup x:Name="PitchSliderPopup" StaysOpen="False" VerticalAlignment="Center">
+                        <Border Background="WhiteSmoke" BorderBrush="LightSlateGray" BorderThickness="1" Padding="4">
+                            <Grid>
+                                <Slider Value="{Binding Pitch, Delay=200}" Width="160" Height="24" AutoToolTipPlacement="TopLeft"
+                                        AutoToolTipPrecision="2" TickPlacement="BottomRight" Maximum="4.0" Minimum="0.5"
+                                        SmallChange="0.01" LargeChange="0.5" TickFrequency="0.5"/>
+                            </Grid>
+                        </Border>
+                    </Popup>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Tempo" Width="110" Margin="0,-5,0,-2" IsEnabled="{Binding IsBypass, Converter={StaticResource BooleanNegativeConverter}}">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" MouseRightButtonUp="RatioStackPanel_MouseRightButtonUp">
                     <RadioButton Content="x2" IsChecked="{Binding Ratio, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=2.0}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="2倍速" Focusable="False"/>
                     <RadioButton Content="x1" IsChecked="{Binding Ratio, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=1.0}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="通常" Focusable="False"/>
                     <RadioButton Content="1/2" IsChecked="{Binding Ratio, Converter={StaticResource FloatToBooleanConverter}, ConverterParameter=0.5}" Style="{StaticResource {x:Type ToggleButton}}" Width="30" Height="20" ToolTip="1/2倍速" Focusable="False"/>
+                    <Popup x:Name="RatioSliderPopup" StaysOpen="False" VerticalAlignment="Center">
+                        <Border Background="WhiteSmoke" BorderBrush="LightSlateGray" BorderThickness="1" Padding="4">
+                            <Grid>
+                                <Slider Value="{Binding Ratio, Delay=200}" Width="160" Height="24" AutoToolTipPlacement="TopLeft"
+                                        AutoToolTipPrecision="2" TickPlacement="BottomRight" Maximum="2.0" Minimum="0.25"
+                                        SmallChange="0.01" LargeChange="0.5" TickFrequency="0.5"/>
+                            </Grid>
+                        </Border>
+                    </Popup>
                 </StackPanel>
             </GroupBox>
             <ToggleButton x:Name="BypassButton" Content="Byp" IsChecked="{Binding IsBypass}" Width="30" Height="20" Margin="8,8,0,0" ToolTip="バイパス" Focusable="False"/>
@@ -751,7 +769,7 @@
         <StackPanel Orientation="Horizontal" Grid.Row="3" Width="430" Margin="0,-4,0,0">
             <GroupBox Header="LPF" IsEnabled="{Binding IsBypass, Converter={StaticResource BooleanNegativeConverter}}">
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                    <Slider VerticalAlignment="Top" Width="93" Value="{Binding LpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=100-20000, Delay=20}" Minimum="0" Maximum="1">
+                    <Slider VerticalAlignment="Top" Width="93" Value="{Binding LpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=100-20000, Delay=20}" Minimum="0" Maximum="1" LargeChange="0.1">
                         <i:Interaction.Behaviors>
                             <local:SliderThumbToolTipBehavior Placement="TopLeft" >
                                 <local:SliderThumbToolTipBehavior.ToolTipTemplate>
@@ -767,7 +785,7 @@
             </GroupBox>
             <GroupBox Header="HPF" IsEnabled="{Binding IsBypass, Converter={StaticResource BooleanNegativeConverter}}">
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                    <Slider VerticalAlignment="Top" Width="93" Value="{Binding HpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=100-20000, Delay=20}" Minimum="0" Maximum="1">
+                    <Slider VerticalAlignment="Top" Width="93" Value="{Binding HpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=100-20000, Delay=20}" Minimum="0" Maximum="1" LargeChange="0.1">
                         <i:Interaction.Behaviors>
                             <local:SliderThumbToolTipBehavior Placement="TopLeft" >
                                 <local:SliderThumbToolTipBehavior.ToolTipTemplate>
@@ -783,7 +801,7 @@
             </GroupBox>
             <GroupBox Header="BPF" IsEnabled="{Binding IsBypass, Converter={StaticResource BooleanNegativeConverter}}">
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                    <Slider VerticalAlignment="Top" Width="93" Value="{Binding BpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=100-20000, Delay=20}" Minimum="0" Maximum="1">
+                    <Slider VerticalAlignment="Top" Width="93" Value="{Binding BpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=100-20000, Delay=20}" Minimum="0" Maximum="1" LargeChange="0.1">
                     <i:Interaction.Behaviors>
                         <local:SliderThumbToolTipBehavior Placement="TopLeft" >
                             <local:SliderThumbToolTipBehavior.ToolTipTemplate>
