@@ -24,6 +24,7 @@
     xmlns:Collections="clr-namespace:System.Collections;assembly=System.Runtime" x:Class="YorkTrail.MainWindow"
     mc:Ignorable="d"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     Title="YorkTrail" Height="330" Width="544" AllowDrop="True" Drop="FileDrop" MaxWidth="544" MinWidth="544" MinHeight="330" Background="WhiteSmoke"
     x:Name="mainWindow"
     SourceInitialized="MainWindow_SourceInitialized"
@@ -750,19 +751,49 @@
         <StackPanel Orientation="Horizontal" Grid.Row="3" Width="430" Margin="0,-4,0,0">
             <GroupBox Header="LPF" IsEnabled="{Binding IsBypass, Converter={StaticResource BooleanNegativeConverter}}">
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                    <Slider Width="93" Value="{Binding LpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=10-22000, Delay=20}" Maximum="1" Minimum="0" VerticalAlignment="Top"/>
+                    <Slider VerticalAlignment="Top" Width="93" Value="{Binding LpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=100-20000, Delay=20}" Minimum="0" Maximum="1">
+                        <i:Interaction.Behaviors>
+                            <local:SliderThumbToolTipBehavior Placement="TopLeft" >
+                                <local:SliderThumbToolTipBehavior.ToolTipTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding LpfFreq, StringFormat={}{0:F0} Hz}" />
+                                    </DataTemplate>
+                                </local:SliderThumbToolTipBehavior.ToolTipTemplate>
+                            </local:SliderThumbToolTipBehavior>
+                        </i:Interaction.Behaviors>
+                    </Slider>
                     <ToggleButton x:Name="LpfOnButton" Content="ON" IsChecked="{Binding LpfEnabled}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="ローパスフィルタを有効にする" Focusable="False"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="HPF" IsEnabled="{Binding IsBypass, Converter={StaticResource BooleanNegativeConverter}}">
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                    <Slider VerticalAlignment="Top" Width="93" Value="{Binding HpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=10-22000, Delay=20}" Maximum="1" Minimum="0"/>
+                    <Slider VerticalAlignment="Top" Width="93" Value="{Binding HpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=100-20000, Delay=20}" Minimum="0" Maximum="1">
+                        <i:Interaction.Behaviors>
+                            <local:SliderThumbToolTipBehavior Placement="TopLeft" >
+                                <local:SliderThumbToolTipBehavior.ToolTipTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding HpfFreq, StringFormat={}{0:F0} Hz}" />
+                                    </DataTemplate>
+                                </local:SliderThumbToolTipBehavior.ToolTipTemplate>
+                            </local:SliderThumbToolTipBehavior>
+                        </i:Interaction.Behaviors>
+                    </Slider>
                     <ToggleButton x:Name="HpfOnButton" Content="ON" IsChecked="{Binding HpfEnabled}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="ハイパスフィルタを有効にする" Focusable="False"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="BPF" IsEnabled="{Binding IsBypass, Converter={StaticResource BooleanNegativeConverter}}">
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                    <Slider VerticalAlignment="Top" Width="93" Value="{Binding BpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=50-20000, Delay=20}" Maximum="1" Minimum="0"/>
+                    <Slider VerticalAlignment="Top" Width="93" Value="{Binding BpfFreq, Converter={StaticResource LogScaleConverter}, ConverterParameter=100-20000, Delay=20}" Minimum="0" Maximum="1">
+                    <i:Interaction.Behaviors>
+                        <local:SliderThumbToolTipBehavior Placement="TopLeft" >
+                            <local:SliderThumbToolTipBehavior.ToolTipTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding BpfFreq, StringFormat={}{0:F0} Hz}" />
+                                </DataTemplate>
+                            </local:SliderThumbToolTipBehavior.ToolTipTemplate>
+                        </local:SliderThumbToolTipBehavior>
+                    </i:Interaction.Behaviors>
+                    </Slider>
                     <ToggleButton x:Name="BpfOnButton" Content="ON" IsChecked="{Binding BpfEnabled}" Width="30" Height="20" Margin="8,0,0,0" VerticalAlignment="Top" ToolTip="バンドパスフィルタを有効にする" Focusable="False"/>
                 </StackPanel>
             </GroupBox>
