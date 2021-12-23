@@ -30,23 +30,23 @@ namespace YorkTrail
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string[] minmax = ((string)parameter).Split("-");
-            float min = float.Parse(minmax[0]);
-            float max = float.Parse(minmax[1]);
-            float x = (float)value;
-            double y = Math.Pow((x - min) / (max - min), 1.0 / 3.0);
-            Debug.WriteLine(x + "/" + y);
-            return (float)y;
+            double minv = Math.Log(double.Parse(minmax[0]));
+            double maxv = Math.Log(double.Parse(minmax[1]));
+            float p = (float)value;
+            double res = (Math.Log(p) - minv) / (maxv - minv);
+            Debug.WriteLine("LogScaleConverter Convert: " + p + "/" + res);
+            return res;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string[] minmax = ((string)parameter).Split("-");
-            float min = float.Parse(minmax[0]);
-            float max = float.Parse(minmax[1]);
-            float x = (float)(double)value;
-            float y = (float)((max - min) * Math.Pow(x, 3.0) + min);
-            Debug.WriteLine(x + "/" + y);
-            return y;
+            double minv = Math.Log(double.Parse(minmax[0]));
+            double maxv = Math.Log(double.Parse(minmax[1]));
+            double p = (double)value;
+            double res = Math.Exp(minv + (maxv - minv) * p);
+            Debug.WriteLine("LogScaleConverter ConvertBack:" + p + "/" + res);
+            return (float)res;
         }
     }
 }
