@@ -289,7 +289,6 @@ namespace YorkTrail
 
         private void DisplayValueTickBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            isTickBarMouseDown = false;
 
             if (SnapToTick)
             {
@@ -301,6 +300,8 @@ namespace YorkTrail
                 DisplayValueTickBarMouseLeftButtonUp(sender, e);
             }
             DisplayValueTickBar.ReleaseMouseCapture();
+
+            isTickBarMouseDown = false;
         }
         /*
         private void DisplayValueTickBar_MouseLeave(object sender, MouseEventArgs e)
