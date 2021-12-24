@@ -283,6 +283,7 @@ namespace YorkTrail
                 Minimum += diff;
                 Maximum += diff;
                 LowerSlider.Value = value;
+                UpperSlider.Value += diff;
             }
         }
 
