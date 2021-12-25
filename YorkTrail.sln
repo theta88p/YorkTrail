@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YorkTrail", "YorkTrail\York
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YorkTrailCore", "YorkTrailCore\YorkTrailCore.vcxproj", "{650C6254-87EA-4F59-A0DC-DB1C703ED43D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YorkTrailTest", "YorkTrailTest\YorkTrailTest.csproj", "{9B8BEC8C-B569-4F22-A92A-88F18CAF6571}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YorkTrailTest", "YorkTrailTest\YorkTrailTest.csproj", "{9B8BEC8C-B569-4F22-A92A-88F18CAF6571}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BED98259-448D-482C-BC38-071D16B1BDAC}"
+	ProjectSection(SolutionItems) = preProject
+		Readme.txt = Readme.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
