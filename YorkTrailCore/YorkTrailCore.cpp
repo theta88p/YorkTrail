@@ -971,7 +971,10 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
             // Reached the end.
             Debug::WriteLine("Cur:{0}\r\nRead:{1}\r\nTotal:{2}", curFrame, frameRead, totalPCMFrames);
             //totalPCMFrames = min(curFrame + frameRead, totalPCMFrames);
-            state = State::Stopping;
+            if (!isLoop)
+            {
+                state = State::Stopping;
+            }
         }
     }
     else
@@ -982,7 +985,10 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
             // Reached the end.
             Debug::WriteLine("Cur:{0} Count:{1} Read:{2} Total:{3}", curFrame, requireFrames, frameRead, totalPCMFrames);
             //totalPCMFrames = curFrame + frameRead;
-            state = State::Stopping;
+            if (!isLoop)
+            {
+                state = State::Stopping;
+            }
         }
     }
 
