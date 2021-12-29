@@ -106,11 +106,11 @@ namespace YorkTrail
             }
         }
 
-        public event RoutedPropertyChangedEventHandler<double> LowerValueChanged;
-        public event RoutedPropertyChangedEventHandler<double> UpperValueChanged;
-        public event DragCompletedEventHandler LowerSliderDragCompleted;
-        public event DragCompletedEventHandler UpperSliderDragCompleted;
-        public event MouseButtonEventHandler DisplayValueTickBarMouseLeftButtonUp;
+        public event RoutedPropertyChangedEventHandler<double>? LowerValueChanged;
+        public event RoutedPropertyChangedEventHandler<double>? UpperValueChanged;
+        public event DragCompletedEventHandler? LowerSliderDragCompleted;
+        public event DragCompletedEventHandler? UpperSliderDragCompleted;
+        public event MouseButtonEventHandler? DisplayValueTickBarMouseLeftButtonUp;
 
         private void DoSnapToTick(Slider slider)
         {

@@ -37,7 +37,9 @@ namespace YorkTrail
     {
         public Settings()
         {
-            SetDefaultKeyBinds();
+            KeyBinds = DefaultKey.GetKeyBinds();
+            KeyBindsSerializeable = new Dictionary<string, string>();
+            MarkerList = new ObservableCollection<double>();
         }
 
         public bool IsInitialized { get; set; } = false;
@@ -47,7 +49,7 @@ namespace YorkTrail
         [DataMember]
         public int DeviceIndex { get; set; } = 0;
         [DataMember]
-        public string DeviceName { get; set; }
+        public string DeviceName { get; set; } = "";
         [DataMember]
         public ObservableCollection<string> RecentFiles { get; set; } = new ObservableCollection<string>();
         [DataMember]
@@ -131,7 +133,7 @@ namespace YorkTrail
         [DataMember]
         public bool RestoreLastState { get; set; } = false;
         [DataMember]
-        public string FilePath { get; set; }
+        public string FilePath { get; set; } = "";
         [DataMember]
         public double Position { get; set; }
         [DataMember]
@@ -176,14 +178,14 @@ namespace YorkTrail
         public ObservableCollection<double> MarkerList { get; set; }
 
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        public event PropertyChangedEventHandler? PropertyChanged;
+        private void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         private const string xmlPath = @".\Settings.xml";
-        public static Settings ReadSettingsFromFile()
+        public static Settings? ReadSettingsFromFile()
         {
-            Settings settings = null;
+            Settings? settings = null;
 
             if (File.Exists(xmlPath))
             {
@@ -199,7 +201,7 @@ namespace YorkTrail
                     using (var streamReader = new StreamReader(xmlPath, Encoding.UTF8))
                     using (var xmlReader = XmlReader.Create(streamReader, xmlSettings))
                     {
-                        settings = (Settings)serializer.ReadObject(xmlReader);
+                        settings = (Settings?)serializer.ReadObject(xmlReader);
                     }
                 }
                 catch(Exception e)
@@ -207,24 +209,27 @@ namespace YorkTrail
                     MessageBox.Show("設定ファイルの読み込みに失敗しました\n\n" + e.Message, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
 
-                settings.SetDefaultKeyBinds();
-
-                foreach (var kb in settings.KeyBindsSerializeable)
+                if (settings != null)
                 {
-                    CommandName cmd;
-                    if (Enum.TryParse(kb.Key, out cmd) && Enum.IsDefined(typeof(CommandName), cmd))
+                    settings.KeyBinds = DefaultKey.GetKeyBinds();
+
+                    foreach (var kb in settings.KeyBindsSerializeable)
                     {
-                        if (settings.KeyBinds.ContainsKey(cmd))
+                        CommandName cmd;
+                        if (Enum.TryParse(kb.Key, out cmd) && Enum.IsDefined(typeof(CommandName), cmd))
                         {
-                            settings.KeyBinds[cmd] = ShortCutKey.ConvertFromString(kb.Value);
+                            if (settings.KeyBinds.ContainsKey(cmd))
+                            {
+                                settings.KeyBinds[cmd] = ShortCutKey.ConvertFromString(kb.Value);
+                            }
                         }
-                    }
 
-                }
-                // アップデートした時nullになるのでここで初期化
-                if (settings.FilterPresets == null)
-                {
-                    settings.FilterPresets = new ObservableCollection<FilterPreset>();
+                    }
+                    // アップデートした時nullになるのでここで初期化
+                    if (settings.FilterPresets == null)
+                    {
+                        settings.FilterPresets = new ObservableCollection<FilterPreset>();
+                    }
                 }
             }
             else
@@ -269,11 +274,6 @@ namespace YorkTrail
                 ret.Add(kb.Key.ToString(), ShortCutKey.ConvertToString(kb.Value));
             }
             return ret;
-        }
-
-        private void SetDefaultKeyBinds()
-        {
-            KeyBinds = DefaultKey.GetKeyBinds();
         }
 
         public System.Collections.ICollection GetKeyBindings()

@@ -94,8 +94,8 @@ namespace YorkTrail
 
         private static void OnMarkerListChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
         {
-            INotifyCollectionChanged oldList = args.OldValue as INotifyCollectionChanged;
-            INotifyCollectionChanged newList = args.NewValue as INotifyCollectionChanged;
+            INotifyCollectionChanged oldList = (INotifyCollectionChanged)args.OldValue;
+            INotifyCollectionChanged newList = (INotifyCollectionChanged)args.NewValue;
 
             var ctrl = (DisplayValueTickBar)obj;
             //If the old list implements the INotifyCollectionChanged interface, then unsubscribe to CollectionChanged events.
@@ -106,7 +106,7 @@ namespace YorkTrail
                 newList.CollectionChanged += ctrl.OnMarkerListCollectionChanged;
         }
 
-        private void OnMarkerListCollectionChanged(object s, NotifyCollectionChangedEventArgs e)
+        private void OnMarkerListCollectionChanged(object? s, NotifyCollectionChangedEventArgs e)
         {
             this.InvalidateVisual();
         }

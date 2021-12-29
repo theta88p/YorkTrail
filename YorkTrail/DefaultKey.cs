@@ -72,7 +72,7 @@ namespace YorkTrail
 
     public class KeyCommand
     {
-        public KeyCommand(string name, ShortCutKey key, ICommand cmd, object obj = null)
+        public KeyCommand(string name, ShortCutKey key, ICommand cmd, object? obj = null)
         {
             LocalName = name;
             ShortCutKey = key;
@@ -82,7 +82,7 @@ namespace YorkTrail
         public string LocalName { get; set; }
         public ShortCutKey ShortCutKey { get; set; }
         public ICommand Command { get; set; }
-        public object CommandParameter { get; set; }
+        public object? CommandParameter { get; set; }
     }
 
     public static class DefaultKey

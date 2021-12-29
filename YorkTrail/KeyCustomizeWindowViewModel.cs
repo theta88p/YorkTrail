@@ -37,7 +37,7 @@ namespace YorkTrail
             }
         }
 
-        public MainWindowViewModel MainWindowViewModel { get; set; }
+        public MainWindowViewModel? MainWindowViewModel { get; set; }
         public List<Key> KeyList { get; set; }
 
         public void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -48,7 +48,7 @@ namespace YorkTrail
 
         public void Window_Closed(object sender, EventArgs e)
         {
-            MainWindowViewModel.SetKeyBinds();
+            MainWindowViewModel?.SetKeyBinds();
         }
     }
 }

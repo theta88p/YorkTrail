@@ -32,7 +32,7 @@ namespace YorkTrail
         {
             var dic = (Dictionary<CommandName, ShortCutKey>)value;
             CommandName cmd;
-            ShortCutKey key;
+            ShortCutKey? key;
             string ret = "";
 
             if (Enum.TryParse((string)parameter, out cmd))

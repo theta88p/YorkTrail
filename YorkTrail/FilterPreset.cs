@@ -29,11 +29,12 @@ namespace YorkTrail
     {
         public FilterPreset()
         {
+            _name = "";
         }
 
         public FilterPreset(string name, bool lpfEnabled, bool hpfEnbaled, bool bpfEnabled, float lpfFreq, float hpfFreq, float bpfFreq)
         {
-            this.Name = name;
+            _name = name;
             this.LpfEnabled = lpfEnabled;
             this.HpfEnbled = hpfEnbaled;
             this.BpfEnabled = bpfEnabled;
@@ -42,8 +43,8 @@ namespace YorkTrail
             this.BpfFreq = bpfFreq;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        public event PropertyChangedEventHandler? PropertyChanged;
+        private void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         private string _name;

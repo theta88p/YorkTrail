@@ -29,14 +29,14 @@ namespace YorkTrail
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (int)value == int.Parse(parameter as string);
+            return (int)value == int.Parse((string)parameter);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if ((bool)value)
             {
-                return Enum.ToObject(targetType, int.Parse(parameter as string));
+                return Enum.ToObject(targetType, int.Parse((string)parameter));
             }
             else
             {

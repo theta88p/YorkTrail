@@ -39,9 +39,12 @@ namespace YorkTrail
     {
         public MainWindowViewModel()
         {
+            playerTask = new Task(() => { });
+            _statusText = "";
             _startPosition = 0.0;
             _endPosition = 1.0;
             _timeSignature = 4;
+            FilePath = "";
             MarkerList = new ObservableCollection<double>();
 
             DeviceList = Core.GetPlaybackDeviceList();
@@ -77,7 +80,7 @@ namespace YorkTrail
             BlinkTimer = new Timer(800);
             BlinkTimer.Elapsed += (sender, e) =>
             {
-                Window.TimeDisplay.Dispatcher.Invoke(() =>
+                Window?.TimeDisplay.Dispatcher.Invoke(() =>
                 {
                     double opc = Window.TimeDisplay.Opacity;
                     if (opc == 1.0)
@@ -98,8 +101,8 @@ namespace YorkTrail
         private Task playerTask;
         //private Stopwatch _sw;
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        public event PropertyChangedEventHandler? PropertyChanged;
+        private void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         public string FilePath { get; set; }
@@ -114,7 +117,7 @@ namespace YorkTrail
         public string TimeString {
             get {
                 long cur = (long)Core.GetTime();
-                if (Settings.ShowTimeAtMeasure)
+                if (Settings?.ShowTimeAtMeasure ?? false)
                 {
                     long offsetCur = cur - MeasureOffset;
                     float msOfBeat = 60000.0f / Tempo;
@@ -152,9 +155,12 @@ namespace YorkTrail
         {
             get { return Core.GetPlaybackDevice(); }
             set {
+                if (Settings != null)
+                {
+                    Settings.DeviceIndex = value;
+                    Settings.DeviceName = DeviceList[value];
+                }
                 Core.SetPlaybackDevice(value);
-                Settings.DeviceIndex = value;
-                Settings.DeviceName = DeviceList[value];
                 RaisePropertyChanged(nameof(PlaybackDevice));
             }
         }
@@ -238,7 +244,10 @@ namespace YorkTrail
         {
             get { return Core.GetVolume(); }
             set {
-                Settings.Volume = value;
+                if (Settings != null)
+                {
+                    Settings.Volume = value;
+                }
                 Core.SetVolume(value);
             }
         }
@@ -247,7 +256,10 @@ namespace YorkTrail
         {
             get { return Core.GetStretchMethod(); }
             set {
-                Settings.StretchMethod = value;
+                if (Settings != null)
+                {
+                    Settings.StretchMethod = value;
+                }
                 Core.SetStretchMethod(value);
             }
         }
@@ -293,10 +305,10 @@ namespace YorkTrail
         public float HpfFreq { get { return Core.GetHpfFreq(); } set { Core.SetHpfFreq(value); RaisePropertyChanged(nameof(HpfFreq)); } }
         public float BpfFreq { get { return Core.GetBpfFreq(); } set { Core.SetBpfFreq(value); RaisePropertyChanged(nameof(BpfFreq)); } }
         public List<string> DeviceList { get; private set; }
-        public Settings Settings { get; private set; }
+        public Settings? Settings { get; private set; }
 
-        public MainWindow Window { get; set; }
-        public TempoCalcWindow TempoCalcWindow { get; set; }
+        public MainWindow? Window { get; set; }
+        public TempoCalcWindow? TempoCalcWindow { get; set; }
 
         public PlayCommand PlayCommand { get; private set; } = (PlayCommand)CommandCollection.Get(nameof(PlayCommand));
         public StopCommand StopCommand { get; private set; } = (StopCommand)CommandCollection.Get(nameof(StopCommand));
@@ -339,26 +351,29 @@ namespace YorkTrail
 
         public void SetKeyBinds()
         {
-            Window.InputBindings.Clear();
-            Window.InputBindings.AddRange(Settings.GetKeyBindings());
+            Window?.InputBindings.Clear();
+            Window?.InputBindings.AddRange(Settings?.GetKeyBindings());
         }
 
         public void SaveWindowSettings()
         {
-            Settings.WindowTop = Window.Top;
-            Settings.WindowLeft = Window.Left;
-            Settings.WindowHeight = Window.ActualHeight;
-            Settings.MenuToolBarBand = Window.MenuToolBar.Band;
-            Settings.MenuToolBarBandIndex = Window.MenuToolBar.BandIndex;
-            Settings.MenuToolBarWidth = Window.MenuToolBar.ActualWidth;
-            Settings.IconToolBarBand = Window.IconToolBar.Band;
-            Settings.IconToolBarBandIndex = Window.IconToolBar.BandIndex;
-            Settings.IconToolBarWidth = Window.IconToolBar.ActualWidth;
+            if (Settings != null && Window != null)
+            {
+                Settings.WindowTop = Window.Top;
+                Settings.WindowLeft = Window.Left;
+                Settings.WindowHeight = Window.ActualHeight;
+                Settings.MenuToolBarBand = Window.MenuToolBar.Band;
+                Settings.MenuToolBarBandIndex = Window.MenuToolBar.BandIndex;
+                Settings.MenuToolBarWidth = Window.MenuToolBar.ActualWidth;
+                Settings.IconToolBarBand = Window.IconToolBar.Band;
+                Settings.IconToolBarBandIndex = Window.IconToolBar.BandIndex;
+                Settings.IconToolBarWidth = Window.IconToolBar.ActualWidth;
+            }
         }
 
         public void RestoreWindowSettings()
         {
-            if (Settings != null)
+            if (Settings != null && Window != null)
             {
                 Window.Top = Settings.WindowTop;
                 Window.Left = Settings.WindowLeft;
@@ -374,33 +389,36 @@ namespace YorkTrail
 
         public void SaveState()
         {
-            Settings.FilePath = FilePath;
-            Settings.Position = Position;
-            Settings.StartPosition = StartPosition;
-            Settings.EndPosition = EndPosition;
-            Settings.Channels = Channels;
-            Settings.Pitch = Pitch;
-            Settings.Ratio = Ratio;
-            Settings.IsBypass = IsBypass;
-            Settings.IsLoop = IsLoop;
-            Settings.LpfEnabled = LpfEnabled;
-            Settings.HpfEnabled = HpfEnabled;
-            Settings.BpfEnabled = BpfEnabled;
-            Settings.LpfFreq = LpfFreq;
-            Settings.HpfFreq = HpfFreq;
-            Settings.BpfFreq = BpfFreq;
-            Settings.Tempo = Tempo;
-            Settings.MeasureOffset = MeasureOffset;
-            Settings.TimeSignature = TimeSignature;
-            Settings.SeekBarMinimum = Window.SeekBar.Minimum;
-            Settings.SeekBarMaximum = Window.SeekBar.Maximum;
-            Settings.ZoomMultiplier = ZoomMultiplier;
-            Settings.MarkerList = MarkerList;
+            if (Settings != null)
+            {
+                Settings.FilePath = FilePath;
+                Settings.Position = Position;
+                Settings.StartPosition = StartPosition;
+                Settings.EndPosition = EndPosition;
+                Settings.Channels = Channels;
+                Settings.Pitch = Pitch;
+                Settings.Ratio = Ratio;
+                Settings.IsBypass = IsBypass;
+                Settings.IsLoop = IsLoop;
+                Settings.LpfEnabled = LpfEnabled;
+                Settings.HpfEnabled = HpfEnabled;
+                Settings.BpfEnabled = BpfEnabled;
+                Settings.LpfFreq = LpfFreq;
+                Settings.HpfFreq = HpfFreq;
+                Settings.BpfFreq = BpfFreq;
+                Settings.Tempo = Tempo;
+                Settings.MeasureOffset = MeasureOffset;
+                Settings.TimeSignature = TimeSignature;
+                Settings.SeekBarMinimum = Window?.SeekBar.Minimum ?? 0;
+                Settings.SeekBarMaximum = Window?.SeekBar.Maximum ?? 1;
+                Settings.ZoomMultiplier = ZoomMultiplier;
+                Settings.MarkerList = MarkerList;
+            }
         }
 
         public void ResotreState()
         {
-            if (Settings.FilePath != null)
+            if (Settings != null && Window != null)
             {
                 if (FileOpen(Settings.FilePath))
                 {
@@ -416,24 +434,24 @@ namespace YorkTrail
                     StaticMethods.ShallowCopy(Settings.MarkerList, MarkerList);
                     RaisePropertyChanged(nameof(Time));
                 }
+                Channels = Settings.Channels;
+                Pitch = (Settings.Pitch == 0) ? 1 : Settings.Pitch;
+                Ratio = (Settings.Ratio == 0) ? 1 : Settings.Ratio;
+                IsBypass = Settings.IsBypass;
+                IsLoop = Settings.IsLoop;
+                LpfEnabled = Settings.LpfEnabled;
+                HpfEnabled = Settings.HpfEnabled;
+                BpfEnabled = Settings.BpfEnabled;
+                LpfFreq = Settings.LpfFreq;
+                HpfFreq = Settings.HpfFreq;
+                BpfFreq = Settings.BpfFreq;
             }
-            Channels = Settings.Channels;
-            Pitch = (Settings.Pitch == 0) ? 1 : Settings.Pitch;
-            Ratio = (Settings.Ratio == 0) ? 1 : Settings.Ratio;
-            IsBypass = Settings.IsBypass;
-            IsLoop = Settings.IsLoop;
-            LpfEnabled = Settings.LpfEnabled;
-            HpfEnabled = Settings.HpfEnabled;
-            BpfEnabled = Settings.BpfEnabled;
-            LpfFreq = Settings.LpfFreq;
-            HpfFreq = Settings.HpfFreq;
-            BpfFreq = Settings.BpfFreq;
         }
 
         public void AddFilterPreset(string name)
         {
             var p = new FilterPreset(name, LpfEnabled, HpfEnabled, BpfEnabled, LpfFreq, HpfFreq, BpfFreq);
-            Settings.FilterPresets.Add(p);
+            Settings?.FilterPresets.Add(p);
         }
 
         public bool FileOpen(string path)
@@ -493,22 +511,28 @@ namespace YorkTrail
                     return false;
                 }
 
-                Window.Title = applicationName + " - " + Path.GetFileName(path);
-                SelectionResetCommand.Execute(Window);
-                ClearMarkerCommand.Execute(Window);
+                if (Window != null)
+                {
+                    Window.Title = applicationName + " - " + Path.GetFileName(path);
+                    SelectionResetCommand.Execute(Window);
+                    ClearMarkerCommand.Execute(Window);
+                }
                 Stop();
 
-                if (Settings.RecentFiles.Contains(path))
+                if (Settings != null)
                 {
-                    Settings.RecentFiles.Remove(path);
-                    Settings.RecentFiles.Insert(0, path);
-                }
-                else
-                {
-                    Settings.RecentFiles.Insert(0, path);
-                    if (Settings.RecentFiles.Count > 10)
+                    if (Settings.RecentFiles.Contains(path))
                     {
-                        Settings.RecentFiles.RemoveAt(10);
+                        Settings.RecentFiles.Remove(path);
+                        Settings.RecentFiles.Insert(0, path);
+                    }
+                    else
+                    {
+                        Settings.RecentFiles.Insert(0, path);
+                        if (Settings.RecentFiles.Count > 10)
+                        {
+                            Settings.RecentFiles.RemoveAt(10);
+                        }
                     }
                 }
 
@@ -547,7 +571,7 @@ namespace YorkTrail
             {
                 MessageBox.Show("ファイルが存在しません\r\n" + path, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
-                if (Settings.RecentFiles.Contains(path))
+                if (Settings?.RecentFiles.Contains(path) ?? false)
                 {
                     Settings.RecentFiles.Remove(path);
                 }
@@ -561,10 +585,13 @@ namespace YorkTrail
             {
                 Stop();
                 Core.FileClose();
-                FilePath = null;
+                FilePath = "";
                 SelectionResetCommand.Execute(null);
-                Window.Title = applicationName;
                 StatusText = "";
+                if (Window != null)
+                {
+                    Window.Title = applicationName;
+                }
             }
         }
 
@@ -614,7 +641,10 @@ namespace YorkTrail
                 else if (Core.GetState() == State.Pausing)
                 {
                     BlinkTimer.Stop();
-                    Window.TimeDisplay.Opacity = 1.0;
+                    if (Window != null)
+                    {
+                        Window.TimeDisplay.Opacity = 1.0;
+                    }
                     playerTask.Wait();
                     playerTask = Task.Run(Core.Start);
                 }
@@ -626,9 +656,12 @@ namespace YorkTrail
             if (Core.IsFileLoaded())
             {
                 BlinkTimer.Stop();
-                Window.TimeDisplay.Opacity = 1.0;
+                if (Window != null)
+                {
+                    Window.TimeDisplay.Opacity = 1.0;
+                }
                 Core.Stop();
-                if (playerTask?.Status == TaskStatus.Running)
+                if (playerTask.Status == TaskStatus.Running)
                     playerTask.Wait();
 
                 Core.ResetRMS();
@@ -661,7 +694,7 @@ namespace YorkTrail
                 {
                     Play();
                 }
-                Position = Window.SeekBar.LowerValue;
+                Position = Window?.SeekBar.LowerValue ?? 0;
             }
         }
 
@@ -673,7 +706,10 @@ namespace YorkTrail
             }
             else
             {
-                Window.SeekBar.LowerValue = 0;
+                if (Window != null)
+                {
+                    Window.SeekBar.LowerValue = 0;
+                }
             }
         }
         
@@ -685,7 +721,7 @@ namespace YorkTrail
                 {
                     Play();
                 }
-                Position = Window.SeekBar.LowerValue;
+                Position = Window?.SeekBar.LowerValue ?? 0;
             }
         }
 
@@ -693,7 +729,7 @@ namespace YorkTrail
         {
             if (Core.IsFileLoaded())
             {
-                Position = Window.SeekBar.LowerValue;
+                Position = Window?.SeekBar.LowerValue ?? 0;
             }
         }
 
@@ -721,7 +757,7 @@ namespace YorkTrail
 
         internal void MainWindow_SourceInitialized(object sender, EventArgs e)
         {
-            if (!Settings.IsInitialized)
+            if (Settings != null && !Settings.IsInitialized)
             {
                 RestoreWindowSettings();
 
@@ -750,7 +786,10 @@ namespace YorkTrail
 
             SaveState();
             SaveWindowSettings();
-            Settings.WriteSettingsToFile(Settings);
+            if (Settings != null)
+            {
+                Settings.WriteSettingsToFile(Settings);
+            }
         }
 
         internal void FilterPreset_Clicked(object sender, ExecutedRoutedEventArgs e)
@@ -766,12 +805,18 @@ namespace YorkTrail
 
         internal void PitchStackPanel_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            Window.PitchSliderPopup.IsOpen = true;
+            if (Window != null)
+            {
+                Window.PitchSliderPopup.IsOpen = true;
+            }
         }
 
         internal void RatioStackPanel_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            Window.RatioSliderPopup.IsOpen = true;
+            if (Window != null)
+            {
+                Window.RatioSliderPopup.IsOpen = true;
+            }
         }
     }
 }

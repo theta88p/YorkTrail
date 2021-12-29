@@ -49,8 +49,11 @@ namespace YorkTrail
 
         private void SoundTouchSettings_SourceUpdated(object sender, RoutedEventArgs e)
         {
-            var vm = (MainWindowViewModel)this.DataContext;
-            vm.Core.SetSoundTouchParam(vm.Settings.SoundTouchSequenceMS, vm.Settings.SoundTouchSeekWindowMS, vm.Settings.SoundTouchOverlapMS);
+            MainWindowViewModel vm = (MainWindowViewModel)this.DataContext;
+            if (vm.Settings != null)
+            {
+                vm.Core.SetSoundTouchParam(vm.Settings.SoundTouchSequenceMS, vm.Settings.SoundTouchSeekWindowMS, vm.Settings.SoundTouchOverlapMS);
+            }
         }
     }
 }

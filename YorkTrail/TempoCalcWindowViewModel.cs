@@ -34,12 +34,12 @@ namespace YorkTrail
 
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        public event PropertyChangedEventHandler? PropertyChanged;
+        private void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        public TempoCalcWindow Window { get; set; }
-        public MainWindowViewModel MainWindowViewModel { get; set; }
+        public TempoCalcWindow? Window { get; set; }
+        public MainWindowViewModel? MainWindowViewModel { get; set; }
 
         private float _tempo;
         public float Tempo {
@@ -129,8 +129,11 @@ namespace YorkTrail
 
         public void Window_Closing(object sender, CancelEventArgs e)
         {
-            e.Cancel = true;
-            Window.Visibility = Visibility.Collapsed;
+            if (Window != null)
+            {
+                e.Cancel = true;
+                Window.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }

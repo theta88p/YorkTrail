@@ -29,18 +29,18 @@ namespace YorkTrail
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (float)value == float.Parse(parameter as string);
+            return (float)value == float.Parse((string)parameter);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if ((bool)value)
             {
-                return float.Parse(parameter as string);
+                return float.Parse((string)parameter);
             }
             else
             {
-                return null;
+                return 0.0f;
             }
         }
     }

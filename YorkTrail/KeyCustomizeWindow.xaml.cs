@@ -41,7 +41,7 @@ namespace YorkTrail
             InitializeComponent();
             ((KeyCustomizeWindowViewModel)this.DataContext).MainWindowViewModel = vm;
             // MainWindowViewModelをセットした後バインドしないと表示されない
-            this.KeyBinds.ItemsSource = vm.Settings.KeyBinds;
+            this.KeyBinds.ItemsSource = vm.Settings?.KeyBinds;
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

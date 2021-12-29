@@ -31,19 +31,24 @@ namespace YorkTrail
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string path = (string)value;
-            string root = Path.GetPathRoot(path);
-            string[] dirs = Path.GetDirectoryName(path).Split("\\");
-            string newpath = Path.GetFileName(path);
-            for(int i = dirs.Length - 1; i >= 0; i--)
+            string? root = Path.GetPathRoot(path);
+            string? dir = Path.GetDirectoryName(path);
+            if (dir != null)
             {
-                if (newpath.Length > 50)
+                string[] dirs = dir.Split("\\");
+                string newpath = Path.GetFileName(path);
+                for (int i = dirs.Length - 1; i >= 0; i--)
                 {
-                    newpath = root + "...\\" + newpath;
-                    break;
+                    if (newpath.Length > 50)
+                    {
+                        newpath = root + "...\\" + newpath;
+                        break;
+                    }
+                    newpath = dirs[i] + "\\" + newpath;
                 }
-                newpath = dirs[i] + "\\" + newpath;
+                return newpath;
             }
-            return newpath;
+            return path;
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {

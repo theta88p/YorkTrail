@@ -10,10 +10,11 @@
     <Authors>theta</Authors>
     <AssemblyVersion>0.6.13.0</AssemblyVersion>
     <FileVersion>0.6.13.0</FileVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
@@ -27,7 +28,7 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <PlatformTarget>AnyCPU</PlatformTarget>
 	  <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-	  <Prefer32Bit>true</Prefer32Bit>
+	  <Prefer32Bit>false</Prefer32Bit>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">

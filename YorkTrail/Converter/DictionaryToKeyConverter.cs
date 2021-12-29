@@ -30,10 +30,10 @@ namespace YorkTrail
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var dic = value as Dictionary<string, ShortCutKey>;
-            ShortCutKey kg;
+            var dic = (Dictionary<string, ShortCutKey>)value;
+            ShortCutKey? kg;
 
-            if (dic.TryGetValue(parameter as string, out kg))
+            if (dic.TryGetValue((string)parameter, out kg))
             {
                 if (targetType == typeof(Key))
                 {

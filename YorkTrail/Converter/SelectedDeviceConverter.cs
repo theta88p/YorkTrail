@@ -30,11 +30,11 @@ namespace YorkTrail
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            List<string> list = values[0] as List<string>;
+            List<string> list = (List<string>)values[0];
             if (list != null)
             {
                 int n = (int)values[1];
-                string header = values[2] as string;
+                string header = (string)values[2];
 
                 for (int i = 0; i < list.Count; i++)
                 {
