@@ -209,8 +209,11 @@ namespace YorkTrail
         {
             get { return Core.GetPitch(); }
             set {
-                Core.SetPitch(value);
-                RaisePropertyChanged(nameof(Pitch));
+                if (value > 0.0f)
+                {
+                    Core.SetPitch(value);
+                    RaisePropertyChanged(nameof(Pitch));
+                }
             }
         }
         
@@ -218,8 +221,11 @@ namespace YorkTrail
         {
             get { return Core.GetRatio(); }
             set {
-                Core.SetRatio(value);
-                RaisePropertyChanged(nameof(Ratio));
+                if (value > 0.0f)
+                {
+                    Core.SetRatio(value);
+                    RaisePropertyChanged(nameof(Ratio));
+                }
             }
         }
 

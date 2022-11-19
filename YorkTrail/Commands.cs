@@ -349,7 +349,8 @@ namespace YorkTrail
             if (ViewModel != null && ViewModel.Settings != null)
             {
                 ViewModel.Settings.SnapToTick = !ViewModel.Settings.SnapToTick;
-            }        }
+            }
+        }
     }
 
     public class OpenTempoCalcWindowCommand : CommandBase

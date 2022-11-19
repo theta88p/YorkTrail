@@ -40,7 +40,7 @@ namespace YorkTrail
             }
             else
             {
-                return 0.0f;
+                return -1.0f;
             }
         }
     }
