@@ -10,8 +10,9 @@ Copylight(c) 2022 theta
 
 ・インストール
   適当なフォルダに配置すればOKです。
-  「.NET Desktop Runtime 5.0」以降が必要ですので入っていない場合はインストールしてください。
-  https://dotnet.microsoft.com/download/dotnet/5.0
+  「.NET デスクトップ ランタイム 6.0」以降が必要ですので
+  入っていない場合はインストールしてください。
+  https://dotnet.microsoft.com/ja-jp/download/dotnet/6.0
 
 
 ・使い方
@@ -74,6 +75,7 @@ Copylight(c) 2022 theta
 ・更新履歴
   v0.6.15         2022/11/20
     メニューとショートカットから速度を変更すると止まることがあるのを修正
+    .NET6に移行
 
   v0.6.14beta     2021/12/29
     区間リセットボタンの位置を変更
