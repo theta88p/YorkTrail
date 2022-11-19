@@ -1,5 +1,5 @@
 YorkTrail - Music Player for Transcription
-Copylight(c) 2021 theta
+Copylight(c) 2022 theta
 
 ・概要
   耳コピ用途に特化した音楽プレイヤーです。  対応ファイル形式はwav・mp3・flacで
@@ -72,6 +72,12 @@ Copylight(c) 2021 theta
 
 
 ・更新履歴
+  v0.6.15         2022/11/20
+    メニューとショートカットから速度を変更すると止まることがあるのを修正
+
+  v0.6.14beta     2021/12/29
+    区間リセットボタンの位置を変更
+
   v0.6.13         2021/12/26
     現在位置がファイルの最後に到達したときループしなかったのを修正
 
