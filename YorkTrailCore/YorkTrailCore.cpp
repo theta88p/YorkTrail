@@ -336,23 +336,34 @@ String^ YorkTrail::YorkTrailCore::GetFileInfo()
 List<float>^ YorkTrail::YorkTrailCore::GetVolumeList()
 {
     float outputL, outputR;
-    int frameCount = 107;
-    int frameStep = totalPCMFrames / frameCount;
-    std::vector<float> decodedFrames(frameCount * 2);
+    int volumeCount = 160;
+    int frameStep = totalPCMFrames / volumeCount;
+    int readFrameCount = min(frameStep / 10, 100);
+    std::vector<float> buff(readFrameCount * 2);
+    std::vector<float> decodedFrames(readFrameCount * 20);
     List<float>^ res = gcnew List<float>;
 
-    for (int i = 0; i < frameCount; i++)
+    for (int i = 0; i < volumeCount; i++)
     {
-        ma_decoder_seek_to_pcm_frame(pDecoder, frameStep * i);
-        ma_uint64 frameRead = ma_decoder_read_pcm_frames(pDecoder, decodedFrames.data(), frameCount);
-        calcRMS(decodedFrames, frameRead, pDecoder->outputChannels, outputL, outputR);
+        for (int j = 0; j < 5; j++)
+        {
+            ma_decoder_seek_to_pcm_frame(pDecoder, frameStep * i + frameStep * j / 5);
+            ma_uint64 frameRead = ma_decoder_read_pcm_frames(pDecoder, buff.data(), readFrameCount);
+            
+            for (int k = 0; k < frameRead; k++)
+            {
+                decodedFrames[j + k] = buff[k];
+            }
+
+            if (frameRead < readFrameCount) {
+                break;
+            }
+        }
+
+        calcRMS(decodedFrames, readFrameCount * 5, pDecoder->outputChannels, outputL, outputR);
         float outputLR = (outputL + outputR) / 2;
         outputLR = (outputLR < -70.0f) ? -70.0f : outputLR;
         res->Add(outputLR);
-
-        if (frameRead < frameCount) {
-            break;
-        }
     }
     return res;
 }

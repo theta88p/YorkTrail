@@ -562,10 +562,17 @@ namespace YorkTrail
                     {
                         tsource.Cancel();
                     }
-                    VolumeList = Core.GetVolumeList();
                 })
                 .ContinueWith((task) =>
                 {
+                    if (Settings != null && Settings.ShowWaveForm)
+                    {
+                        VolumeList = Core.GetVolumeList();
+                    }
+                    else
+                    {
+                        VolumeList.Clear();
+                    }
                     StatusText = Core.GetFileInfo();
                     RaisePropertyChanged(nameof(TotalMilliSeconds));
                 }, token);

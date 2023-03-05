@@ -28,18 +28,19 @@
         WindowStartupLocation="CenterOwner"
         Background="WhiteSmoke"
         Topmost="{Binding Settings.AlwaysOnTop}"
-        Title="オプション設定" Height="340" Width="460">
+        Title="オプション設定" Height="366" Width="460">
     <Window.Resources>
         <ResourceDictionary>
             <local:IntToStringConverter x:Key="IntToStringConverter"/>
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
-        <TabControl Height="260" VerticalAlignment="Top">
+        <TabControl Height="286" VerticalAlignment="Top">
             <TabItem Header="全般">
                 <Grid>
                     <StackPanel Width="360" Margin="40,10,34,0" Grid.ColumnSpan="2">
-                        <CheckBox Content="起動時に前回終了時の状態を復元" IsChecked="{Binding Settings.RestoreLastState}" Height="26"/>
+                        <CheckBox Content="起動時に前回終了時の状態を復元する" IsChecked="{Binding Settings.RestoreLastState}" Height="26"/>
+                        <CheckBox Content="シークバーに波形を表示する" IsChecked="{Binding Settings.ShowWaveForm}" Height="26"/>
                         <Grid Margin="0,4,0,0">
                             <Label Content="早送り・巻き戻しの秒数" VerticalAlignment="Center"/>
                             <TextBox TextWrapping="NoWrap" VerticalAlignment="Center" Width="40" HorizontalAlignment="Right" Margin="0,0,60,0">

@@ -128,6 +128,8 @@ namespace YorkTrail
         public int SoundTouchOverlapMS { get; set; } = 8;
         [DataMember]
         public StretchMethod StretchMethod { get; set; } = StretchMethod.RubberBand;
+        [DataMember]
+        public bool ShowWaveForm { get; set; } = true;
 
         // 状態保存のためのプロパティ
         [DataMember]
