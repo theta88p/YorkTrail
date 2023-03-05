@@ -84,6 +84,7 @@ namespace YorkTrail
 		!YorkTrailCore();
 		String^ GetFileInfo();
 		bool FileOpen(String^ path, FileType type);
+		List<float>^ GetVolumeList();
 		bool IsFileLoaded();
 		void FileClose();
 		bool DeviceOpen();

@@ -202,7 +202,11 @@
             -->
         </Grid>
         <Grid Grid.Row="1">
-            <Border x:Name="SliderBack" BorderThickness="0,30,0,0" BorderBrush="Transparent" VerticalAlignment="Top" Focusable="False"
+            <local:WaveFormViewer x:Name="SliderBack" BorderThickness="0,30,0,0" BorderBrush="Transparent" VerticalAlignment="Top" Focusable="False"
+                    Position="{Binding Position, ElementName=root}"
+                    Minimum="{Binding Minimum, ElementName=root}"
+                    Maximum="{Binding Maximum, ElementName=root}"
+                    VolumeList="{Binding VolumeList, ElementName=root}"
                     MouseLeftButtonDown="Border_MouseLeftButtonDown" MouseMove="Border_MouseMove"
                     MouseLeftButtonUp="Border_MouseLeftButtonUp" MouseRightButtonDown="Border_MouseRightButtonDown"/>
         

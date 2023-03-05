@@ -333,6 +333,30 @@ String^ YorkTrail::YorkTrailCore::GetFileInfo()
     }
 }
 
+List<float>^ YorkTrail::YorkTrailCore::GetVolumeList()
+{
+    float outputL, outputR;
+    int frameCount = 107;
+    int frameStep = totalPCMFrames / frameCount;
+    std::vector<float> decodedFrames(frameCount * 2);
+    List<float>^ res = gcnew List<float>;
+
+    for (int i = 0; i < frameCount; i++)
+    {
+        ma_decoder_seek_to_pcm_frame(pDecoder, frameStep * i);
+        ma_uint64 frameRead = ma_decoder_read_pcm_frames(pDecoder, decodedFrames.data(), frameCount);
+        calcRMS(decodedFrames, frameRead, pDecoder->outputChannels, outputL, outputR);
+        float outputLR = (outputL + outputR) / 2;
+        outputLR = (outputLR < -70.0f) ? -70.0f : outputLR;
+        res->Add(outputLR);
+
+        if (frameRead < frameCount) {
+            break;
+        }
+    }
+    return res;
+}
+
 bool YorkTrail::YorkTrailCore::IsFileLoaded()
 {
     return pDecoder != nullptr && pDevice != nullptr;
@@ -944,13 +968,13 @@ void YorkTrail::YorkTrailCore::calcRMS(std::vector<float> &input, int frameCount
     
     if (requireCh < 2)
     {
-        outputL = (std::isinf(val[0])) ? -100.0f : val[0];
+        outputL = (val[0] < -70.0f) ? -70.0f : val[0];
         outputR = outputL;
     }
     else
     {
-        outputL = (std::isinf(val[0])) ? -100.0f : val[0];
-        outputR = (std::isinf(val[1])) ? -100.0f : val[1];
+        outputL = (val[0] < -70.0f) ? -70.0f : val[0];
+        outputR = (val[0] < -70.0f) ? -70.0f : val[1];
     }
 }
 

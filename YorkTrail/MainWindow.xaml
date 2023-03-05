@@ -712,12 +712,12 @@
                 <StackPanel Orientation="Vertical" Width="260" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
                         <Label Content="L" Width="17" Height="20" Padding="5,1,5,1" FontWeight="Bold"/>
-                        <ProgressBar Height="13" Width="237" Maximum="0" Minimum="-100" Value="{Binding RMSL, Mode=OneWay}" Background="#192F4F4F" Margin="2,3,2,3" Foreground="DarkSlateGray" BorderBrush="#192F4F4F"/>
+                        <ProgressBar Height="13" Width="237" Maximum="0" Minimum="-70" Value="{Binding RMSL, Mode=OneWay}" Background="#192F4F4F" Margin="2,3,2,3" Foreground="DarkSlateGray" BorderBrush="#192F4F4F"/>
                     </StackPanel>
                     <Rectangle Fill="LightSlateGray" Height="1" Width="256" HorizontalAlignment="Left" Margin="0,-1,0,0" SnapsToDevicePixels="True"/>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="R" Width="17" Height="20" Padding="5,1,5,1" FontWeight="Bold"/>
-                        <ProgressBar Height="13" Width="237" Maximum="0" Minimum="-100" Value="{Binding RMSR, Mode=OneWay}" Background="#192F4F4F" Margin="2,3,2,3" Foreground="DarkSlateGray" BorderBrush="#192F4F4F"/>
+                        <ProgressBar Height="13" Width="237" Maximum="0" Minimum="-70" Value="{Binding RMSR, Mode=OneWay}" Background="#192F4F4F" Margin="2,3,2,3" Foreground="DarkSlateGray" BorderBrush="#192F4F4F"/>
                     </StackPanel>
                 </StackPanel>
             </Grid>
@@ -828,6 +828,8 @@
                                TimeSignature="{Binding TimeSignature}" IsSliderLinked="{Binding Settings.IsSliderLinked}"
                                ShowTimeAtMeasure="{Binding Settings.ShowTimeAtMeasure}" SnapToTick="{Binding Settings.SnapToTick}"
                                MarkerList="{Binding MarkerList}"
+                               VolumeList="{Binding VolumeList}"
+                               Position="{Binding Position}"
             />
         </Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Row="5" Width="430">

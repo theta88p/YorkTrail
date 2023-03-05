@@ -109,6 +109,16 @@ namespace YorkTrail
         public int ZoomMultiplier { get; set; }
         public ObservableCollection<double> MarkerList { get; set; }
 
+        private List<float> _volumeList = new List<float>();
+        public List<float> VolumeList
+        {
+            get { return _volumeList; }
+            set {
+                _volumeList = value;
+                RaisePropertyChanged(nameof(VolumeList));
+            }
+        }
+
         public ulong Time
         {
             get { return Core.GetTime(); }
@@ -552,6 +562,7 @@ namespace YorkTrail
                     {
                         tsource.Cancel();
                     }
+                    VolumeList = Core.GetVolumeList();
                 })
                 .ContinueWith((task) =>
                 {
