@@ -436,7 +436,7 @@ namespace YorkTrail
         {
             if (Settings != null && Window != null)
             {
-                if (FileOpen(Settings.FilePath))
+                if (Settings.FilePath != "" && FileOpen(Settings.FilePath))
                 {
                     Position = Settings.Position;
                     StartPosition = Settings.StartPosition;
