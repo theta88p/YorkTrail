@@ -338,7 +338,7 @@ List<float>^ YorkTrail::YorkTrailCore::GetVolumeList()
     float outputL, outputR;
     int volumeCount = 160;
     int frameStep = totalPCMFrames / volumeCount;
-    int readFrameCount = min(frameStep / 10, 100);
+    int readFrameCount = min(frameStep / 5, 100);
     std::vector<float> buff(readFrameCount * 2);
     std::vector<float> decodedFrames(readFrameCount * 20);
     List<float>^ res = gcnew List<float>;

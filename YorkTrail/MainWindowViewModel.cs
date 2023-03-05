@@ -612,6 +612,7 @@ namespace YorkTrail
                 FilePath = "";
                 SelectionResetCommand.Execute(null);
                 StatusText = "";
+                VolumeList.Clear();
                 if (Window != null)
                 {
                     Window.Title = applicationName;
