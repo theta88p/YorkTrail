@@ -345,3 +345,4 @@ healthchecksdb
 /YorkTrailCore/RingBuffer.h
 /YorkTrailCore/SampleRateConverter.cpp
 /YorkTrailCore/SampleRateConverter.h
+/YorkTrailTest/
