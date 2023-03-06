@@ -39,7 +39,7 @@ namespace YorkTrail
             var unplayedColor1 = Color.FromRgb(180, 180, 180);
             var unplayedColor2 = Color.FromRgb(90, 90, 90);
             var playedColor1 = Color.FromRgb(100, 210, 255);
-            var playedColor2 = Color.FromRgb(60, 90, 205);
+            var playedColor2 = Color.FromRgb(100, 120, 205);
 
             fgpen.Thickness = 0;
             var grad1 = new LinearGradientBrush();
