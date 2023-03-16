@@ -1294,7 +1294,9 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
 {
     ma_mutex_lock(pMutex);
 
-    ma_uint32 bufferSize = frameCount * pCurrentDecoder->outputChannels;
+    ma_uint32 outputChannels = pCurrentDecoder->outputChannels;
+    ma_uint32 outputSampleRate = pCurrentDecoder->outputSampleRate;
+    ma_uint32 bufferSize = frameCount * outputChannels;
     std::vector<float> decodedFrames(bufferSize * playbackRatio * 2, 0.0f);
     std::vector<float> processedFrames(bufferSize * 2, 0.0f);
     ma_uint64 frameRead;
@@ -1371,23 +1373,23 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
         {
             if (stretchMethod == StretchMethod::RubberBand)
             {
-                float** deintInputFrames = new float* [pDecoder->outputChannels];
-                float** deintOutputFrames = new float* [pDecoder->outputChannels];
+                float** deintInputFrames = new float* [outputChannels];
+                float** deintOutputFrames = new float* [outputChannels];
 
-                for (ma_uint32 i = 0; i < pDecoder->outputChannels; i++)
+                for (ma_uint32 i = 0; i < outputChannels; i++)
                 {
                     deintInputFrames[i] = new float[frameRead * 2];
                     deintOutputFrames[i] = new float[frameCount * 2];
                 }
 
-                toDeinterleaved(decodedFrames, deintInputFrames, pDecoder->outputChannels, frameRead);
+                toDeinterleaved(decodedFrames, deintInputFrames, outputChannels, frameRead);
                 pRubberBand->process(deintInputFrames, frameRead, false);
                 size_t frameRequired = pRubberBand->getSamplesRequired();
                 int available = pRubberBand->available();
                 if (available < frameCount)
                 {
                     Debug::WriteLine("Rubber Band processed: {0}/{1} frames", frameRequired, frameCount);
-                    for (ma_uint32 i = 0; i < pDecoder->outputChannels; i++)
+                    for (ma_uint32 i = 0; i < outputChannels; i++)
                     {
                         delete[] deintInputFrames[i];
                         delete[] deintOutputFrames[i];
@@ -1398,9 +1400,9 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
                     return;
                 }
                 frameProcessed = pRubberBand->retrieve(deintOutputFrames, frameCount);
-                toInterleaved(deintOutputFrames, processedFrames, pDecoder->outputChannels, frameProcessed);
+                toInterleaved(deintOutputFrames, processedFrames, outputChannels, frameProcessed);
 
-                for (int i = 0; i < pDecoder->outputChannels; i++)
+                for (int i = 0; i < outputChannels; i++)
                 {
                     delete[] deintInputFrames[i];
                     delete[] deintOutputFrames[i];
@@ -1438,31 +1440,31 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
             ma_bpf_process_pcm_frames(pBpf, processedFrames.data(), processedFrames.data(), frameCount);
         }
 
-        if (pDecoder->outputChannels >= 2)
+        if (outputChannels >= 2)
         {
             switch (channels)
             {
             case Channels::LOnly:
-                for (ma_uint32 i = 0; i < frameCount * pDecoder->outputChannels; i += 2)
+                for (ma_uint32 i = 0; i < frameCount * outputChannels; i += 2)
                 {
                     processedFrames[i + 1] = processedFrames[i];
                 }
                 break;
             case Channels::ROnly:
-                for (ma_uint32 i = 0; i < frameCount * pDecoder->outputChannels; i += 2)
+                for (ma_uint32 i = 0; i < frameCount * outputChannels; i += 2)
                 {
                     processedFrames[i] = processedFrames[i + 1];
                 }
                 break;
             case Channels::Mono:
-                for (ma_uint32 i = 0; i < frameCount * pDecoder->outputChannels; i += 2)
+                for (ma_uint32 i = 0; i < frameCount * outputChannels; i += 2)
                 {
                     float val = (processedFrames[i] + processedFrames[i + 1]) / 2;
                     processedFrames[i] = processedFrames[i + 1] = val;
                 }
                 break;
             case Channels::LMinusR:
-                for (ma_uint32 i = 0; i < frameCount * pDecoder->outputChannels; i += 2)
+                for (ma_uint32 i = 0; i < frameCount * outputChannels; i += 2)
                 {
                     float val = (processedFrames[i] - processedFrames[i + 1]) / 2;
                     processedFrames[i] = processedFrames[i + 1] = val;
@@ -1480,11 +1482,11 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
     
     //bpm_putSamples(hBpm, processedFrames.data(), frameProcessed);
     float l, r;
-    calcRMS(processedFrames, frameCount, pDecoder->outputChannels, l, r);
+    calcRMS(processedFrames, frameCount, outputChannels, l, r);
     rmsL = l;
     rmsR = r;
 
-    std::memcpy(pOutput, processedFrames.data(), sizeof(float) * frameProcessed * pDecoder->outputChannels);
+    std::memcpy(pOutput, processedFrames.data(), sizeof(float) * frameProcessed * outputChannels);
 
     ma_mutex_unlock(pMutex);
 }
