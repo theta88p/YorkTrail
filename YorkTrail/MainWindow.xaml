@@ -22,10 +22,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:YorkTrail"
     xmlns:Collections="clr-namespace:System.Collections;assembly=System.Runtime" x:Class="YorkTrail.MainWindow"
-    mc:Ignorable="d"
+    mc:Ignorable="d" d:DesignWidth="828"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-    Title="YorkTrail" Height="330" Width="544" AllowDrop="True" Drop="FileDrop" MaxWidth="544" MinWidth="544" MinHeight="330" Background="WhiteSmoke"
+    Title="YorkTrail" Height="330" Width="568" AllowDrop="True" Drop="FileDrop" MaxWidth="828" MinWidth="544" MinHeight="330" Background="WhiteSmoke"
+    SizeToContent="WidthAndHeight" ResizeMode="NoResize"
     x:Name="mainWindow"
     SourceInitialized="MainWindow_SourceInitialized"
     Closing="MainWindow_Closing"
@@ -58,6 +59,8 @@
             <local:LogScaleConverter x:Key="LogScaleConverter"/>
             <local:BooleanNegativeConverter x:Key="BooleanNegativeConverter"/>
             <local:KeyBindsToStringConverter x:Key="KeyBindsToStringConverter"/>
+            <local:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <local:PriorityBooleanConverter x:Key="PriorityBooleanConverter"/>
             <!--ボリュームスライダー-->
             <!--#region -->
             <Style x:Key="RepeatButtonPink" TargetType="{x:Type RepeatButton}">
@@ -475,6 +478,84 @@
                 </Style.Triggers>
             </Style>
             <!--#endregion -->
+            <!--ミュートボタン-->
+            <!--#region -->
+            <Style x:Key="MuteButton" TargetType="ToggleButton">
+                <Setter Property="Focusable" Value="False"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Border BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True" BorderThickness="1">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <MultiTrigger>
+                        <MultiTrigger.Conditions>
+                            <Condition Property="IsChecked" Value="True"/>
+                            <Condition Property="IsMouseOver" Value="True"/>
+                        </MultiTrigger.Conditions>
+                        <Setter Property="Background" Value="#FFDD00"/>
+                    </MultiTrigger>
+                    <MultiTrigger>
+                        <MultiTrigger.Conditions>
+                            <Condition Property="IsChecked" Value="False"/>
+                            <Condition Property="IsMouseOver" Value="True"/>
+                        </MultiTrigger.Conditions>
+                        <Setter Property="Background" Value="#FFEE88"/>
+                    </MultiTrigger>
+                    <Trigger Property="IsChecked" Value="True">
+                        <Setter Property="Background" Value="#FFDD00"/>
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Foreground" Value="Gray"/>
+                        <Setter Property="Background" Value="WhiteSmoke"/>
+                        <Setter Property="BorderBrush" Value="#A0A0A0"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <!--#endregion -->
+            <!--ソロボタン-->
+            <!--#region -->
+            <Style x:Key="SoloButton" TargetType="ToggleButton">
+                <Setter Property="Focusable" Value="False"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Border BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True" BorderThickness="1">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <MultiTrigger>
+                        <MultiTrigger.Conditions>
+                            <Condition Property="IsChecked" Value="True"/>
+                            <Condition Property="IsMouseOver" Value="True"/>
+                        </MultiTrigger.Conditions>
+                        <Setter Property="Background" Value="#99FF33"/>
+                    </MultiTrigger>
+                    <MultiTrigger>
+                        <MultiTrigger.Conditions>
+                            <Condition Property="IsChecked" Value="False"/>
+                            <Condition Property="IsMouseOver" Value="True"/>
+                        </MultiTrigger.Conditions>
+                        <Setter Property="Background" Value="#CCFF99"/>
+                    </MultiTrigger>
+                    <Trigger Property="IsChecked" Value="True">
+                        <Setter Property="Background" Value="#99FF33"/>
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Foreground" Value="Gray"/>
+                        <Setter Property="Background" Value="WhiteSmoke"/>
+                        <Setter Property="BorderBrush" Value="#A0A0A0"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <!--#endregion -->
         </ResourceDictionary>
     </Window.Resources>
     <Window.DataContext>
@@ -491,8 +572,9 @@
             <RowDefinition Height="24"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="484"/>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <ToolBarTray Grid.ColumnSpan="2" IsLocked="False" Background="WhiteSmoke">
             <ToolBar x:Name="MenuToolBar" Style="{StaticResource GrayToolBar}">
@@ -938,5 +1020,76 @@
                 </Button>
             </StackPanel>
         </Grid>
+        <Expander Grid.Column="2" Grid.Row="1" Grid.RowSpan="5" ExpandDirection="Right" d:IsExpanded="True">
+            <GroupBox Header="Stem Separation" Width="240">
+                <Grid>
+                    <Grid IsEnabled="{Binding IsStemSeparated}" Margin="0 6 0 0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="22"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <UniformGrid Rows="1" Grid.Row="0">
+                            <RadioButton GroupName="SourceSwitch" Content="Source" IsChecked="True" Margin="50 0 10 0"/>
+                            <RadioButton GroupName="SourceSwitch" Content="Stems" IsChecked="{Binding IsStemPlaying}" Margin="10 0 50 0"/>
+                        </UniformGrid>
+                        <UniformGrid Rows="1" Grid.Row="1" Margin="2 10 2 0">
+                            <StackPanel Orientation="Vertical">
+                                <Label Content="Vocals" HorizontalAlignment="Center"/>
+                                <Slider Orientation="Vertical" Value="{Binding VocalsVolume}" Maximum="1" Minimum="0" TickPlacement="Both" Height="126" HorizontalAlignment="Center"/>
+                                <UniformGrid Rows="1" Margin="2 4 2 0">
+                                    <ToggleButton Content="M" Style="{StaticResource MuteButton}" IsChecked="{Binding VocalsMute}"/>
+                                    <ToggleButton Content="S" Style="{StaticResource SoloButton}" IsChecked="{Binding VocalsSolo}"/>
+                                </UniformGrid>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <Label Content="Drums" HorizontalAlignment="Center"/>
+                                <Slider Orientation="Vertical" Value="{Binding DrumsVolume}" Maximum="1" Minimum="0" TickPlacement="Both" Height="126" HorizontalAlignment="Center"/>
+                                <UniformGrid Rows="1" Margin="2 4 2 0">
+                                    <ToggleButton Content="M" Style="{StaticResource MuteButton}" IsChecked="{Binding DrumsMute}"/>
+                                    <ToggleButton Content="S" Style="{StaticResource SoloButton}" IsChecked="{Binding DrumsSolo}"/>
+                                </UniformGrid>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <Label Content="Bass" HorizontalAlignment="Center"/>
+                                <Slider Orientation="Vertical" Value="{Binding BassVolume}" Maximum="1" Minimum="0" TickPlacement="Both" Height="126" HorizontalAlignment="Center"/>
+                                <UniformGrid Rows="1" Margin="2 4 2 0">
+                                    <ToggleButton Content="M" Style="{StaticResource MuteButton}" IsChecked="{Binding BassMute}"/>
+                                    <ToggleButton Content="S" Style="{StaticResource SoloButton}" IsChecked="{Binding BassSolo}"/>
+                                </UniformGrid>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <Label Content="Piano" HorizontalAlignment="Center"/>
+                                <Slider Orientation="Vertical" Value="{Binding PianoVolume}" Maximum="1" Minimum="0" TickPlacement="Both" Height="126" HorizontalAlignment="Center"/>
+                                <UniformGrid Rows="1" Margin="2 4 2 0">
+                                    <ToggleButton Content="M" Style="{StaticResource MuteButton}" IsChecked="{Binding PianoMute}"/>
+                                    <ToggleButton Content="S" Style="{StaticResource SoloButton}" IsChecked="{Binding PianoSolo}"/>
+                                </UniformGrid>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <Label Content="Other" HorizontalAlignment="Center"/>
+                                <Slider Orientation="Vertical" Value="{Binding OtherVolume}" Maximum="1" Minimum="0" TickPlacement="Both" Height="126" HorizontalAlignment="Center"/>
+                                <UniformGrid Rows="1" Margin="2 4 2 0">
+                                    <ToggleButton Content="M" Style="{StaticResource MuteButton}" IsChecked="{Binding OtherMute}"/>
+                                    <ToggleButton Content="S" Style="{StaticResource SoloButton}" IsChecked="{Binding OtherSolo}"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </UniformGrid>
+                    </Grid>
+                    <Grid Visibility="{Binding IsStemSeparated, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Button Content="Separate" ToolTip="Stem分離" Width="64" Height="30" Command="{Binding StemSeparateCommand}">
+                            <Button.IsEnabled>
+                                <MultiBinding Converter="{StaticResource PriorityBooleanConverter}">
+                                    <Binding Path="IsStemSeparating"/>
+                                    <Binding Path="IsFileLoaded"/>
+                                </MultiBinding>
+                            </Button.IsEnabled>
+                        </Button>
+                    </Grid>
+                    <Grid Visibility="{Binding IsStemSeparating, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=true}">
+                        <ProgressBar Value="{Binding SeparateProgress}" Maximum="1" Height="10"/>
+                    </Grid>
+                </Grid>
+            </GroupBox>
+        </Expander>
     </Grid>
 </Window>

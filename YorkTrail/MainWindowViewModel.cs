@@ -32,6 +32,11 @@ using System.Windows.Controls.Primitives;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Xml.Serialization;
+using System.Windows.Shapes;
+using Path = System.IO.Path;
+using System.Xml.Linq;
+using System.Threading;
+using Timer = System.Timers.Timer;
 
 namespace YorkTrail
 {
@@ -44,6 +49,13 @@ namespace YorkTrail
             _startPosition = 0.0;
             _endPosition = 1.0;
             _timeSignature = 4;
+            _isStemSeparated = false;
+            _isStemPlaying = false;
+            _vocalsVolume = 1.0f;
+            _drumsVolume = 1.0f;
+            _bassVolume = 1.0f;
+            _pianoVolume = 1.0f;
+            _otherVolume = 1.0f;
             FilePath = "";
             MarkerList = new ObservableCollection<double>();
 
@@ -268,6 +280,185 @@ namespace YorkTrail
             }
         }
 
+        private float _vocalsVolume;
+        public float VocalsVolume
+        {
+            get {  return  _vocalsVolume; }
+            set {
+                _vocalsVolume = value;
+                SetStemVolumes();
+                RaisePropertyChanged(nameof(VocalsVolume));
+            }
+        }
+
+        private float _drumsVolume;
+        public float DrumsVolume
+        {
+            get { return _drumsVolume; }
+            set
+            {
+                _drumsVolume = value;
+                SetStemVolumes();
+                RaisePropertyChanged(nameof(DrumsVolume));
+            }
+        }
+
+        private float _bassVolume;
+        public float BassVolume
+        {
+            get { return _bassVolume; }
+            set
+            {
+                _bassVolume = value;
+                SetStemVolumes();
+                RaisePropertyChanged(nameof(BassVolume));
+            }
+        }
+
+        private float _pianoVolume;
+        public float PianoVolume
+        {
+            get { return _pianoVolume; }
+            set
+            {
+                _pianoVolume = value;
+                SetStemVolumes();
+                RaisePropertyChanged(nameof(PianoVolume));
+            }
+        }
+
+        private float _otherVolume;
+        public float OtherVolume
+        {
+            get { return _otherVolume; }
+            set
+            {
+                _otherVolume = value;
+                SetStemVolumes();
+                RaisePropertyChanged(nameof(OtherVolume));
+            }
+        }
+
+        private bool _vocalsMute;
+        public bool VocalsMute
+        {
+            get { return _vocalsMute; }
+            set
+            {
+                _vocalsMute = value;
+                SetStemVolumes();
+                RaisePropertyChanged(nameof(VocalsMute));
+            }
+        }
+
+        private bool _drumsMute;
+        public bool DrumsMute
+        {
+            get { return _drumsMute; }
+            set
+            {
+                _drumsMute = value;
+                SetStemVolumes();
+                RaisePropertyChanged(nameof(DrumsMute));
+            }
+        }
+
+        private bool _bassMute;
+        public bool BassMute
+        {
+            get { return _bassMute; }
+            set
+            {
+                _bassMute = value;
+                SetStemVolumes();
+                RaisePropertyChanged(nameof(BassMute));
+            }
+        }
+
+        private bool _pianoMute;
+        public bool PianoMute
+        {
+            get { return _pianoMute; }
+            set
+            {
+                _pianoMute = value;
+                SetStemVolumes();
+                RaisePropertyChanged(nameof(PianoMute));
+            }
+        }
+
+        private bool _otherMute;
+        public bool OtherMute
+        {
+            get { return _otherMute; }
+            set
+            {
+                _otherMute = value;
+                SetStemVolumes();
+                RaisePropertyChanged(nameof(OtherMute));
+            }
+        }
+
+        private bool _vocalsSolo;
+        public bool VocalsSolo
+        {
+            get { return _vocalsSolo; }
+            set
+            {
+                _vocalsSolo = value;
+                SetStemVolumes();
+                RaisePropertyChanged(nameof(VocalsSolo));
+            }
+        }
+
+        private bool _drumsSolo;
+        public bool DrumsSolo
+        {
+            get { return _drumsSolo; }
+            set
+            {
+                _drumsSolo = value;
+                SetStemVolumes();
+                RaisePropertyChanged(nameof(DrumsSolo));
+            }
+        }
+
+        private bool _bassSolo;
+        public bool BassSolo
+        {
+            get { return _bassSolo; }
+            set
+            {
+                _bassSolo = value;
+                SetStemVolumes();
+                RaisePropertyChanged(nameof(BassSolo));
+            }
+        }
+
+        private bool _pianoSolo;
+        public bool PianoSolo
+        {
+            get { return _pianoSolo; }
+            set
+            {
+                _pianoSolo = value;
+                SetStemVolumes();
+                RaisePropertyChanged(nameof(PianoSolo));
+            }
+        }
+
+        private bool _otherSolo;
+        public bool OtherSolo
+        {
+            get { return _otherSolo; }
+            set
+            {
+                _otherSolo = value;
+                SetStemVolumes();
+                RaisePropertyChanged(nameof(OtherSolo));
+            }
+        }
+
         public StretchMethod StretchMethod
         {
             get { return Core.GetStretchMethod(); }
@@ -311,6 +502,61 @@ namespace YorkTrail
             }
         }
 
+        private bool _isStemSeparated;
+        public bool IsStemSeparated
+        {
+            get { return _isStemSeparated; }
+            set
+            {
+                _isStemSeparated = value;
+                RaisePropertyChanged(nameof(IsStemSeparated));
+            }
+        }
+
+        private bool _isStemSeparating;
+        public bool IsStemSeparating
+        {
+            get { return _isStemSeparating; }
+            set
+            {
+                _isStemSeparating = value;
+                RaisePropertyChanged(nameof(IsStemSeparating));
+            }
+        }
+
+        private double _separateProgress;
+        public double SeparateProgress
+        {
+            get { return _separateProgress; }
+            set
+            {
+                _separateProgress = value;
+                RaisePropertyChanged(nameof(SeparateProgress));
+            }
+        }
+
+        private bool _isStemPlaying;
+        public bool IsStemPlaying
+        {
+            get { return _isStemPlaying; }
+            set
+            {
+                if (_isStemPlaying != value)
+                {
+                    if (value)
+                    {
+                        Core.SwitchDecoderToStems();
+                    }
+                    else
+                    {
+                        Core.SwitchDecoderToSource();
+                    }
+                }
+                _isStemPlaying = value;
+                RaisePropertyChanged(nameof(IsStemPlaying));
+            }
+        }
+
         public YorkTrailCore Core { get; private set; } = YorkTrailHandleHolder.hYorkTrailCore;
         public float RMSL { get { return Core.GetRmsL(); } }
         public float RMSR { get { return Core.GetRmsR(); } }
@@ -320,6 +566,8 @@ namespace YorkTrail
         public float LpfFreq { get { return Core.GetLpfFreq(); } set { Core.SetLpfFreq(value); RaisePropertyChanged(nameof(LpfFreq)); } }
         public float HpfFreq { get { return Core.GetHpfFreq(); } set { Core.SetHpfFreq(value); RaisePropertyChanged(nameof(HpfFreq)); } }
         public float BpfFreq { get { return Core.GetBpfFreq(); } set { Core.SetBpfFreq(value); RaisePropertyChanged(nameof(BpfFreq)); } }
+        public bool IsFileLoaded { get { return Core.IsFileLoaded(); } }
+        public State State { get { return Core.GetState(); } }
         public List<string> DeviceList { get; private set; }
         public Settings? Settings { get; private set; }
 
@@ -356,6 +604,7 @@ namespace YorkTrail
         public FilterPresetRenameCommand FilterPresetRenameCommand { get; private set; } = (FilterPresetRenameCommand)CommandCollection.Get(nameof(FilterPresetRenameCommand));
         public AddMarkerCommand AddMarkerCommand { get; private set; } = (AddMarkerCommand)CommandCollection.Get(nameof(AddMarkerCommand));
         public ClearMarkerCommand ClearMarkerCommand { get; private set; } = (ClearMarkerCommand)CommandCollection.Get(nameof(ClearMarkerCommand));
+        public StemSeparateCommand StemSeparateCommand { get; private set; } = (StemSeparateCommand)CommandCollection.Get(nameof(StemSeparateCommand));
 
         public void DisplayUpdate()
         {
@@ -552,43 +801,58 @@ namespace YorkTrail
                     }
                 }
 
-                System.Threading.CancellationTokenSource tsource = new System.Threading.CancellationTokenSource();
-                System.Threading.CancellationToken token = tsource.Token;
-                TaskFactory factory = new TaskFactory(token);
-
-                Task t = factory.StartNew(() =>
-                {
-                    if (!Core.FileOpen(path, type))
-                    {
-                        tsource.Cancel();
-                    }
-                })
-                .ContinueWith((task) =>
-                {
-                    if (Settings != null && Settings.ShowWaveForm)
-                    {
-                        VolumeList = Core.GetVolumeList();
-                    }
-                    else
-                    {
-                        VolumeList.Clear();
-                    }
-                    StatusText = Core.GetFileInfo();
-                    RaisePropertyChanged(nameof(TotalMilliSeconds));
-                }, token);
-
-                try
-                {
-                    t.Wait(token);
-                }
-                catch(OperationCanceledException)
+                if (!Core.FileOpen(path, type))
                 {
                     MessageBox.Show("ファイルを開けませんでした\r\n" + path, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     FileClose();
                     return false;
                 }
 
+                StatusText = Core.GetFileInfo();
+                RaisePropertyChanged(nameof(IsFileLoaded));
+                RaisePropertyChanged(nameof(TotalMilliSeconds));
                 FilePath = path;
+
+                if (Settings != null && Settings.ShowWaveForm)
+                {
+                    VolumeList.Clear();
+                    var task = Task.Run(() =>
+                    {
+                        var list1 = new List<float>();
+                        var list2 = new List<float>();
+                        var list3 = new List<float>();
+                        var list4 = new List<float>();
+                        var tasks = new List<Task>();
+                        tasks.Add(Task.Run(() => { list1 = Core.GetVolumeList(0, 40, 4); }));
+                        tasks.Add(Task.Run(() => { list2 = Core.GetVolumeList(40, 40, 4); }));
+                        tasks.Add(Task.Run(() => { list3 = Core.GetVolumeList(80, 40, 4); }));
+                        tasks.Add(Task.Run(() => { list4 = Core.GetVolumeList(120, 40, 4); }));
+                        Task.WaitAll(tasks[0], tasks[1], tasks[2], tasks[3]);
+                        VolumeList.AddRange(list1);
+                        VolumeList.AddRange(list2);
+                        VolumeList.AddRange(list3);
+                        VolumeList.AddRange(list4);
+                    });
+                }
+                else
+                {
+                    VolumeList.Clear();
+                }
+
+                var dir = GetStemDir(path);
+                if (FindStemFiles(dir))
+                {
+                    IsStemSeparated = true;
+                    IsStemPlaying = false;
+                    Core.StemFilesOpen(dir);
+                }
+                else
+                {
+                    IsStemSeparated = false;
+                    IsStemPlaying = false;
+                    Core.StemFilesClose();
+                }
+
                 return true;
             }
             else
@@ -605,9 +869,11 @@ namespace YorkTrail
 
         public void FileClose()
         {
-            if (Core.IsFileLoaded())
+            if (IsFileLoaded)
             {
                 Stop();
+                IsStemSeparated = false;
+                IsStemPlaying = false;
                 Core.FileClose();
                 FilePath = "";
                 SelectionResetCommand.Execute(null);
@@ -633,9 +899,9 @@ namespace YorkTrail
 
         public void Play()
         {
-            if (Core.IsFileLoaded())
+            if (IsFileLoaded)
             {
-                if (Core.GetState() == State.Pausing)
+                if (State == State.Pausing)
                 {
                     Pause();
                 }
@@ -643,10 +909,10 @@ namespace YorkTrail
                 {
                     Position = StartPosition;
 
-                    if (Core.GetState() == State.Stopping)
+                    if (State == State.Stopping)
                         playerTask.Wait();
 
-                    if (Core.GetState() == State.Stopped)
+                    if (State == State.Stopped)
                     {
                         playerTask = Task.Run(Core.Start);
                     }
@@ -656,14 +922,14 @@ namespace YorkTrail
 
         public void Pause()
         {
-            if (Core.IsFileLoaded())
+            if (IsFileLoaded)
             {
-                if (Core.GetState() == State.Playing)
+                if (State == State.Playing)
                 {
                     Core.Pause();
                     BlinkTimer.Start();
                 }
-                else if (Core.GetState() == State.Pausing)
+                else if (State == State.Pausing)
                 {
                     BlinkTimer.Stop();
                     if (Window != null)
@@ -678,7 +944,7 @@ namespace YorkTrail
 
         public void Stop()
         {
-            if (Core.IsFileLoaded())
+            if (IsFileLoaded)
             {
                 BlinkTimer.Stop();
                 if (Window != null)
@@ -695,15 +961,15 @@ namespace YorkTrail
 
         public void SeekRelative(int ms)
         {
-            if (Core.IsFileLoaded())
+            if (IsFileLoaded)
             {
                 Core.SeekRelative(ms);
 
-                if (Core.GetState() == State.Pausing)
+                if (State == State.Pausing)
                 {
                     Play();
                 }
-                else if (Core.GetState() == State.Stopped)
+                else if (State == State.Stopped)
                 {
                     StartPosition = Position;
                     DisplayUpdate();
@@ -711,11 +977,108 @@ namespace YorkTrail
             }
         }
 
+        public string GetStemDir(string path)
+        {
+            var name = Path.GetFileName(path);
+            var mydoc = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var dir = path.Replace("\\", "_").Replace(":", "_");
+            return Path.Combine(mydoc, "YorkTrail", "stem", dir);
+        }
+
+        public bool FindStemFiles(string dir)
+        {
+            var files = new List<string> { "vocals.flac", "drums.flac", "bass.flac", "piano.flac", "other.flac" };
+
+            foreach (var file in files)
+            {
+                var path = Path.Combine(dir, file);
+
+                if (!File.Exists(path))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public void SeparateStem()
+        {
+            if (IsFileLoaded)
+            {
+                if (State != State.Stopped)
+                {
+                    Stop();
+                }
+                Position = 0;
+                var dir = GetStemDir(FilePath);
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+
+                var processTask = Task.Run(() =>
+                {
+                    IsStemSeparating = true;
+                    if (Core.SeparateStem(dir))
+                    {
+                        MessageBox.Show("正常に終了しました");
+
+                        if (!FindStemFiles(dir))
+                        {
+                            return;
+                        }
+                        Core.StemFilesOpen(dir);
+                        IsStemSeparated = true;
+                        IsStemPlaying = true;
+                    }
+                    IsStemSeparating = false;
+                });
+
+                var progressTask = Task.Run(() =>
+                {
+                    while (!processTask.IsCompleted)
+                    {
+                        Application.Current.Dispatcher.Invoke(new Action(() =>
+                        {
+                            SeparateProgress = Core.GetProgress();
+                        }));
+                        Thread.Sleep(100);
+                    }
+                });
+            }
+        }
+
+        public void GetStemVolumes(out float vo, out float dr, out float bs, out float pn, out float other)
+        {
+            if (VocalsSolo || DrumsSolo || BassSolo || PianoSolo || OtherSolo)
+            {
+                vo = (VocalsSolo) ? ((VocalsMute) ? 0.0f : VocalsVolume) : 0.0f;
+                dr = (DrumsSolo) ? ((DrumsMute) ? 0.0f : DrumsVolume) : 0.0f;
+                bs = (BassSolo) ? ((BassMute) ? 0.0f : BassVolume) : 0.0f;
+                pn = (PianoSolo) ? ((PianoMute) ? 0.0f : PianoVolume) : 0.0f;
+                other = (OtherSolo) ? ((OtherMute) ? 0.0f : OtherVolume) : 0.0f;
+            }
+            else
+            { 
+                vo = (VocalsMute) ? 0.0f : VocalsVolume;
+                dr = (DrumsMute) ? 0.0f : DrumsVolume;
+                bs = (BassMute) ? 0.0f : BassVolume;
+                pn = (PianoMute) ? 0.0f : PianoVolume;
+                other = (OtherMute) ? 0.0f : OtherVolume;
+            }
+        }
+
+        public void SetStemVolumes()
+        {
+            GetStemVolumes(out float vo, out float dr, out float bs, out float pn, out float other);
+            Core.SetStemVolumes(vo, dr, bs, pn, other);
+        }
+
         internal void RangeSlider_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (Core.IsFileLoaded())
+            if (IsFileLoaded)
             {
-                if (Core.GetState() == State.Pausing)
+                if (State == State.Pausing)
                 {
                     Play();
                 }
@@ -725,7 +1088,7 @@ namespace YorkTrail
 
         internal void RangeSlider_LowerValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (Core.IsFileLoaded())
+            if (IsFileLoaded)
             {
                 //Position = Window.SeekBar.LowerValue;
             }
@@ -740,9 +1103,9 @@ namespace YorkTrail
         
         internal void RangeSlider_LowerSliderDragCompleted(object sender, DragCompletedEventArgs e)
         {
-            if (Core.IsFileLoaded())
+            if (IsFileLoaded)
             {
-                if (this.Core.GetState() == State.Pausing)
+                if (State == State.Pausing)
                 {
                     Play();
                 }
@@ -752,7 +1115,7 @@ namespace YorkTrail
 
         internal void SeekBar_DisplayValueTickBarMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (Core.IsFileLoaded())
+            if (IsFileLoaded)
             {
                 Position = Window?.SeekBar.LowerValue ?? 0;
             }
@@ -799,7 +1162,7 @@ namespace YorkTrail
 
         internal void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (Core.GetState() == State.Playing)
+            if (State == State.Playing)
             {
                 Stop();
             }

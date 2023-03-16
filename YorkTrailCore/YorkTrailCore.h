@@ -20,17 +20,21 @@
 #include <sstream>
 #include <vector>
 #include <msclr/marshal.h>
-//#include <chrono>
-
-#include "extras/dr_flac.h"    // Enables FLAC decoding.
-#include "extras/dr_mp3.h"     // Enables MP3 decoding.
-#include "extras/dr_wav.h"     // Enables WAV decoding.
+#include <msclr/marshal_cppstd.h>
 
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
 
 #include "source/SoundTouchDLL/SoundTouchDLL.h"
 #include "rubberband/RubberBandStretcher.h"
+
+#ifdef _M_CEE
+#undef _M_CEE
+#endif // _M_CEE
+
+#include "StemSeparator.h"
+#include "FlacEncode.h"
+#include "Utils.h"
 
 using namespace System;
 using namespace System::Text;
@@ -41,6 +45,7 @@ using namespace msclr::interop;
 using namespace System::Collections::Generic;
 using namespace System::Threading;
 using namespace System::Threading::Tasks;
+using namespace System::IO;
 
 namespace YorkTrail
 {
@@ -83,11 +88,13 @@ namespace YorkTrail
 		~YorkTrailCore();
 		!YorkTrailCore();
 		String^ GetFileInfo();
-		bool FileOpen(String^ path, FileType type);
-		List<float>^ GetVolumeList();
+		bool FileOpen(String^ filePath, FileType type);
+		bool StemFilesOpen(String^ filePath);
+		void StemFilesClose();
+		List<float>^ GetVolumeList(int start, int count, int split);
 		bool IsFileLoaded();
 		void FileClose();
-		bool DeviceOpen();
+		bool DeviceOpen(ma_decoder* pDecoder);
 		void DeviceClose();
 		void Start();
 		void Pause();
@@ -95,8 +102,8 @@ namespace YorkTrail
 		void ResetRMS();
 		void SetFrame(uint64_t frame);
 		void SeekRelative(long ms);
-		uint64_t GetTime();
-		uint64_t GetTotalMilliSeconds();
+		ma_uint64 GetTime();
+		ma_uint64 GetTotalMilliSeconds();
 		State GetState();
 		double GetPosition();
 		void SetPosition(double pos);
@@ -104,6 +111,7 @@ namespace YorkTrail
 		void SetEndPosition(double pos);
 		void SetVolume(float vol);
 		float GetVolume();
+		void SetStemVolumes(float vocals, float drums, float bass, float piano, float other);
 		void SetRatio(float ratio);
 		float GetRatio();
 		void SetPitch(float pitch);
@@ -129,11 +137,16 @@ namespace YorkTrail
 		int GetPlaybackDevice();
 		float GetRmsL();
 		float GetRmsR();
+		float GetBPM();
 		void SetLoop(bool value);
 		bool GetLoop();
 		StretchMethod GetStretchMethod();
 		void SetStretchMethod(StretchMethod value);
 		void SetSoundTouchParam(int seq, int window, int overlap);
+		bool SeparateStem(String^ destFolder);
+		double GetProgress();
+		bool SwitchDecoderToSource();
+		bool SwitchDecoderToStems();
 		void miniaudioStartCallback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
 
 		delegate void NotifyTimeChangedEventHandler();
@@ -141,8 +154,15 @@ namespace YorkTrail
 
 	private:
 		HANDLE hSoundTouch;
+		HANDLE hBpm;
 		RubberBand::RubberBandStretcher* pRubberBand;
 		ma_decoder* pDecoder;
+		ma_decoder* pDecoderVocals;
+		ma_decoder* pDecoderDrums;
+		ma_decoder* pDecoderBass;
+		ma_decoder* pDecoderPiano;
+		ma_decoder* pDecoderOther;
+		ma_decoder* pCurrentDecoder;
 		ma_device* pDevice;
 		ma_lpf* pLpf;
 		ma_hpf* pHpf;
@@ -150,21 +170,26 @@ namespace YorkTrail
 		std::vector<drmp3_seek_point>* pSeekPoints;
 
 		ma_mutex* pMutex;
-		const char* path;
+		String^ filePath;
 		String^ extension;
 		FileType fileType;
 		uint32_t encodingFormat;
 		float volume = 1.0f;
-		uint64_t totalPCMFrames = 0;
-		uint32_t displayUpdateCounter = 0;
+		ma_uint64 totalPCMFrames = 0;
+		ma_uint32 displayUpdateCounter = 0;
 		State state = State::Stopped;
-		uint64_t curFrame = 0;
-		uint64_t startFrame = 0;
-		uint64_t endFrame = 0;
+		ma_uint64 curFrame = 0;
+		ma_uint64 startFrame = 0;
+		ma_uint64 endFrame = 0;
 		Channels channels = Channels::Stereo;
 		float playbackRatio = 1.0f;
 		float playbackPitch = 1.0f;
 		int playbackDevice = 0;
+		float volumeVocals = 1.0f;
+		float volumeDrums = 1.0f;
+		float volumeBass = 1.0f;
+		float volumePiano = 1.0f;
+		float volumeOther = 1.0f;
 		float rmsL = -100.0f;
 		float rmsR = -100.0f;
 		float lpfFreq = 22000.0f;
@@ -176,21 +201,28 @@ namespace YorkTrail
 		bool isLoop = false;
 		bool isBypass = false;
 		// 画面更新の頻度 (値xレイテンシ)
-		uint32_t displayUpdateCycle = 2;
+		ma_uint32 displayUpdateCycle = 2;
 		StretchMethod stretchMethod;
+		double progress = 0;
 
-		uint64_t posToFrame(double pos);
-		uint64_t frameToMillisecs(uint64_t frames);
+		ma_uint64 posToFrame(double pos);
+		ma_uint64 frameToMillisecs(uint64_t frames);
 		void Seek(int64_t frames);
 		void timeStretch(std::vector<float> &frames, std::vector<float> &ouput, float ratio);
 		//void pitchShift(std::vector<float> &frames, float pitch, float mix);
 		float lerp(float v1, float v2, float t);
 		void toDeinterleaved(std::vector<float>& input, float* const* output, int channels, int frameCount);
 		void toInterleaved(const float* const* input, std::vector<float> &output, int channels, int frameCount);
+		FLAC__int32 toInt32(const float input);
+		float clip(const float input);
 		void calcVolume(float vol, std::vector<float> &input);
 		void calcRMS(std::vector<float>& input, int frameCount, int channels, float& outputL, float& outputR);
 		void throwError(String^ loc, String^ msg);
+		int decoderInit(ma_decoder* %pDecoder, String^ filePath, ma_uint32 outputChannels, ma_uint32 outputSampleRate);
+		ma_uint64 getTotalPCMFrames(ma_decoder* pDecoder);
+		bool switchDecoder(ma_decoder* pDecoder);
 	};
+
 
 	public ref class YorkTrailHandleHolder
 	{
