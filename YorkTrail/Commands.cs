@@ -69,6 +69,7 @@ namespace YorkTrail
             { nameof(AddMarkerCommand), new AddMarkerCommand() },
             { nameof(ClearMarkerCommand), new ClearMarkerCommand() },
             { nameof(LinkSlidersCommand), new LinkSlidersCommand() },
+            { nameof(StemSeparateCommand), new StemSeparateCommand() },
         });
 
         public static CommandBase Get(string cmd)
@@ -406,7 +407,7 @@ namespace YorkTrail
     {
         public override bool CanExecute(object? parameter)
         {
-            return ViewModel?.Core.IsFileLoaded() ?? false;
+            return ViewModel?.IsFileLoaded ?? false;
         }
 
         public override void Execute(object? parameter)
@@ -652,6 +653,19 @@ namespace YorkTrail
             {
                 ViewModel.Settings.IsSliderLinked = !ViewModel.Settings.IsSliderLinked;
             }
+        }
+    }
+
+    public class StemSeparateCommand : CommandBase
+    {
+        public override bool CanExecute(object? parameter)
+        {
+            return ViewModel?.IsFileLoaded ?? false;
+        }
+
+        public override void Execute(object? parameter)
+        {
+            ViewModel?.SeparateStem();
         }
     }
 }
