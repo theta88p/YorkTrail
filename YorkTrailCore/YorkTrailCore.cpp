@@ -1480,7 +1480,7 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
         std::copy(decodedFrames.begin(), decodedFrames.end(), processedFrames.begin());
     }
     
-    //bpm_putSamples(hBpm, processedFrames.data(), frameProcessed);
+    bpm_putSamples(hBpm, processedFrames.data(), frameProcessed);
     float l, r;
     calcRMS(processedFrames, frameCount, outputChannels, l, r);
     rmsL = l;

@@ -32,7 +32,7 @@
     <Window.Resources>
         <local:TimeToStringConverter x:Key="TimeToStringConverter"/>
         <local:TimeValidationRule x:Key="TimeValidationRule"/>
-        <local:IntegerRangeValidationRule x:Key="PlusIntegerValidationRule"/>
+        <local:IntegerRangeValidationRule x:Key="IntegerRangeValidationRule"/>
     </Window.Resources>
     <Window.DataContext>
         <local:TempoCalcWindowViewModel/>
@@ -93,6 +93,6 @@
         <Label Content="小節数" HorizontalAlignment="Left" Margin="143,38,0,0" VerticalAlignment="Top" Height="26"/>
         <Label Content="始点" HorizontalAlignment="Left" Margin="155,68,0,0" VerticalAlignment="Top" Height="26"/>
         <Label Content="終点" HorizontalAlignment="Left" Margin="155,100,0,0" VerticalAlignment="Top" Height="26"/>
-
+        <ToggleButton Content="テンポ自動取得" IsChecked="{Binding IsAutoCalc}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="30,40" Width="100" Height="26"/>
     </Grid>
 </Window>
