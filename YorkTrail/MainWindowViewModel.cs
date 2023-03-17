@@ -678,6 +678,22 @@ namespace YorkTrail
                 Settings.SeekBarMaximum = Window?.SeekBar.Maximum ?? 1;
                 Settings.ZoomMultiplier = ZoomMultiplier;
                 Settings.MarkerList = MarkerList;
+                Settings.IsStemPlaying = IsStemPlaying;
+                Settings.VocalsVolume = VocalsVolume;
+                Settings.DrumsVolume = DrumsVolume;
+                Settings.BassVolume = BassVolume;
+                Settings.PianoVolume = PianoVolume;
+                Settings.OtherVolume = OtherVolume;
+                Settings.VocalsMute = VocalsMute;
+                Settings.DrumsMute = DrumsMute;
+                Settings.BassMute = BassMute;
+                Settings.PianoMute = PianoMute;
+                Settings.OtherMute = OtherMute;
+                Settings.VocalsSolo = VocalsSolo;
+                Settings.DrumsSolo = DrumsSolo;
+                Settings.BassSolo = BassSolo;
+                Settings.PianoSolo = PianoSolo;
+                Settings.OtherSolo = OtherSolo;
             }
         }
 
@@ -697,6 +713,22 @@ namespace YorkTrail
                     Window.SeekBar.Maximum = Settings.SeekBarMaximum;
                     ZoomMultiplier = Settings.ZoomMultiplier;
                     StaticMethods.ShallowCopy(Settings.MarkerList, MarkerList);
+                    IsStemPlaying = Settings.IsStemPlaying;
+                    VocalsVolume = Settings.VocalsVolume;
+                    DrumsVolume = Settings.DrumsVolume;
+                    BassVolume = Settings.BassVolume;
+                    PianoVolume = Settings.PianoVolume;
+                    OtherVolume = Settings.OtherVolume;
+                    VocalsMute = Settings.VocalsMute;
+                    DrumsMute = Settings.DrumsMute;
+                    BassMute = Settings.BassMute;
+                    PianoMute = Settings.PianoMute;
+                    OtherMute = Settings.OtherMute;
+                    VocalsSolo = Settings.VocalsSolo;
+                    DrumsSolo = Settings.DrumsSolo;
+                    BassSolo = Settings.BassSolo;
+                    PianoSolo = Settings.PianoSolo;
+                    OtherSolo = Settings.OtherSolo;
                     RaisePropertyChanged(nameof(Time));
                 }
                 Channels = Settings.Channels;

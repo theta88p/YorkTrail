@@ -178,6 +178,38 @@ namespace YorkTrail
         public int ZoomMultiplier { get; set; }
         [DataMember]
         public ObservableCollection<double> MarkerList { get; set; }
+        [DataMember]
+        public bool IsStemPlaying { get; set; }
+        [DataMember]
+        public float VocalsVolume { get; set; }
+        [DataMember]
+        public float DrumsVolume { get; set; }
+        [DataMember]
+        public float BassVolume { get; set; }
+        [DataMember]
+        public float PianoVolume { get; set; }
+        [DataMember]
+        public float OtherVolume { get; set; }
+        [DataMember]
+        public bool VocalsMute { get; set; }
+        [DataMember]
+        public bool DrumsMute { get; set; }
+        [DataMember]
+        public bool BassMute { get; set; }
+        [DataMember]
+        public bool PianoMute { get; set; }
+        [DataMember]
+        public bool OtherMute { get; set; }
+        [DataMember]
+        public bool VocalsSolo { get; set; }
+        [DataMember]
+        public bool DrumsSolo { get; set; }
+        [DataMember]
+        public bool BassSolo { get; set; }
+        [DataMember]
+        public bool PianoSolo { get; set; }
+        [DataMember]
+        public bool OtherSolo { get; set; }
 
 
         public event PropertyChangedEventHandler? PropertyChanged;
