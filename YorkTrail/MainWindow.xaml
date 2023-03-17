@@ -26,7 +26,7 @@
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     Title="YorkTrail" Height="330" Width="568" AllowDrop="True" Drop="FileDrop" MaxWidth="828" MinWidth="544" MinHeight="330" Background="WhiteSmoke"
-    SizeToContent="WidthAndHeight" ResizeMode="NoResize"
+    SizeToContent="WidthAndHeight" ResizeMode="CanMinimize"
     x:Name="mainWindow"
     SourceInitialized="MainWindow_SourceInitialized"
     Closing="MainWindow_Closing"
