@@ -34,11 +34,11 @@ namespace YorkTrail
 
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            int res = 0;
+            double res = 0;
             Min = (NoMin) ? int.MinValue : Min;
             Max = (NoMax) ? int.MaxValue : Max;
 
-            if (int.TryParse((string)value, out res) && res >= Min && res <= Max)
+            if (double.TryParse((string)value, out res) && res >= Min && res <= Max)
             {
                 return new ValidationResult(true, null);
             }

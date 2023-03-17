@@ -21,9 +21,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Timer = System.Timers.Timer;
 
 namespace YorkTrail
 {
@@ -31,7 +33,13 @@ namespace YorkTrail
     {
         public TempoCalcWindowViewModel()
         {
-
+            autocalcTimer.Elapsed += (sender, e) =>
+            {
+                Window?.TempoOutput.Dispatcher.Invoke(() =>
+                {
+                    Window.TempoOutput.Text = MainWindowViewModel?.Core.GetBPM().ToString("#.##");
+                });
+            };
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -40,6 +48,8 @@ namespace YorkTrail
 
         public TempoCalcWindow? Window { get; set; }
         public MainWindowViewModel? MainWindowViewModel { get; set; }
+
+        private Timer autocalcTimer = new Timer(500);
 
         private float _tempo;
         public float Tempo {
@@ -70,7 +80,22 @@ namespace YorkTrail
         public int TimeSignature { get; set; } = 4;
         public int Measure { get; set; } = 8;
         public float MeasureTime { get; set; } = 1;
-
+        private bool _isAutoCalc = false;
+        public bool IsAutoCalc
+        {
+            get { return _isAutoCalc; }
+            set {
+                _isAutoCalc = value;
+                if (value)
+                {
+                    autocalcTimer.Start();
+                }
+                else
+                {
+                    autocalcTimer.Stop();
+                }
+            }
+        }
 
         public InputStartTimeButtonCommand InputStartTimeButtonCommand { get; private set; } = new InputStartTimeButtonCommand();
         public InputEndTimeButtonCommand InputEndTimeButtonCommand { get; private set; } = new InputEndTimeButtonCommand();
