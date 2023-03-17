@@ -1020,7 +1020,7 @@
                 </Button>
             </StackPanel>
         </Grid>
-        <Expander Grid.Column="2" Grid.Row="1" Grid.RowSpan="5" ExpandDirection="Right" d:IsExpanded="True">
+        <Expander x:Name="StemWindowExpander" Grid.Column="2" Grid.Row="1" Grid.RowSpan="5" ExpandDirection="Right" d:IsExpanded="True">
             <GroupBox Header="Stem Separation" Width="240">
                 <Grid>
                     <Grid IsEnabled="{Binding IsStemSeparated}" Margin="0 6 0 0">
@@ -1029,7 +1029,7 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <UniformGrid Rows="1" Grid.Row="0">
-                            <RadioButton GroupName="SourceSwitch" Content="Source" IsChecked="True" Margin="50 0 10 0"/>
+                            <RadioButton GroupName="SourceSwitch" Content="Source" IsChecked="{Binding IsStemPlaying, Converter={StaticResource BooleanNegativeConverter}}" Margin="50 0 10 0"/>
                             <RadioButton GroupName="SourceSwitch" Content="Stems" IsChecked="{Binding IsStemPlaying}" Margin="10 0 50 0"/>
                         </UniformGrid>
                         <UniformGrid Rows="1" Grid.Row="1" Margin="2 10 2 0">

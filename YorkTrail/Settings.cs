@@ -130,6 +130,8 @@ namespace YorkTrail
         public StretchMethod StretchMethod { get; set; } = StretchMethod.RubberBand;
         [DataMember]
         public bool ShowWaveForm { get; set; } = true;
+        [DataMember]
+        public bool IsStemWindowExpanded { get; set; } = false;
 
         // 状態保存のためのプロパティ
         [DataMember]

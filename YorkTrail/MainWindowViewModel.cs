@@ -633,6 +633,7 @@ namespace YorkTrail
                 Settings.IconToolBarBand = Window.IconToolBar.Band;
                 Settings.IconToolBarBandIndex = Window.IconToolBar.BandIndex;
                 Settings.IconToolBarWidth = Window.IconToolBar.ActualWidth;
+                Settings.IsStemWindowExpanded = Window.StemWindowExpander.IsExpanded;
             }
         }
 
@@ -649,6 +650,7 @@ namespace YorkTrail
                 Window.IconToolBar.Band = Settings.IconToolBarBand;
                 Window.IconToolBar.BandIndex = Settings.IconToolBarBandIndex;
                 Window.IconToolBar.Width = Settings.IconToolBarWidth;
+                Window.StemWindowExpander.IsExpanded = Settings.IsStemWindowExpanded;
             }
         }
 
