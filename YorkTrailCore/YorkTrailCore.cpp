@@ -192,10 +192,15 @@ void YorkTrail::YorkTrailCore::StemFilesClose()
     if (pDecoderVocals != nullptr)
     {
         ma_decoder_uninit(pDecoderVocals);
+        pDecoderVocals = nullptr;
         ma_decoder_uninit(pDecoderDrums);
+        pDecoderDrums = nullptr;
         ma_decoder_uninit(pDecoderBass);
+        pDecoderBass = nullptr;
         ma_decoder_uninit(pDecoderPiano);
+        pDecoderPiano = nullptr;
         ma_decoder_uninit(pDecoderOther);
+        pDecoderOther = nullptr;
     }
 }
 
