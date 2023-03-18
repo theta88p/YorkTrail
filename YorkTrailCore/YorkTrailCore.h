@@ -139,6 +139,7 @@ namespace YorkTrail
 		float GetRmsL();
 		float GetRmsR();
 		float GetBPM();
+		void SetBPMCalc(bool input);
 		void SetLoop(bool value);
 		bool GetLoop();
 		StretchMethod GetStretchMethod();
@@ -201,6 +202,7 @@ namespace YorkTrail
 		bool bpfEnabled = false;
 		bool isLoop = false;
 		bool isBypass = false;
+		bool isBPMCalc = false;
 		// 画面更新の頻度 (値xレイテンシ)
 		ma_uint32 displayUpdateCycle = 2;
 		StretchMethod stretchMethod;
