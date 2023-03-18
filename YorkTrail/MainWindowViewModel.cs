@@ -1069,11 +1069,6 @@ namespace YorkTrail
         {
             if (IsFileLoaded)
             {
-                if (State != State.Stopped)
-                {
-                    Stop();
-                }
-                Position = 0;
                 var dir = GetStemDir(FilePath);
                 if (!Directory.Exists(dir))
                 {
@@ -1085,8 +1080,6 @@ namespace YorkTrail
                     IsStemSeparating = true;
                     if (Core.SeparateStem(dir))
                     {
-                        MessageBox.Show("正常に終了しました");
-
                         if (!FindStemFiles(dir))
                         {
                             return;
