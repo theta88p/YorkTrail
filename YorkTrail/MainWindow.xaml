@@ -1028,11 +1028,12 @@
                             <RowDefinition Height="22"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <UniformGrid Rows="1" Grid.Row="0">
-                            <RadioButton x:Name="SourceSelect" GroupName="SourceSwitch" Content="Source" ToolTip="音源をソースに切り替える" IsChecked="{Binding IsStemPlaying, Converter={StaticResource BooleanNegativeConverter}}" Margin="50 0 10 0"/>
-                            <RadioButton GroupName="SourceSwitch" Content="Stems" ToolTip="音源をStemに切り替える" IsChecked="{Binding IsStemPlaying}" Margin="10 0 50 0"/>
-                        </UniformGrid>
-                        <UniformGrid IsEnabled="{Binding IsChecked, ElementName=SourceSelect}" Rows="1" Grid.Row="1" Margin="2 10 2 0">
+                        <Grid>
+                            <RadioButton x:Name="SwitchSource" GroupName="SourceSwitch" Content="Source" ToolTip="音源をソースに切り替える" IsChecked="{Binding IsStemPlaying, Converter={StaticResource BooleanNegativeConverter}}" Width="60" Margin="10,0,0,0" HorizontalAlignment="Left"/>
+                            <RadioButton x:Name="SwitchStems" GroupName="SourceSwitch" Content="Stems" ToolTip="音源をStemに切り替える" IsChecked="{Binding IsStemPlaying}" Width="60" Margin="80,0,0,0" HorizontalAlignment="Left"/>
+                            <Button Content="Del" ToolTip="Stemファイル削除" Command="{Binding DeleteStemFilesCommand}" Width="30" Margin="0,0,10,0" HorizontalAlignment="Right"/>
+                        </Grid>
+                        <UniformGrid IsEnabled="{Binding IsChecked, ElementName=SwitchStems}" Rows="1" Grid.Row="1" Margin="2 10 2 0">
                             <StackPanel Orientation="Vertical">
                                 <Label Content="Vocals" HorizontalAlignment="Center"/>
                                 <Slider Orientation="Vertical" Value="{Binding VocalsVolume}" Maximum="1" Minimum="0" TickPlacement="Both" Height="126" HorizontalAlignment="Center"/>

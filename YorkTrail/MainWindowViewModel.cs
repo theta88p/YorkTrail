@@ -600,6 +600,7 @@ namespace YorkTrail
         public AddMarkerCommand AddMarkerCommand { get; private set; } = (AddMarkerCommand)CommandCollection.Get(nameof(AddMarkerCommand));
         public ClearMarkerCommand ClearMarkerCommand { get; private set; } = (ClearMarkerCommand)CommandCollection.Get(nameof(ClearMarkerCommand));
         public StemSeparateCommand StemSeparateCommand { get; private set; } = (StemSeparateCommand)CommandCollection.Get(nameof(StemSeparateCommand));
+        public DeleteStemFilesCommand DeleteStemFilesCommand { get; private set; } = (DeleteStemFilesCommand)CommandCollection.Get(nameof(DeleteStemFilesCommand));
 
         public void DisplayUpdate()
         {
@@ -1045,6 +1046,23 @@ namespace YorkTrail
                 }
             }
             return true;
+        }
+
+        public void DeleteStemFiles()
+        {
+            var mbres = MessageBox.Show("Stemファイルを削除します。よろしいですか？", "Error", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (mbres == MessageBoxResult.Yes)
+            {
+                IsStemSeparated = false;
+                IsStemPlaying = false;
+                Core.StemFilesClose();
+
+                var dir = GetStemDir(FilePath);
+                if (FindStemFiles(dir))
+                {
+                    Directory.Delete(dir, true);
+                }
+            }
         }
 
         public void SeparateStem()
