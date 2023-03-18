@@ -1050,7 +1050,7 @@ namespace YorkTrail
 
         public void DeleteStemFiles()
         {
-            var mbres = MessageBox.Show("Stemファイルを削除します。よろしいですか？", "Error", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var mbres = MessageBox.Show("Stemファイルを削除します。よろしいですか？", "ファイルの削除", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (mbres == MessageBoxResult.Yes)
             {
                 IsStemSeparated = false;
