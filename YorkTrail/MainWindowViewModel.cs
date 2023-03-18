@@ -601,6 +601,7 @@ namespace YorkTrail
         public ClearMarkerCommand ClearMarkerCommand { get; private set; } = (ClearMarkerCommand)CommandCollection.Get(nameof(ClearMarkerCommand));
         public StemSeparateCommand StemSeparateCommand { get; private set; } = (StemSeparateCommand)CommandCollection.Get(nameof(StemSeparateCommand));
         public DeleteStemFilesCommand DeleteStemFilesCommand { get; private set; } = (DeleteStemFilesCommand)CommandCollection.Get(nameof(DeleteStemFilesCommand));
+        public CancelStemSeparateCommand CancelStemSeparateCommand { get; private set; } = (CancelStemSeparateCommand)CommandCollection.Get(nameof(CancelStemSeparateCommand));
 
         public void DisplayUpdate()
         {
@@ -1075,6 +1076,9 @@ namespace YorkTrail
                     Directory.CreateDirectory(dir);
                 }
 
+                var tsource = new CancellationTokenSource();
+                var token = tsource.Token;
+
                 var processTask = Task.Run(() =>
                 {
                     IsStemSeparating = true;
@@ -1088,18 +1092,27 @@ namespace YorkTrail
                         IsStemSeparated = true;
                         IsStemPlaying = true;
                     }
+                    else
+                    {
+                        tsource.Cancel();
+                    }
                     IsStemSeparating = false;
                 });
 
                 var progressTask = Task.Run(() =>
                 {
-                    while (!processTask.IsCompleted)
+                    while (!processTask.IsCompleted || !token.IsCancellationRequested)
                     {
                         Application.Current.Dispatcher.Invoke(new Action(() =>
                         {
                             SeparateProgress = Core.GetProgress();
                         }));
                         Thread.Sleep(100);
+                    }
+
+                    if (token.IsCancellationRequested)
+                    {
+                        DeleteStemFiles();
                     }
                 });
             }

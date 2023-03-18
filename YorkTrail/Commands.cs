@@ -71,6 +71,7 @@ namespace YorkTrail
             { nameof(LinkSlidersCommand), new LinkSlidersCommand() },
             { nameof(StemSeparateCommand), new StemSeparateCommand() },
             { nameof(DeleteStemFilesCommand), new DeleteStemFilesCommand() },
+            { nameof(CancelStemSeparateCommand), new CancelStemSeparateCommand() },
         });
 
         public static CommandBase Get(string cmd)
@@ -680,6 +681,14 @@ namespace YorkTrail
         public override void Execute(object? parameter)
         {
             ViewModel?.DeleteStemFiles();
+        }
+    }
+
+    public class CancelStemSeparateCommand : CommandBase
+    {
+        public override void Execute(object? parameter)
+        {
+            ViewModel?.Core.CancelStemSeparate();
         }
     }
 }

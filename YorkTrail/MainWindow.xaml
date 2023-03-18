@@ -1086,9 +1086,12 @@
                             </Button.IsEnabled>
                         </Button>
                     </Grid>
-                    <Grid Visibility="{Binding IsStemSeparating, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=true}">
-                        <ProgressBar Value="{Binding SeparateProgress}" Maximum="1" Height="10"/>
-                    </Grid>
+                    <Border BorderBrush="DimGray" BorderThickness="1" Width="200" Height="80" Background="WhiteSmoke" Visibility="{Binding IsStemSeparating, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=true}" d:Visibility="Visible">
+                        <Grid>
+                            <ProgressBar Value="{Binding SeparateProgress}" Maximum="1" Width="180" Height="10" VerticalAlignment="Top" Margin="0,20,0,0"/>
+                            <Button Content="Cancel" Command="{Binding CancelStemSeparateCommand}" Width="60" Height="24" VerticalAlignment="Bottom" Margin="0,0,0,10"/>
+                        </Grid>
+                    </Border>
                 </Grid>
             </GroupBox>
         </Expander>

@@ -486,6 +486,11 @@ List<float>^ YorkTrail::YorkTrailCore::GetVolumeList(int start, int count, int s
     return res;
 }
 
+void YorkTrail::YorkTrailCore::CancelStemSeparate()
+{
+    stemSeparateIsCancelled = true;
+}
+
 // 重い処理なので別スレッドで実行する
 bool YorkTrail::YorkTrailCore::SeparateStem(String^ destFolder)
 {
@@ -523,7 +528,7 @@ bool YorkTrail::YorkTrailCore::SeparateStem(String^ destFolder)
 
     ma_uint64 tempTotalPCMFrames = getTotalPCMFrames(tempDecoder);
 
-    while (currentFrame < tempTotalPCMFrames)
+    while (currentFrame < tempTotalPCMFrames && !stemSeparateIsCancelled)
     {
         ma_uint64 readFrames;
         ma_uint64 requireFrames;
@@ -610,7 +615,15 @@ bool YorkTrail::YorkTrailCore::SeparateStem(String^ destFolder)
     ma_decoder_uninit(tempDecoder);
     stemSeparator.Uninit();
 
-    return true;
+    if (stemSeparateIsCancelled)
+    {
+        stemSeparateIsCancelled = false;
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 double YorkTrail::YorkTrailCore::GetProgress()
