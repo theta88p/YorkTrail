@@ -17,6 +17,7 @@
 */
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -53,6 +54,24 @@ namespace YorkTrail
                     return "";
                 }
             }
+        }
+
+        public string Copyright { get
+            {
+                var year = DateTime.Now.Year.ToString();
+                return "(C) " + year + " theta";
+            }
+        }
+
+        private void RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            var psi = new ProcessStartInfo()
+            {
+                FileName = e.Uri.AbsoluteUri,
+                UseShellExecute = true
+            };
+            Process.Start(psi);
+            e.Handled = true;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
