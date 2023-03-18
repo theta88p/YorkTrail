@@ -21,6 +21,7 @@
 #include <vector>
 #include <msclr/marshal.h>
 #include <msclr/marshal_cppstd.h>
+#include <chrono>
 
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"

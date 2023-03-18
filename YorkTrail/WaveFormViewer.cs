@@ -17,7 +17,9 @@
 */
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -34,6 +36,7 @@ namespace YorkTrail
     {
         public WaveFormViewer()
         {
+            instance = this;
             SnapsToDevicePixels = true;
             
             var unplayedColor1 = Color.FromRgb(180, 180, 180);
@@ -86,6 +89,7 @@ namespace YorkTrail
         private ColorAnimation anime2 = new ColorAnimation();
         private int CurrentBar { get; set; }
         private int PrevBar { get; set; }
+        private static WaveFormViewer instance;
 
         public double Position
         {
@@ -114,18 +118,18 @@ namespace YorkTrail
         public static readonly DependencyProperty MaximumProperty =
             DependencyProperty.Register("Maximum", typeof(double), typeof(WaveFormViewer), new FrameworkPropertyMetadata(1d, FrameworkPropertyMetadataOptions.AffectsRender, OnPropertyChanged));
 
-        public List<float> VolumeList
+        public ObservableCollection<float> VolumeList
         {
-            get { return (List<float>)GetValue(VolumeListProperty); }
+            get { return (ObservableCollection<float>)GetValue(VolumeListProperty); }
             set { SetValue(VolumeListProperty, value); }
         }
 
         public static readonly DependencyProperty VolumeListProperty =
-            DependencyProperty.Register("VolumeList", typeof(List<float>), typeof(WaveFormViewer), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender, OnPropertyChanged));
+            DependencyProperty.Register("VolumeList", typeof(ObservableCollection<float>), typeof(WaveFormViewer), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender, OnVolumeListPropertyChanged));
 
-        private static void OnPositionPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
+        private static void OnPositionPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            var ctrl = (WaveFormViewer)obj;
+            var ctrl = (WaveFormViewer)sender;
             ctrl.CurrentBar = (int)Math.Ceiling(ctrl.VolumeList.Count * ctrl.Position);
             if (ctrl.CurrentBar != ctrl.PrevBar)
             {
@@ -134,10 +138,53 @@ namespace YorkTrail
             }
         }
 
-        private static void OnPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
+        private static void OnPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            var ctrl = (WaveFormViewer)obj;
+            var ctrl = (WaveFormViewer)sender;
             ctrl.InvalidateVisual();
+        }
+
+        private static void OnVolumeListPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            var ctrl = (WaveFormViewer)sender;
+            if (e.OldValue != null)
+            {
+                var coll = (ObservableCollection<float>)e.OldValue;
+                coll.CollectionChanged -= OnCollectionChanged;
+            }
+
+            if (e.NewValue != null)
+            {
+                var coll = (ObservableCollection<float>)e.NewValue;
+                coll.CollectionChanged += OnCollectionChanged;
+            }
+        }
+
+        private static void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            var coll = (ObservableCollection<float>)sender;
+            if (coll.Count >= 160)
+            {
+                instance.Opacity = 0;
+                Task.Run(() =>
+                {
+                    double f = 0;
+                    while (f < 1)
+                    {
+                        instance.Dispatcher.Invoke(() =>
+                        {
+                            f += 0.1;
+                            instance.Opacity += 0.1;
+                            instance.InvalidateVisual();
+                        });
+                        Thread.Sleep(10);
+                    }
+                });
+            }
+            else if (coll.Count == 0)
+            {
+                instance.InvalidateVisual();
+            }
         }
 
         protected override void OnRender(DrawingContext dc)

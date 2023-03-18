@@ -440,14 +440,14 @@ namespace YorkTrail
         public static readonly DependencyProperty MarkerListProperty =
             DependencyProperty.Register("MarkerList", typeof(ObservableCollection<double>), typeof(RangeSlider), new FrameworkPropertyMetadata(null));
 
-        public List<float> VolumeList
+        public ObservableCollection<float> VolumeList
         {
-            get { return (List<float>)GetValue(VolumeListProperty); }
+            get { return (ObservableCollection<float>)GetValue(VolumeListProperty); }
             set { SetValue(VolumeListProperty, value); }
         }
 
         public static readonly DependencyProperty VolumeListProperty =
-            DependencyProperty.Register("VolumeList", typeof(List<float>), typeof(RangeSlider), new FrameworkPropertyMetadata(null));
+            DependencyProperty.Register("VolumeList", typeof(ObservableCollection<float>), typeof(RangeSlider), new FrameworkPropertyMetadata(null));
 
         public double Position
         {

@@ -298,7 +298,7 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
             }
         }
     }
-
+ 
     if (!DeviceOpen(pDecoder))
     {
         return false;
@@ -442,43 +442,41 @@ String^ YorkTrail::YorkTrailCore::GetFileInfo()
 
 List<float>^ YorkTrail::YorkTrailCore::GetVolumeList(int start, int count, int split)
 {
+    auto startTime = std::chrono::system_clock::now();
+
     float outputL, outputR;
-    int volumeCount = count;
-    int frameStep = totalPCMFrames / volumeCount / split;
-    int readFrameCount = min(frameStep / 5, 100);
+    ma_uint32 volumeCount = count;
+    ma_uint64 frameStep = totalPCMFrames / volumeCount / split;
+    ma_uint64 readFrameCount = min(frameStep, 100);
     std::vector<float> buff(readFrameCount * 2);
-    std::vector<float> decodedFrames(readFrameCount * 20);
-    List<float>^ res = gcnew List<float>;
+    List<float>^ res = gcnew List<float>(count);
 
     ma_decoder* tempDecoder = new ma_decoder();
     decoderInit(tempDecoder, filePath, NULL, NULL);
 
+    auto now = std::chrono::system_clock::now();
+    Debug::WriteLine("Decoder Initialized " + std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - now).count());
+
     for (int i = start; i < start + count; i++)
     {
-        for (int j = 0; j < 5; j++)
+        ma_decoder_seek_to_pcm_frame(tempDecoder, frameStep * i + frameStep / 2);
+        ma_uint64 frameRead;
+        if (ma_decoder_read_pcm_frames(tempDecoder, buff.data(), readFrameCount, &frameRead) != MA_SUCCESS)
         {
-            ma_decoder_seek_to_pcm_frame(tempDecoder, frameStep * i + frameStep * j / 5);
-            ma_uint64 frameRead;
-            if (ma_decoder_read_pcm_frames(tempDecoder, buff.data(), readFrameCount, &frameRead) != MA_SUCCESS)
-            {
-                //throwError("ma_decoder", "デコードエラー");
-            }
-
-            for (int k = 0; k < frameRead; k++)
-            {
-                decodedFrames[j + k] = buff[k];
-            }
-
-            if (frameRead < readFrameCount) {
-                break;
-            }
+            //throwError("ma_decoder", "デコードエラー");
         }
 
-        calcRMS(decodedFrames, readFrameCount * 5, tempDecoder->outputChannels, outputL, outputR);
+        if (frameRead < readFrameCount) {
+            break;
+        }
+
+        calcRMS(buff, readFrameCount, tempDecoder->outputChannels, outputL, outputR);
         float outputLR = (outputL + outputR) / 2;
         outputLR = (outputLR < -70.0f) ? -70.0f : outputLR;
         res->Add(outputLR);
     }
+    Debug::WriteLine("Calc End " + std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - now).count());
+    now = std::chrono::system_clock::now();
     ma_decoder_uninit(tempDecoder);
     return res;
 }
