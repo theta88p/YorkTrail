@@ -37,7 +37,11 @@ namespace YorkTrail
             {
                 Window?.TempoOutput.Dispatcher.Invoke(() =>
                 {
-                    Window.TempoOutput.Text = MainWindowViewModel?.Core.GetBPM().ToString("#.##");
+                    if (MainWindowViewModel != null)
+                    {
+                        float bpm = MainWindowViewModel.Core.GetBPM();
+                        Window.TempoOutput.Text = (bpm > 0) ? bpm.ToString("#.##") : "0";
+                    }
                 });
             };
         }
@@ -88,12 +92,13 @@ namespace YorkTrail
                 _isAutoCalc = value;
                 if (value)
                 {
-                    autocalcTimer.Start();
+                    SetAutoCalcTempo(true);
                 }
                 else
                 {
-                    autocalcTimer.Stop();
+                    SetAutoCalcTempo(false);
                 }
+                RaisePropertyChanged(nameof(IsAutoCalc));
             }
         }
 
@@ -104,6 +109,20 @@ namespace YorkTrail
         {
             double tempo = 60.0f / ((float)(EndTime - StartTime) / 1000) * Measure * TimeSignature;
             Tempo = (float)Math.Round(tempo, 2);
+        }
+
+        private void SetAutoCalcTempo(bool input)
+        {
+            MainWindowViewModel?.Core.SetBPMCalc(input);
+
+            if (input)
+            {
+                autocalcTimer.Start();
+            }
+            else
+            {
+                autocalcTimer.Stop();
+            }
         }
 
         internal void TempoOutput_TextChanged(object sender, TextChangedEventArgs e)
@@ -157,6 +176,7 @@ namespace YorkTrail
             if (Window != null)
             {
                 e.Cancel = true;
+                IsAutoCalc = false;
                 Window.Visibility = Visibility.Collapsed;
             }
         }

@@ -976,6 +976,11 @@ float YorkTrail::YorkTrailCore::GetRmsR()
     return rmsR;
 }
 
+void YorkTrail::YorkTrailCore::SetBPMCalc(bool input)
+{
+    isBPMCalc = input;
+}
+
 float YorkTrail::YorkTrailCore::GetBPM()
 {
     return bpm_getBpm(hBpm);
@@ -1483,7 +1488,10 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
         std::copy(decodedFrames.begin(), decodedFrames.end(), processedFrames.begin());
     }
     
-    bpm_putSamples(hBpm, processedFrames.data(), frameProcessed);
+    if (isBPMCalc)
+    {
+        bpm_putSamples(hBpm, processedFrames.data(), frameProcessed);
+    }
     float l, r;
     calcRMS(processedFrames, frameCount, outputChannels, l, r);
     rmsL = l;
