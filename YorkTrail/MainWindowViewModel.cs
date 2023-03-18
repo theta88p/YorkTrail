@@ -37,6 +37,7 @@ using Path = System.IO.Path;
 using System.Xml.Linq;
 using System.Threading;
 using Timer = System.Timers.Timer;
+using System.Windows.Data;
 
 namespace YorkTrail
 {
@@ -58,6 +59,8 @@ namespace YorkTrail
             _otherVolume = 1.0f;
             FilePath = "";
             MarkerList = new ObservableCollection<double>();
+            VolumeList = new ObservableCollection<float>();
+            BindingOperations.EnableCollectionSynchronization(VolumeList, _lockObject);
 
             DeviceList = Core.GetPlaybackDeviceList();
             Settings = Settings.ReadSettingsFromFile();
@@ -120,16 +123,8 @@ namespace YorkTrail
         public string FilePath { get; set; }
         public int ZoomMultiplier { get; set; }
         public ObservableCollection<double> MarkerList { get; set; }
-
-        private List<float> _volumeList = new List<float>();
-        public List<float> VolumeList
-        {
-            get { return _volumeList; }
-            set {
-                _volumeList = value;
-                RaisePropertyChanged(nameof(VolumeList));
-            }
-        }
+        public ObservableCollection<float> VolumeList { get; set; }
+        private object _lockObject = new object();
 
         public ulong Time
         {
@@ -850,23 +845,7 @@ namespace YorkTrail
                 if (Settings != null && Settings.ShowWaveForm)
                 {
                     VolumeList.Clear();
-                    var task = Task.Run(() =>
-                    {
-                        var list1 = new List<float>();
-                        var list2 = new List<float>();
-                        var list3 = new List<float>();
-                        var list4 = new List<float>();
-                        var tasks = new List<Task>();
-                        tasks.Add(Task.Run(() => { list1 = Core.GetVolumeList(0, 40, 4); }));
-                        tasks.Add(Task.Run(() => { list2 = Core.GetVolumeList(40, 40, 4); }));
-                        tasks.Add(Task.Run(() => { list3 = Core.GetVolumeList(80, 40, 4); }));
-                        tasks.Add(Task.Run(() => { list4 = Core.GetVolumeList(120, 40, 4); }));
-                        Task.WaitAll(tasks[0], tasks[1], tasks[2], tasks[3]);
-                        VolumeList.AddRange(list1);
-                        VolumeList.AddRange(list2);
-                        VolumeList.AddRange(list3);
-                        VolumeList.AddRange(list4);
-                    });
+                    GetVolumeList();
                 }
                 else
                 {
@@ -898,6 +877,39 @@ namespace YorkTrail
                     Settings.RecentFiles.Remove(path);
                 }
                 return false;
+            }
+        }
+
+        public async Task GetVolumeList()
+        {
+            int threadCount = 8;
+            int listCount = 160;
+            var lists = new List<List<float>>(threadCount);
+            
+            await Task.Run(() =>
+            {
+                var tasks = new List<Task>();
+                var action = new Action<object?>((object? x) =>
+                {
+                    if (x != null) lists[(int)x] = Core.GetVolumeList((int)x * listCount / threadCount, listCount / threadCount, threadCount);
+                });
+                for (int i = 0; i < threadCount; i++)
+                {
+                    lists.Add(new List<float>());
+                }
+                for (int i = 0; i < threadCount; i++)
+                {
+                    tasks.Add(Task.Factory.StartNew(action, i));
+                }
+                Task.WaitAll(tasks.ToArray());
+            });
+
+            for (int i = 0; i < threadCount; i++)
+            {
+                for (int j = 0; j < listCount / threadCount; j++)
+                {
+                    VolumeList.Add(lists[i][j]);
+                }
             }
         }
 
