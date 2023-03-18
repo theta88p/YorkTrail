@@ -28,7 +28,7 @@ YorkTrail::StemSeparator::~StemSeparator()
 std::error_code YorkTrail::StemSeparator::Init()
 {
     std::error_code err;
-    spleeter::Initialize(std::string("./models/offline"), { spleeter::FiveStems }, err);
+    spleeter::Initialize(std::string("./models"), { spleeter::FiveStems }, err);
     return err;
 }
 
