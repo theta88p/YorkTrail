@@ -555,6 +555,7 @@ namespace YorkTrail
         }
 
         public YorkTrailCore Core { get; private set; } = YorkTrailHandleHolder.hYorkTrailCore;
+        public YorkTrailCore Core { get; private set; } = YorkTrailHandleHolder.GetYorkTrailCore();
         public float RMSL { get { return Core.GetRmsL(); } }
         public float RMSR { get { return Core.GetRmsR(); } }
         public bool LpfEnabled { get { return Core.GetLpfEnabled(); } set { Core.SetLpfEnabled(value); RaisePropertyChanged(nameof(LpfEnabled)); } }

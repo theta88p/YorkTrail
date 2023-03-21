@@ -1499,6 +1499,6 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
 
 void YorkTrail::callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
 {
-    YorkTrailCore^ core = YorkTrailHandleHolder::hYorkTrailCore;
+    YorkTrailCore^ core = YorkTrailHandleHolder::GetYorkTrailCore();
     core->miniaudioStartCallback(pDevice, pOutput, pInput, frameCount);
 }
