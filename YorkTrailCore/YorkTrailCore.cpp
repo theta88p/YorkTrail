@@ -33,10 +33,6 @@ YorkTrail::YorkTrailCore::~YorkTrailCore()
 
 YorkTrail::YorkTrailCore::!YorkTrailCore()
 {
-    if (pSeekPoints != nullptr)
-    {
-        delete pSeekPoints;
-    }
     ma_mutex_uninit(pMutex);
     if (pDevice != nullptr)
     {
@@ -48,7 +44,7 @@ YorkTrail::YorkTrailCore::!YorkTrailCore()
         ma_decoder_uninit(pDecoder);
         StemFilesClose();
     }
-    
+
     if (hBpm != nullptr)
     {
         bpm_destroyInstance(hBpm);
@@ -132,21 +128,21 @@ void YorkTrail::YorkTrailCore::SetPlaybackDevice(int index)
 {
     if (playbackDevice != index)
     {
-    if (pDevice != nullptr)
-    {
-        if (pCurrentDecoder != nullptr)
+        if (pDevice != nullptr)
         {
-            Stop();
+            if (pCurrentDecoder != nullptr)
+            {
+                Stop();
+            }
+            DeviceClose();
+            playbackDevice = index;
+            DeviceOpen(pCurrentDecoder);
         }
-        DeviceClose();
-        playbackDevice = index;
-        DeviceOpen(pCurrentDecoder);
+        else
+        {
+            playbackDevice = index;
+        }
     }
-    else
-    {
-        playbackDevice = index;
-    }
-}
 }
 
 int YorkTrail::YorkTrailCore::GetPlaybackDevice()
@@ -169,6 +165,8 @@ int YorkTrail::YorkTrailCore::decoderInit(ma_decoder* %dec, String^ p, ma_uint32
     auto path = context->marshal_as<const char*>(p);
 
     ma_decoder_config config = ma_decoder_config_init(ma_format_f32, outputChannels, outputSampleRate);
+    config.seekPointCount = 1024;
+
     if (ma_decoder_init_file(path, &config, dec) != MA_SUCCESS)
     {
         throwError("ma_decoder", "デコーダの初期化時にエラーが発生しました");
@@ -297,27 +295,6 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
     totalPCMFrames = getTotalPCMFrames(pCurrentDecoder);
     endFrame = totalPCMFrames;
     Debug::WriteLine(totalPCMFrames);
-
-    if (t == FileType::Mp3)
-    {
-        // 実際のフレーム数がTotalPCMFramesより少ない時があるのでこうする
-        //totalPCMFrames -= 10000;
-
-        if (pSeekPoints == nullptr)
-        {
-            pSeekPoints = new std::vector<drmp3_seek_point>(1024);
-        }
-        auto backend = (ma_mp3*)pDecoder->pBackend;
-
-        if (backend != nullptr)
-        {
-            drmp3_uint32 seekPointCount = 1024;
-            if (drmp3_calculate_seek_points(&backend->dr, &seekPointCount, pSeekPoints->data()))
-            {
-                drmp3_bind_seek_table(&backend->dr, seekPointCount, pSeekPoints->data());
-            }
-        }
-    }
  
     if (!DeviceOpen(pDecoder))
     {
@@ -347,6 +324,7 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
     pRubberBand = new RubberBand::RubberBandStretcher((size_t)pDecoder->outputSampleRate, (size_t)pDecoder->outputChannels
         , RubberBand::RubberBandStretcher::OptionProcessRealTime | RubberBand::RubberBandStretcher::OptionPitchHighQuality);
 
+    SetVolume(volume);
     SetRatio(playbackRatio);
     SetPitch(playbackPitch);
 
@@ -391,7 +369,7 @@ bool YorkTrail::YorkTrailCore::DeviceOpen(ma_decoder* dec)
     {
         deviceConfig.playback.pDeviceID = &pPlaybackInfos[playbackDevice - 1].id;
     }
-
+    
     if (ma_device_init(NULL, &deviceConfig, pDevice) != MA_SUCCESS)
     {
         throwError("ma_device", "デバイスの初期化時にエラーが発生しました");
@@ -411,40 +389,44 @@ String^ YorkTrail::YorkTrailCore::GetFileInfo()
 {
     if (pDecoder != nullptr && pDevice != nullptr)
     {
-        int ch;
-        String^ samplerate;
-        String^ bits;
         String^ typeName;
+        String^ formatStr;
+        String^ channelStr;
+        String^ samplerateStr;
+        ma_format format;
+        ma_uint32 ch;
+        ma_uint32 samplerate;
         
+        ma_data_source_get_data_format(pDecoder->pBackend, &format, &ch, &samplerate, NULL, NULL);
+
         if (fileType == FileType::Wav)
         {
-            typeName = "wav";
-            auto dec = (ma_wav*)pDecoder->pBackend;
-            ch = dec->dr.channels;
-            samplerate = dec->dr.sampleRate.ToString() + "Hz ";
-            bits = dec->dr.bitsPerSample.ToString() + "bit ";
+            typeName = "WAV";
         }
         else if (fileType == FileType::Mp3)
         {
-            typeName = "mp3";
-            auto dec = (ma_mp3*)pDecoder->pBackend;
-            ch = dec->dr.channels;
-            samplerate = dec->dr.sampleRate.ToString() + "Hz ";
-            bits = "";
+            typeName = "MP3";
         }
         else if (fileType == FileType::Flac)
         {
-            typeName = "flac";
-            auto dec = (ma_flac*)pDecoder->pBackend;
-            ch = dec->dr->channels;
-            samplerate = dec->dr->sampleRate.ToString() + "Hz ";
-            bits = dec->dr->bitsPerSample.ToString() + "bit ";
+            typeName = "FLAC";
         }
         else
         {
             return nullptr;
         }
         
+        switch (pDecoder->outputFormat)
+        {
+        case 0: formatStr = "unknown "; break;
+        case 1: formatStr = "8bit Intager "; break;
+        case 2: formatStr = "16bit Intager "; break;
+        case 3: formatStr = "24bit Intager "; break;
+        case 4: formatStr = "32bit Intager "; break;
+        case 5: formatStr = "32bit Floating Point "; break;
+        default: formatStr = " "; break;
+        }
+
         String^ fstr;
         String^ backend = gcnew String(ma_get_backend_name(pDevice->pContext->backend));
 
@@ -456,7 +438,9 @@ String^ YorkTrail::YorkTrailCore::GetFileInfo()
         default: chStr = ch.ToString() + "ch "; break;
         }
 
-        return typeName + " " + samplerate + bits + chStr + backend;
+        samplerateStr = samplerate.ToString() + "Hz ";
+
+        return typeName + " " + samplerateStr + formatStr + chStr + backend;
     }
 }
 
@@ -653,7 +637,6 @@ bool YorkTrail::YorkTrailCore::IsFileLoaded()
 
 void YorkTrail::YorkTrailCore::FileClose()
 {
-    StemFilesClose();
 
     if (pDecoder != nullptr)
     {
@@ -673,13 +656,13 @@ void YorkTrail::YorkTrailCore::FileClose()
         soundtouch_clear(hSoundTouch);
         if (hBpm != nullptr)
         {
-        bpm_destroyInstance(hBpm);
-        hBpm = nullptr;
+            bpm_destroyInstance(hBpm);
+            hBpm = nullptr;
         }
         if (pRubberBand != nullptr)
         {
-        pRubberBand->~RubberBandStretcher();
-        pRubberBand = nullptr;
+            pRubberBand->~RubberBandStretcher();
+            pRubberBand = nullptr;
         }
         NotifyTimeChanged();
     }
