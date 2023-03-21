@@ -165,7 +165,10 @@ namespace YorkTrail
             var coll = (ObservableCollection<float>)sender;
             if (coll.Count >= 160)
             {
-                instance.Opacity = 0;
+                instance.Dispatcher.Invoke(() =>
+                {
+                    instance.Opacity = 0;
+                });
                 Task.Run(() =>
                 {
                     double f = 0;
@@ -183,7 +186,10 @@ namespace YorkTrail
             }
             else if (coll.Count == 0)
             {
-                instance.InvalidateVisual();
+                instance.Dispatcher.Invoke(() =>
+                { 
+                    instance.InvalidateVisual();
+                });
             }
         }
 

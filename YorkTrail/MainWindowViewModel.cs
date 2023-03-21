@@ -48,6 +48,7 @@ namespace YorkTrail
         {
             applicationName = Assembly.GetExecutingAssembly().GetName().Name ?? "YorkTrail";
             playerTask = new Task(() => { });
+            _windowTitle = applicationName;
             _statusText = "";
             _startPosition = 0.0;
             _endPosition = 1.0;
@@ -59,6 +60,9 @@ namespace YorkTrail
             _bassVolume = 1.0f;
             _pianoVolume = 1.0f;
             _otherVolume = 1.0f;
+            _timeDisplayOpacity = 1.0;
+            _seekbarMinimum = 0.0;
+            _seekbarMaximum = 1.0;
             FilePath = "";
             MarkerList = new ObservableCollection<double>();
             VolumeList = new ObservableCollection<float>();
@@ -86,7 +90,6 @@ namespace YorkTrail
                 Settings.IsInitialized = true;
             }
 
-            // Positionはイベント駆動
             Core.NotifyTimeChanged += () => {
                 RaisePropertyChanged(nameof(TimeString));
                 RaisePropertyChanged(nameof(Position));
@@ -97,18 +100,14 @@ namespace YorkTrail
             BlinkTimer = new Timer(800);
             BlinkTimer.Elapsed += (sender, e) =>
             {
-                Window?.TimeDisplay.Dispatcher.Invoke(() =>
+                if (TimeDisplayOpacity == 1.0)
                 {
-                    double opc = Window.TimeDisplay.Opacity;
-                    if (opc == 1.0)
-                    {
-                        Window.TimeDisplay.Opacity = 0.1;
-                    }
-                    else if (opc == 0.1)
-                    {
-                        Window.TimeDisplay.Opacity = 1.0;
-                    }
-                });
+                    TimeDisplayOpacity = 0.1;
+                }
+                else if (TimeDisplayOpacity == 0.1)
+                {
+                    TimeDisplayOpacity = 1.0;
+                }
             };
         }
 
@@ -127,6 +126,17 @@ namespace YorkTrail
         public ObservableCollection<double> MarkerList { get; set; }
         public ObservableCollection<float> VolumeList { get; set; }
         private object _lockObject = new object();
+
+        private string _windowTitle;
+        public string WindowTitle
+        {
+            get { return _windowTitle; }
+            set
+            {
+                _windowTitle = value;
+                RaisePropertyChanged(nameof(WindowTitle));
+            }
+        }
 
         public ulong Time
         {
@@ -554,7 +564,39 @@ namespace YorkTrail
             }
         }
 
-        public YorkTrailCore Core { get; private set; } = YorkTrailHandleHolder.hYorkTrailCore;
+        private double _timeDisplayOpacity;
+        public double TimeDisplayOpacity
+        {
+            get { return _timeDisplayOpacity; }
+            set
+            {
+                _timeDisplayOpacity = value;
+                RaisePropertyChanged(nameof(TimeDisplayOpacity));
+            }
+        }
+
+        private double _seekbarMinimum;
+        public double SeekbarMinimum
+        {
+            get { return _seekbarMinimum; }
+            set
+            {
+                _seekbarMinimum = value;
+                RaisePropertyChanged(nameof(SeekbarMinimum));
+            }
+        }
+
+        private double _seekbarMaximum;
+        public double SeekbarMaximum
+        {
+            get { return _seekbarMaximum; }
+            set
+            {
+                _seekbarMaximum = value;
+                RaisePropertyChanged(nameof(SeekbarMaximum));
+            }
+        }
+
         public YorkTrailCore Core { get; private set; } = YorkTrailHandleHolder.GetYorkTrailCore();
         public float RMSL { get { return Core.GetRmsL(); } }
         public float RMSR { get { return Core.GetRmsR(); } }
@@ -679,11 +721,11 @@ namespace YorkTrail
             }
         }
 
-        public void ResotreState()
+        public async void ResotreState()
         {
             if (Settings != null && Window != null)
             {
-                if (Settings.FilePath != "" && FileOpen(Settings.FilePath))
+                if (Settings.FilePath != "" && await FileOpen(Settings.FilePath))
                 {
                     Position = Settings.Position;
                     StartPosition = Settings.StartPosition;
@@ -717,7 +759,7 @@ namespace YorkTrail
             Settings?.FilterPresets.Add(p);
         }
 
-        public bool FileOpen(string path)
+        public async Task<bool> FileOpen(string path)
         {
             if (File.Exists(path))
             {
@@ -774,14 +816,6 @@ namespace YorkTrail
                     return false;
                 }
 
-                if (Window != null)
-                {
-                    Window.Title = applicationName + " - " + Path.GetFileName(path);
-                    SelectionResetCommand.Execute(Window);
-                    ClearMarkerCommand.Execute(Window);
-                }
-                Stop();
-
                 if (Settings != null)
                 {
                     if (Settings.RecentFiles.Contains(path))
@@ -799,13 +833,17 @@ namespace YorkTrail
                     }
                 }
 
+                Stop();
+                await FileClose();
+
                 if (!Core.FileOpen(path, type))
                 {
                     MessageBox.Show("ファイルを開けませんでした\r\n" + path, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    FileClose();
+                    await FileClose();
                     return false;
                 }
 
+                WindowTitle = applicationName + " - " + Path.GetFileName(path);
                 StatusText = Core.GetFileInfo();
                 RaisePropertyChanged(nameof(IsFileLoaded));
                 RaisePropertyChanged(nameof(TotalMilliSeconds));
@@ -814,11 +852,18 @@ namespace YorkTrail
                 if (Settings != null && Settings.ShowWaveForm)
                 {
                     VolumeList.Clear();
-                    GetVolumeList();
+                    Task.Run(GetVolumeList);
                 }
                 else
                 {
                     VolumeList.Clear();
+                }
+
+                if (IsStemSeparated)
+                {
+                    IsStemSeparated = false;
+                    IsStemPlaying = false;
+                    Core.StemFilesClose();
                 }
 
                 var dir = GetStemDir(path);
@@ -828,13 +873,6 @@ namespace YorkTrail
                     IsStemPlaying = false;
                     Core.StemFilesOpen(dir);
                 }
-                else
-                {
-                    IsStemSeparated = false;
-                    IsStemPlaying = false;
-                    Core.StemFilesClose();
-                }
-
                 return true;
             }
             else
@@ -849,29 +887,26 @@ namespace YorkTrail
             }
         }
 
-        public async Task GetVolumeList()
+        public void GetVolumeList()
         {
             int threadCount = 8;
             int listCount = 160;
             var lists = new List<List<float>>(threadCount);
             
-            await Task.Run(() =>
+            var tasks = new List<Task>();
+            var action = new Action<object?>((object? x) =>
             {
-                var tasks = new List<Task>();
-                var action = new Action<object?>((object? x) =>
-                {
-                    if (x != null) lists[(int)x] = Core.GetVolumeList((int)x * listCount / threadCount, listCount / threadCount, threadCount);
-                });
-                for (int i = 0; i < threadCount; i++)
-                {
-                    lists.Add(new List<float>());
-                }
-                for (int i = 0; i < threadCount; i++)
-                {
-                    tasks.Add(Task.Factory.StartNew(action, i));
-                }
-                Task.WaitAll(tasks.ToArray());
+                if (x != null) lists[(int)x] = Core.GetVolumeList((int)x * listCount / threadCount, listCount / threadCount, threadCount);
             });
+            for (int i = 0; i < threadCount; i++)
+            {
+                lists.Add(new List<float>());
+            }
+            for (int i = 0; i < threadCount; i++)
+            {
+                tasks.Add(Task.Factory.StartNew(action, i));
+            }
+            Task.WaitAll(tasks.ToArray());
 
             for (int i = 0; i < threadCount; i++)
             {
@@ -882,31 +917,32 @@ namespace YorkTrail
             }
         }
 
-        public void FileClose()
+        public Task FileClose()
         {
+            var task = Task.Run(() => { });
             if (IsFileLoaded)
             {
                 Stop();
                 IsStemSeparated = false;
                 IsStemPlaying = false;
-                Core.FileClose();
+                Position = 0;
                 FilePath = "";
                 SelectionResetCommand.Execute(null);
+                ClearMarkerCommand.Execute(null);
                 StatusText = "";
                 VolumeList.Clear();
-                if (Window != null)
-                {
-                    Window.Title = applicationName;
-                }
+                WindowTitle = applicationName;
+                task = Task.Run(Core.FileClose);
             }
+            return task;
         }
 
-        public void FileDrop(object sender, DragEventArgs e)
+        public async void FileDrop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                if (FileOpen(files[0]))
+                if (await FileOpen(files[0]))
                     Play();
             }
             e.Handled = true;
@@ -947,10 +983,7 @@ namespace YorkTrail
                 else if (State == State.Pausing)
                 {
                     BlinkTimer.Stop();
-                    if (Window != null)
-                    {
-                        Window.TimeDisplay.Opacity = 1.0;
-                    }
+                    TimeDisplayOpacity = 1.0;
                     playerTask.Wait();
                     playerTask = Task.Run(Core.Start);
                 }
@@ -962,10 +995,7 @@ namespace YorkTrail
             if (IsFileLoaded)
             {
                 BlinkTimer.Stop();
-                if (Window != null)
-                {
-                    Window.TimeDisplay.Opacity = 1.0;
-                }
+                TimeDisplayOpacity = 1.0;
                 Core.Stop();
                 if (playerTask.Status == TaskStatus.Running)
                     playerTask.Wait();
@@ -1097,7 +1127,7 @@ namespace YorkTrail
                 {
                     Play();
                 }
-                Position = Window?.SeekBar.LowerValue ?? 0;
+                Position = StartPosition;
             }
         }
 
@@ -1109,10 +1139,7 @@ namespace YorkTrail
             }
             else
             {
-                if (Window != null)
-                {
-                    Window.SeekBar.LowerValue = 0;
-                }
+                StartPosition = 0;
             }
         }
         
@@ -1124,7 +1151,7 @@ namespace YorkTrail
                 {
                     Play();
                 }
-                Position = Window?.SeekBar.LowerValue ?? 0;
+                Position = StartPosition;
             }
         }
 
@@ -1132,15 +1159,15 @@ namespace YorkTrail
         {
             if (IsFileLoaded)
             {
-                Position = Window?.SeekBar.LowerValue ?? 0;
+                Position = StartPosition;
             }
         }
 
 
-        internal void RecentFile_Clicked(object sender, ExecutedRoutedEventArgs e)
+        internal async void RecentFile_Clicked(object sender, ExecutedRoutedEventArgs e)
         {
             string path = (string)e.Parameter;
-            if (FileOpen(path))
+            if (await FileOpen(path))
             {
                 Play();
             }

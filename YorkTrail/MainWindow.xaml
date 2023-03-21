@@ -25,7 +25,7 @@
     mc:Ignorable="d" d:DesignWidth="828"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-    Title="YorkTrail" Height="330" Width="568" AllowDrop="True" Drop="FileDrop" MaxWidth="828" MinWidth="544" MinHeight="330" Background="WhiteSmoke"
+    Title="{Binding WindowTitle}" Height="330" Width="568" AllowDrop="True" Drop="FileDrop" MaxWidth="828" MinWidth="544" MinHeight="330" Background="WhiteSmoke"
     SizeToContent="WidthAndHeight" ResizeMode="CanMinimize"
     x:Name="mainWindow"
     SourceInitialized="MainWindow_SourceInitialized"
@@ -790,7 +790,7 @@
         </ToolBarTray>
         <Border Grid.Row="1" Width="430" BorderBrush="DarkSlateGray" Background="#FFE8E4D4" BorderThickness="1,1,1,1" CornerRadius="1,1,1,1">
             <Grid>
-                <Label x:Name="TimeDisplay" Content="{Binding TimeString, Mode=OneWay}" FontSize="24" FontWeight="Bold" FontFamily="Tahoma" Foreground="DarkSlateGray" Margin="6,0,0,0"/>
+                <Label x:Name="TimeDisplay" Content="{Binding TimeString, Mode=OneWay}" Opacity="{Binding TimeDisplayOpacity}" FontSize="24" FontWeight="Bold" FontFamily="Tahoma" Foreground="DarkSlateGray" Margin="6,0,0,0"/>
                 <StackPanel Orientation="Vertical" Width="260" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
                         <Label Content="L" Width="17" Height="20" Padding="5,1,5,1" FontWeight="Bold"/>
@@ -902,6 +902,7 @@
             <ProgressBar x:Name="ProgressBar" HorizontalAlignment="Stretch" Height="30" VerticalAlignment="Bottom" Width="430" Value="{Binding Position}" Minimum="{Binding ElementName=SeekBar, Path=Minimum}" Maximum="{Binding ElementName=SeekBar, Path=Maximum}" Foreground="#FF066AB0"/>
             <local:RangeSlider x:Name="SeekBar" Width="430" Height="54" VerticalAlignment="Bottom"
                                LowerValue="{Binding StartPosition, Mode=TwoWay}" UpperValue="{Binding EndPosition, Mode=TwoWay}"
+                               Minimum="{Binding SeekbarMinimum}" Maximum="{Binding SeekbarMaximum}"
                                LowerValueChanged="RangeSlider_LowerValueChanged" MouseLeftButtonUp="RangeSlider_MouseLeftButtonUp"
                                LowerSliderDragCompleted="RangeSlider_LowerSliderDragCompleted"
                                DisplayValueTickBarMouseLeftButtonUp="SeekBar_DisplayValueTickBarMouseLeftButtonUp"
