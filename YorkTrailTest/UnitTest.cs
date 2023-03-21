@@ -31,18 +31,19 @@ namespace YorkTrailTest
         public MainWindowViewModel vm;
 
         [SetUp]
-        public void Setup()
+        public async void Setup()
         {
             window = new MainWindow();
             vm = (MainWindowViewModel)window.DataContext;
-            vm.FileOpen("test.flac");
+            await vm.FileOpen("test.flac");
         }
 
         [Test]
-        public void FileOpenTest()
+        public async void FileOpenTest()
         {
-            Assert.IsTrue(vm.FileOpen("test.flac"));
-            vm.FileClose();
+            var res = await vm.FileOpen("test.flac");
+            Assert.IsTrue(res);
+            await vm.FileClose();
             Assert.AreEqual(vm.FilePath, "");
         }
 

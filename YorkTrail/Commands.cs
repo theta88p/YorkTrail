@@ -239,16 +239,15 @@ namespace YorkTrail
     {
         public override void Execute(object? parameter)
         {
-            if (Window != null && ViewModel != null)
+            if (ViewModel != null)
             {
-                var window = Window;
                 var vm = ViewModel;
                 int initial = (int)Math.Pow(2, (int)((vm.EndPosition - vm.StartPosition) * 4));
                 initial = Math.Max(initial, 4);
                 vm.ZoomMultiplier = Math.Max(initial, vm.ZoomMultiplier * 2);
                 vm.ZoomMultiplier = Math.Min(vm.ZoomMultiplier, 1024);
-                window.SeekBar.Minimum = Math.Max(0, vm.StartPosition - (vm.EndPosition - vm.StartPosition) / (vm.ZoomMultiplier * (vm.EndPosition - vm.StartPosition)));
-                window.SeekBar.Maximum = Math.Min(1, vm.EndPosition + (vm.EndPosition - vm.StartPosition) / (vm.ZoomMultiplier * (vm.EndPosition - vm.StartPosition)));
+                vm.SeekbarMinimum = Math.Max(0, vm.StartPosition - (vm.EndPosition - vm.StartPosition) / (vm.ZoomMultiplier * (vm.EndPosition - vm.StartPosition)));
+                vm.SeekbarMaximum = Math.Min(1, vm.EndPosition + (vm.EndPosition - vm.StartPosition) / (vm.ZoomMultiplier * (vm.EndPosition - vm.StartPosition)));
             }
         }
     }
@@ -257,15 +256,14 @@ namespace YorkTrail
     {
         public override void Execute(object? parameter)
         {
-            if (Window != null && ViewModel != null)
+            if (ViewModel != null)
             {
-                var window = Window;
                 var vm = ViewModel;
                 int initial = (int)Math.Pow(2, (int)((vm.EndPosition - vm.StartPosition) * 4));
                 initial = Math.Max(initial, 4);
                 vm.ZoomMultiplier = (vm.ZoomMultiplier <= initial) ? 0 : vm.ZoomMultiplier / 2;
-                window.SeekBar.Minimum = Math.Max(0, vm.StartPosition - (vm.EndPosition - vm.StartPosition) / (vm.ZoomMultiplier * (vm.EndPosition - vm.StartPosition)));
-                window.SeekBar.Maximum = Math.Min(1, vm.EndPosition + (vm.EndPosition - vm.StartPosition) / (vm.ZoomMultiplier * (vm.EndPosition - vm.StartPosition)));
+                vm.SeekbarMinimum = Math.Max(0, vm.StartPosition - (vm.EndPosition - vm.StartPosition) / (vm.ZoomMultiplier * (vm.EndPosition - vm.StartPosition)));
+                vm.SeekbarMaximum = Math.Min(1, vm.EndPosition + (vm.EndPosition - vm.StartPosition) / (vm.ZoomMultiplier * (vm.EndPosition - vm.StartPosition)));
             }
         }
     }
@@ -389,7 +387,7 @@ namespace YorkTrail
     }
     public class FileOpenCommand : CommandBase
     {
-        public override void Execute(object? parameter)
+        public override async void Execute(object? parameter)
         {
             if (ViewModel != null)
             {
@@ -398,7 +396,7 @@ namespace YorkTrail
                 ofd.Filter = "音声ファイル (*.wav;*.mp3;*.flac)|*.wav;*.mp3;*.flac";
                 if (ofd.ShowDialog() == true)
                 {
-                    if (vm.FileOpen(ofd.FileName))
+                    if (await vm.FileOpen(ofd.FileName))
                         vm.Play();
                 }
             }
@@ -446,7 +444,7 @@ namespace YorkTrail
     {
         public override void Execute(object? parameter)
         {
-            if (Window != null && ViewModel != null)
+            if (ViewModel != null)
             {
                 var window = Window;
                 var vm = ViewModel;
@@ -462,7 +460,7 @@ namespace YorkTrail
     {
         public override void Execute(object? parameter)
         {
-            if (Window != null && ViewModel != null)
+            if (ViewModel != null)
             {
                 var sw = new SettingWindow(ViewModel);
                 sw.ShowActivated = true;
@@ -476,10 +474,10 @@ namespace YorkTrail
     {
         public override void Execute(object? parameter)
         {
-            if (Window != null && ViewModel != null)
+            if (ViewModel != null)
             {
-                Window.SeekBar.Minimum = 0.0;
-                Window.SeekBar.Maximum = 1.0;
+                ViewModel.SeekbarMinimum = 0.0;
+                ViewModel.SeekbarMaximum = 1.0;
                 ViewModel.StartPosition = 0.0;
                 ViewModel.EndPosition = 1.0;
             }

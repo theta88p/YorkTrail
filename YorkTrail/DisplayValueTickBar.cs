@@ -108,7 +108,10 @@ namespace YorkTrail
 
         private void OnMarkerListCollectionChanged(object? s, NotifyCollectionChangedEventArgs e)
         {
-            this.InvalidateVisual();
+            this.Dispatcher.Invoke(() =>
+            {
+                this.InvalidateVisual();
+            });
         }
 
         protected override void OnRender(DrawingContext dc)
