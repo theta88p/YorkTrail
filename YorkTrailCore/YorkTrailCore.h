@@ -232,7 +232,12 @@ namespace YorkTrail
 	public ref class YorkTrailHandleHolder
 	{
 	public:
-		static YorkTrail::YorkTrailCore^ hYorkTrailCore = gcnew YorkTrail::YorkTrailCore();
+		static YorkTrail::YorkTrailCore^ GetYorkTrailCore()
+		{
+			return hYorkTrailCore;
+		}
+	private:
+		static YorkTrail::YorkTrailCore^ hYorkTrailCore = gcnew YorkTrailCore();
 	};
 
 	void callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
