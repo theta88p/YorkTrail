@@ -130,6 +130,8 @@ List<String^>^ YorkTrail::YorkTrailCore::GetPlaybackDeviceList()
 
 void YorkTrail::YorkTrailCore::SetPlaybackDevice(int index)
 {
+    if (playbackDevice != index)
+    {
     if (pDevice != nullptr)
     {
         if (pCurrentDecoder != nullptr)
@@ -144,6 +146,7 @@ void YorkTrail::YorkTrailCore::SetPlaybackDevice(int index)
     {
         playbackDevice = index;
     }
+}
 }
 
 int YorkTrail::YorkTrailCore::GetPlaybackDevice()
