@@ -28,6 +28,7 @@ YorkTrail::YorkTrailCore::YorkTrailCore()
 
 YorkTrail::YorkTrailCore::~YorkTrailCore()
 {
+    this->!YorkTrailCore();
 }
 
 YorkTrail::YorkTrailCore::!YorkTrailCore()
@@ -45,11 +46,18 @@ YorkTrail::YorkTrailCore::!YorkTrailCore()
     if (pDecoder != nullptr)
     {
         ma_decoder_uninit(pDecoder);
+        StemFilesClose();
     }
     
     if (hBpm != nullptr)
     {
         bpm_destroyInstance(hBpm);
+    }
+
+    if (pRubberBand != nullptr)
+    {
+        pRubberBand->~RubberBandStretcher();
+        pRubberBand = nullptr;
     }
 
     soundtouch_destroyInstance(hSoundTouch);
@@ -148,6 +156,10 @@ int YorkTrail::YorkTrailCore::decoderInit(ma_decoder* %dec, String^ p, ma_uint32
     if (dec == nullptr)
     {
         dec = new ma_decoder();
+    }
+    else
+    {
+        ma_decoder_uninit(dec);
     }
 
     marshal_context^ context = gcnew marshal_context();
@@ -624,20 +636,30 @@ void YorkTrail::YorkTrailCore::FileClose()
 
     if (pDecoder != nullptr)
     {
+        if (pDevice != nullptr)
+        {
+            ma_device_uninit(pDevice);
+            pDevice = nullptr;
+        }
         ma_decoder_uninit(pDecoder);
         pDecoder = nullptr;
-        ma_device_uninit(pDevice);
-        pDevice = nullptr;
+        StemFilesClose();
         totalPCMFrames = 0;
         curFrame = 0;
         startFrame = 0;
         endFrame = 0;
         filePath = nullptr;
         soundtouch_clear(hSoundTouch);
+        if (hBpm != nullptr)
+        {
         bpm_destroyInstance(hBpm);
         hBpm = nullptr;
+        }
+        if (pRubberBand != nullptr)
+        {
         pRubberBand->~RubberBandStretcher();
         pRubberBand = nullptr;
+        }
         NotifyTimeChanged();
     }
 }
