@@ -24,7 +24,7 @@
 #include <chrono>
 
 #define MINIAUDIO_IMPLEMENTATION
-#include "miniaudio.h"
+#include "lib/miniaudio.h"
 
 #include "source/SoundTouchDLL/SoundTouchDLL.h"
 #include "rubberband/RubberBandStretcher.h"
@@ -169,7 +169,6 @@ namespace YorkTrail
 		ma_lpf* pLpf;
 		ma_hpf* pHpf;
 		ma_bpf* pBpf;
-		std::vector<drmp3_seek_point>* pSeekPoints;
 
 		ma_mutex* pMutex;
 		String^ filePath;
