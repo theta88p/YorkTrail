@@ -38,6 +38,7 @@ using System.Xml.Linq;
 using System.Threading;
 using Timer = System.Timers.Timer;
 using System.Windows.Data;
+using System.Reflection;
 
 namespace YorkTrail
 {
@@ -45,6 +46,7 @@ namespace YorkTrail
     {
         public MainWindowViewModel()
         {
+            applicationName = Assembly.GetExecutingAssembly().GetName().Name ?? "YorkTrail";
             playerTask = new Task(() => { });
             _statusText = "";
             _startPosition = 0.0;
@@ -110,7 +112,7 @@ namespace YorkTrail
             };
         }
 
-        private const string applicationName = "YorkTrail";
+        private string applicationName;
 
         public Timer BlinkTimer;
         private Task playerTask;
