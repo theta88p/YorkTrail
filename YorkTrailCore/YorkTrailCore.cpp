@@ -265,6 +265,9 @@ bool YorkTrail::YorkTrailCore::switchDecoder(ma_decoder* dec)
     pRubberBand = new RubberBand::RubberBandStretcher((size_t)sampleRate, (size_t)channels
         , RubberBand::RubberBandStretcher::OptionProcessRealTime | RubberBand::RubberBandStretcher::OptionPitchHighQuality);
 
+    SetRatio(playbackRatio);
+    SetPitch(playbackPitch);
+
     return true;
 }
 
