@@ -101,6 +101,11 @@ namespace YorkTrail
             remove { CommandManager.RequerySuggested -= value; }
         }
 
+        public static void RaiseCanExecuteChanged()
+        {
+            CommandManager.InvalidateRequerySuggested();
+        }
+
         public virtual bool CanExecute(object? parameter)
         {
             return true;

@@ -953,9 +953,8 @@ namespace YorkTrail
             }
         }
 
-        public Task FileClose()
+        public async Task FileClose()
         {
-            var task = Task.Run(() => { });
             if (IsFileLoaded)
             {
                 Stop();
@@ -968,9 +967,9 @@ namespace YorkTrail
                 StatusText = "";
                 VolumeList.Clear();
                 WindowTitle = applicationName;
-                task = Task.Run(Core.FileClose);
+                await Task.Run(Core.FileClose);
+                CommandBase.RaiseCanExecuteChanged();
             }
-            return task;
         }
 
         public async void FileDrop(object sender, DragEventArgs e)

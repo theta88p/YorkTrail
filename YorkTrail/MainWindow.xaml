@@ -60,7 +60,6 @@
             <local:BooleanNegativeConverter x:Key="BooleanNegativeConverter"/>
             <local:KeyBindsToStringConverter x:Key="KeyBindsToStringConverter"/>
             <local:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-            <local:PriorityBooleanConverter x:Key="PriorityBooleanConverter"/>
             <!--ボリュームスライダー-->
             <!--#region -->
             <Style x:Key="RepeatButtonPink" TargetType="{x:Type RepeatButton}">
@@ -1078,14 +1077,7 @@
                         </UniformGrid>
                     </Grid>
                     <Grid Visibility="{Binding IsStemSeparated, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <Button Content="Separate" ToolTip="Stem分離" Width="64" Height="30" Command="{Binding StemSeparateCommand}">
-                            <Button.IsEnabled>
-                                <MultiBinding Converter="{StaticResource PriorityBooleanConverter}">
-                                    <Binding Path="IsStemSeparating"/>
-                                    <Binding Path="IsFileLoaded"/>
-                                </MultiBinding>
-                            </Button.IsEnabled>
-                        </Button>
+                        <Button Content="Separate" ToolTip="Stem分離" Width="64" Height="30" Command="{Binding StemSeparateCommand}"/>
                     </Grid>
                     <Border BorderBrush="DimGray" BorderThickness="1" Width="200" Height="84" Background="WhiteSmoke" Visibility="{Binding IsStemSeparating, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=true}" d:Visibility="Visible">
                         <Grid>
