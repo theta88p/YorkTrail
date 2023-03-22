@@ -53,13 +53,6 @@ namespace YorkTrail
             _startPosition = 0.0;
             _endPosition = 1.0;
             _timeSignature = 4;
-            _isStemSeparated = false;
-            _isStemPlaying = false;
-            _vocalsVolume = 1.0f;
-            _drumsVolume = 1.0f;
-            _bassVolume = 1.0f;
-            _pianoVolume = 1.0f;
-            _otherVolume = 1.0f;
             _timeDisplayOpacity = 1.0;
             _seekbarMinimum = 0.0;
             _seekbarMaximum = 1.0;
@@ -287,185 +280,6 @@ namespace YorkTrail
             }
         }
 
-        private float _vocalsVolume;
-        public float VocalsVolume
-        {
-            get {  return  _vocalsVolume; }
-            set {
-                _vocalsVolume = value;
-                SetStemVolumes();
-                RaisePropertyChanged(nameof(VocalsVolume));
-            }
-        }
-
-        private float _drumsVolume;
-        public float DrumsVolume
-        {
-            get { return _drumsVolume; }
-            set
-            {
-                _drumsVolume = value;
-                SetStemVolumes();
-                RaisePropertyChanged(nameof(DrumsVolume));
-            }
-        }
-
-        private float _bassVolume;
-        public float BassVolume
-        {
-            get { return _bassVolume; }
-            set
-            {
-                _bassVolume = value;
-                SetStemVolumes();
-                RaisePropertyChanged(nameof(BassVolume));
-            }
-        }
-
-        private float _pianoVolume;
-        public float PianoVolume
-        {
-            get { return _pianoVolume; }
-            set
-            {
-                _pianoVolume = value;
-                SetStemVolumes();
-                RaisePropertyChanged(nameof(PianoVolume));
-            }
-        }
-
-        private float _otherVolume;
-        public float OtherVolume
-        {
-            get { return _otherVolume; }
-            set
-            {
-                _otherVolume = value;
-                SetStemVolumes();
-                RaisePropertyChanged(nameof(OtherVolume));
-            }
-        }
-
-        private bool _vocalsMute;
-        public bool VocalsMute
-        {
-            get { return _vocalsMute; }
-            set
-            {
-                _vocalsMute = value;
-                SetStemVolumes();
-                RaisePropertyChanged(nameof(VocalsMute));
-            }
-        }
-
-        private bool _drumsMute;
-        public bool DrumsMute
-        {
-            get { return _drumsMute; }
-            set
-            {
-                _drumsMute = value;
-                SetStemVolumes();
-                RaisePropertyChanged(nameof(DrumsMute));
-            }
-        }
-
-        private bool _bassMute;
-        public bool BassMute
-        {
-            get { return _bassMute; }
-            set
-            {
-                _bassMute = value;
-                SetStemVolumes();
-                RaisePropertyChanged(nameof(BassMute));
-            }
-        }
-
-        private bool _pianoMute;
-        public bool PianoMute
-        {
-            get { return _pianoMute; }
-            set
-            {
-                _pianoMute = value;
-                SetStemVolumes();
-                RaisePropertyChanged(nameof(PianoMute));
-            }
-        }
-
-        private bool _otherMute;
-        public bool OtherMute
-        {
-            get { return _otherMute; }
-            set
-            {
-                _otherMute = value;
-                SetStemVolumes();
-                RaisePropertyChanged(nameof(OtherMute));
-            }
-        }
-
-        private bool _vocalsSolo;
-        public bool VocalsSolo
-        {
-            get { return _vocalsSolo; }
-            set
-            {
-                _vocalsSolo = value;
-                SetStemVolumes();
-                RaisePropertyChanged(nameof(VocalsSolo));
-            }
-        }
-
-        private bool _drumsSolo;
-        public bool DrumsSolo
-        {
-            get { return _drumsSolo; }
-            set
-            {
-                _drumsSolo = value;
-                SetStemVolumes();
-                RaisePropertyChanged(nameof(DrumsSolo));
-            }
-        }
-
-        private bool _bassSolo;
-        public bool BassSolo
-        {
-            get { return _bassSolo; }
-            set
-            {
-                _bassSolo = value;
-                SetStemVolumes();
-                RaisePropertyChanged(nameof(BassSolo));
-            }
-        }
-
-        private bool _pianoSolo;
-        public bool PianoSolo
-        {
-            get { return _pianoSolo; }
-            set
-            {
-                _pianoSolo = value;
-                SetStemVolumes();
-                RaisePropertyChanged(nameof(PianoSolo));
-            }
-        }
-
-        private bool _otherSolo;
-        public bool OtherSolo
-        {
-            get { return _otherSolo; }
-            set
-            {
-                _otherSolo = value;
-                SetStemVolumes();
-                RaisePropertyChanged(nameof(OtherSolo));
-            }
-        }
-
         public StretchMethod StretchMethod
         {
             get { return Core.GetStretchMethod(); }
@@ -506,61 +320,6 @@ namespace YorkTrail
             {
                 _timeSignature = value;
                 RaisePropertyChanged(nameof(TimeSignature));
-            }
-        }
-
-        private bool _isStemSeparated;
-        public bool IsStemSeparated
-        {
-            get { return _isStemSeparated; }
-            set
-            {
-                _isStemSeparated = value;
-                RaisePropertyChanged(nameof(IsStemSeparated));
-            }
-        }
-
-        private bool _isStemSeparating;
-        public bool IsStemSeparating
-        {
-            get { return _isStemSeparating; }
-            set
-            {
-                _isStemSeparating = value;
-                RaisePropertyChanged(nameof(IsStemSeparating));
-            }
-        }
-
-        private double _separateProgress;
-        public double SeparateProgress
-        {
-            get { return _separateProgress; }
-            set
-            {
-                _separateProgress = value;
-                RaisePropertyChanged(nameof(SeparateProgress));
-            }
-        }
-
-        private bool _isStemPlaying;
-        public bool IsStemPlaying
-        {
-            get { return _isStemPlaying; }
-            set
-            {
-                if (_isStemPlaying != value)
-                {
-                    if (value)
-                    {
-                        Core.SwitchDecoderToStems();
-                    }
-                    else
-                    {
-                        Core.SwitchDecoderToSource();
-                    }
-                }
-                _isStemPlaying = value;
-                RaisePropertyChanged(nameof(IsStemPlaying));
             }
         }
 
@@ -644,7 +403,6 @@ namespace YorkTrail
         public FilterPresetRenameCommand FilterPresetRenameCommand { get; private set; } = (FilterPresetRenameCommand)CommandCollection.Get(nameof(FilterPresetRenameCommand));
         public AddMarkerCommand AddMarkerCommand { get; private set; } = (AddMarkerCommand)CommandCollection.Get(nameof(AddMarkerCommand));
         public ClearMarkerCommand ClearMarkerCommand { get; private set; } = (ClearMarkerCommand)CommandCollection.Get(nameof(ClearMarkerCommand));
-        public StemSeparateCommand StemSeparateCommand { get; private set; } = (StemSeparateCommand)CommandCollection.Get(nameof(StemSeparateCommand));
 
         public async void SetPlaybackDevice(int index)
         {
@@ -863,21 +621,6 @@ namespace YorkTrail
                 {
                     VolumeList.Clear();
                 }
-
-                if (IsStemSeparated)
-                {
-                    IsStemSeparated = false;
-                    IsStemPlaying = false;
-                    Core.StemFilesClose();
-                }
-
-                var dir = GetStemDir(path);
-                if (FindStemFiles(dir))
-                {
-                    IsStemSeparated = true;
-                    IsStemPlaying = false;
-                    Core.StemFilesOpen(dir);
-                }
                 return true;
             }
             else
@@ -927,8 +670,6 @@ namespace YorkTrail
             if (IsFileLoaded)
             {
                 Stop();
-                IsStemSeparated = false;
-                IsStemPlaying = false;
                 Position = 0;
                 FilePath = "";
                 SelectionResetCommand.Execute(null);
@@ -1024,103 +765,6 @@ namespace YorkTrail
                     DisplayUpdate();
                 }
             }
-        }
-
-        public string GetStemDir(string path)
-        {
-            var name = Path.GetFileName(path);
-            var mydoc = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var dir = path.Replace("\\", "_").Replace(":", "_");
-            return Path.Combine(mydoc, "YorkTrail", "stem", dir);
-        }
-
-        public bool FindStemFiles(string dir)
-        {
-            var files = new List<string> { "vocals.flac", "drums.flac", "bass.flac", "piano.flac", "other.flac" };
-
-            foreach (var file in files)
-            {
-                var path = Path.Combine(dir, file);
-
-                if (!File.Exists(path))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public void SeparateStem()
-        {
-            if (IsFileLoaded)
-            {
-                if (State != State.Stopped)
-                {
-                    Stop();
-                }
-                Position = 0;
-                var dir = GetStemDir(FilePath);
-                if (!Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
-
-                var processTask = Task.Run(() =>
-                {
-                    IsStemSeparating = true;
-                    if (Core.SeparateStem(dir))
-                    {
-                        MessageBox.Show("正常に終了しました");
-
-                        if (!FindStemFiles(dir))
-                        {
-                            return;
-                        }
-                        Core.StemFilesOpen(dir);
-                        IsStemSeparated = true;
-                        IsStemPlaying = true;
-                    }
-                    IsStemSeparating = false;
-                });
-
-                var progressTask = Task.Run(() =>
-                {
-                    while (!processTask.IsCompleted)
-                    {
-                        Application.Current.Dispatcher.Invoke(new Action(() =>
-                        {
-                            SeparateProgress = Core.GetProgress();
-                        }));
-                        Thread.Sleep(100);
-                    }
-                });
-            }
-        }
-
-        public void GetStemVolumes(out float vo, out float dr, out float bs, out float pn, out float other)
-        {
-            if (VocalsSolo || DrumsSolo || BassSolo || PianoSolo || OtherSolo)
-            {
-                vo = (VocalsSolo) ? ((VocalsMute) ? 0.0f : VocalsVolume) : 0.0f;
-                dr = (DrumsSolo) ? ((DrumsMute) ? 0.0f : DrumsVolume) : 0.0f;
-                bs = (BassSolo) ? ((BassMute) ? 0.0f : BassVolume) : 0.0f;
-                pn = (PianoSolo) ? ((PianoMute) ? 0.0f : PianoVolume) : 0.0f;
-                other = (OtherSolo) ? ((OtherMute) ? 0.0f : OtherVolume) : 0.0f;
-            }
-            else
-            { 
-                vo = (VocalsMute) ? 0.0f : VocalsVolume;
-                dr = (DrumsMute) ? 0.0f : DrumsVolume;
-                bs = (BassMute) ? 0.0f : BassVolume;
-                pn = (PianoMute) ? 0.0f : PianoVolume;
-                other = (OtherMute) ? 0.0f : OtherVolume;
-            }
-        }
-
-        public void SetStemVolumes()
-        {
-            GetStemVolumes(out float vo, out float dr, out float bs, out float pn, out float other);
-            Core.SetStemVolumes(vo, dr, bs, pn, other);
         }
 
         internal void RangeSlider_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)

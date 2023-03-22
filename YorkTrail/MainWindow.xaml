@@ -22,10 +22,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:YorkTrail"
     xmlns:Collections="clr-namespace:System.Collections;assembly=System.Runtime" x:Class="YorkTrail.MainWindow"
-    mc:Ignorable="d" d:DesignWidth="828"
+    mc:Ignorable="d"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-    Title="{Binding WindowTitle}" Height="330" Width="568" AllowDrop="True" Drop="FileDrop" MaxWidth="828" MinWidth="544" MinHeight="330" Background="WhiteSmoke"
+    Title="{Binding WindowTitle}" Height="330" Width="568" AllowDrop="True" Drop="FileDrop" MaxWidth="568" MinWidth="568" MinHeight="330" Background="WhiteSmoke"
     SizeToContent="WidthAndHeight" ResizeMode="CanMinimize"
     x:Name="mainWindow"
     SourceInitialized="MainWindow_SourceInitialized"
@@ -1020,69 +1020,5 @@
                 </Button>
             </StackPanel>
         </Grid>
-        <Expander Grid.Column="2" Grid.Row="1" Grid.RowSpan="5" ExpandDirection="Right" d:IsExpanded="True">
-            <GroupBox Header="Stem Separation" Width="240">
-                <Grid>
-                    <Grid IsEnabled="{Binding IsStemSeparated}" Margin="0 6 0 0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="22"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <UniformGrid Rows="1" Grid.Row="0">
-                            <RadioButton GroupName="SourceSwitch" Content="Source" IsChecked="True" Margin="50 0 10 0"/>
-                            <RadioButton GroupName="SourceSwitch" Content="Stems" IsChecked="{Binding IsStemPlaying}" Margin="10 0 50 0"/>
-                        </UniformGrid>
-                        <UniformGrid Rows="1" Grid.Row="1" Margin="2 10 2 0">
-                            <StackPanel Orientation="Vertical">
-                                <Label Content="Vocals" HorizontalAlignment="Center"/>
-                                <Slider Orientation="Vertical" Value="{Binding VocalsVolume}" Maximum="1" Minimum="0" TickPlacement="Both" Height="126" HorizontalAlignment="Center"/>
-                                <UniformGrid Rows="1" Margin="2 4 2 0">
-                                    <ToggleButton Content="M" Style="{StaticResource MuteButton}" IsChecked="{Binding VocalsMute}"/>
-                                    <ToggleButton Content="S" Style="{StaticResource SoloButton}" IsChecked="{Binding VocalsSolo}"/>
-                                </UniformGrid>
-                            </StackPanel>
-                            <StackPanel Orientation="Vertical">
-                                <Label Content="Drums" HorizontalAlignment="Center"/>
-                                <Slider Orientation="Vertical" Value="{Binding DrumsVolume}" Maximum="1" Minimum="0" TickPlacement="Both" Height="126" HorizontalAlignment="Center"/>
-                                <UniformGrid Rows="1" Margin="2 4 2 0">
-                                    <ToggleButton Content="M" Style="{StaticResource MuteButton}" IsChecked="{Binding DrumsMute}"/>
-                                    <ToggleButton Content="S" Style="{StaticResource SoloButton}" IsChecked="{Binding DrumsSolo}"/>
-                                </UniformGrid>
-                            </StackPanel>
-                            <StackPanel Orientation="Vertical">
-                                <Label Content="Bass" HorizontalAlignment="Center"/>
-                                <Slider Orientation="Vertical" Value="{Binding BassVolume}" Maximum="1" Minimum="0" TickPlacement="Both" Height="126" HorizontalAlignment="Center"/>
-                                <UniformGrid Rows="1" Margin="2 4 2 0">
-                                    <ToggleButton Content="M" Style="{StaticResource MuteButton}" IsChecked="{Binding BassMute}"/>
-                                    <ToggleButton Content="S" Style="{StaticResource SoloButton}" IsChecked="{Binding BassSolo}"/>
-                                </UniformGrid>
-                            </StackPanel>
-                            <StackPanel Orientation="Vertical">
-                                <Label Content="Piano" HorizontalAlignment="Center"/>
-                                <Slider Orientation="Vertical" Value="{Binding PianoVolume}" Maximum="1" Minimum="0" TickPlacement="Both" Height="126" HorizontalAlignment="Center"/>
-                                <UniformGrid Rows="1" Margin="2 4 2 0">
-                                    <ToggleButton Content="M" Style="{StaticResource MuteButton}" IsChecked="{Binding PianoMute}"/>
-                                    <ToggleButton Content="S" Style="{StaticResource SoloButton}" IsChecked="{Binding PianoSolo}"/>
-                                </UniformGrid>
-                            </StackPanel>
-                            <StackPanel Orientation="Vertical">
-                                <Label Content="Other" HorizontalAlignment="Center"/>
-                                <Slider Orientation="Vertical" Value="{Binding OtherVolume}" Maximum="1" Minimum="0" TickPlacement="Both" Height="126" HorizontalAlignment="Center"/>
-                                <UniformGrid Rows="1" Margin="2 4 2 0">
-                                    <ToggleButton Content="M" Style="{StaticResource MuteButton}" IsChecked="{Binding OtherMute}"/>
-                                    <ToggleButton Content="S" Style="{StaticResource SoloButton}" IsChecked="{Binding OtherSolo}"/>
-                                </UniformGrid>
-                            </StackPanel>
-                        </UniformGrid>
-                    </Grid>
-                    <Grid Visibility="{Binding IsStemSeparated, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <Button Content="Separate" ToolTip="Stem分離" Width="64" Height="30" Command="{Binding StemSeparateCommand}"/>
-                    </Grid>
-                    <Grid Visibility="{Binding IsStemSeparating, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=true}">
-                        <ProgressBar Value="{Binding SeparateProgress}" Maximum="1" Height="10"/>
-                    </Grid>
-                </Grid>
-            </GroupBox>
-        </Expander>
     </Grid>
 </Window>

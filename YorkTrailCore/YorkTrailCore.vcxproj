@@ -97,13 +97,13 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\soundtouch;..\..\rubberband;..\..\spleeterpp\src;C:\src\vcpkg\vcpkg\installed\x64-windows\include\eigen3;..\..\spleeterpp\build\_deps\rtff-src\src;..\..\\flac\include;..\..\libtensorflow-cpu-windows-x86_64-2.6.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\soundtouch;..\..\rubberband;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <AdditionalDependencies>..\..\soundtouch\lib\SoundTouchDLLD.lib;..\..\rubberband\otherbuilds\x64\Debug\rubberband-library.lib;..\..\spleeterpp\build\src\spleeter\Debug\spleeter.lib;..\..\spleeterpp\build\src\spleeter_common\Debug\spleeter_common.lib;..\..\spleeterpp\build\src\spleeter_filter\Debug\spleeter_filter.lib;..\..\spleeterpp\build\src\artff\Debug\artff.lib;..\..\spleeterpp\build\tensorflow\lib\tensorflow.lib;..\..\spleeterpp\build\_deps\rtff-build\src\rtff\Debug\rtffd.lib;..\..\flac\build\src\libFLAC++\Debug\FLAC++.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\soundtouch\lib\SoundTouchDLLD.lib;..\..\rubberband\otherbuilds\x64\Debug\rubberband-library.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -122,24 +122,16 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\soundtouch;..\..\rubberband;..\..\spleeterpp\src;C:\src\vcpkg\vcpkg\installed\x64-windows\include\eigen3;..\..\spleeterpp\build\_deps\rtff-src\src;..\..\\flac\include;..\..\libtensorflow-cpu-windows-x86_64-2.6.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\soundtouch;..\..\rubberband;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>..\..\soundtouch\lib\SoundTouchDLL.lib;..\..\rubberband\otherbuilds\x64\Release\rubberband-library.lib;..\..\spleeterpp\build\src\spleeter\Release\spleeter.lib;..\..\spleeterpp\build\src\spleeter_common\Release\spleeter_common.lib;..\..\spleeterpp\build\src\spleeter_filter\Release\spleeter_filter.lib;..\..\spleeterpp\build\src\artff\Release\artff.lib;..\..\spleeterpp\build\tensorflow\lib\tensorflow.lib;..\..\spleeterpp-0.2.1\build\_deps\rtff-build\src\rtff\Release\rtff.lib;..\..\flac\build\src\libFLAC++\Release\FLAC++.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\soundtouch\lib\SoundTouchDLL.lib;..\..\rubberband\otherbuilds\x64\Release\rubberband-library.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FlacEncode.cpp">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
-    </ClCompile>
     <ClCompile Include="lib\miniaudio.c">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
-    </ClCompile>
-    <ClCompile Include="StemSeparator.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
     </ClCompile>
@@ -147,9 +139,7 @@
     <ClCompile Include="YorkTrailCore.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FlacEncode.h" />
     <ClInclude Include="lib\miniaudio.h" />
-    <ClInclude Include="StemSeparator.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="YorkTrailCore.h" />
   </ItemGroup>

@@ -29,12 +29,6 @@
 #include "source/SoundTouchDLL/SoundTouchDLL.h"
 #include "rubberband/RubberBandStretcher.h"
 
-#ifdef _M_CEE
-#undef _M_CEE
-#endif // _M_CEE
-
-#include "StemSeparator.h"
-#include "FlacEncode.h"
 #include "Utils.h"
 
 using namespace System;
@@ -90,8 +84,6 @@ namespace YorkTrail
 		!YorkTrailCore();
 		String^ GetFileInfo();
 		bool FileOpen(String^ filePath, FileType type);
-		bool StemFilesOpen(String^ filePath);
-		void StemFilesClose();
 		List<float>^ GetVolumeList(int start, int count, int split);
 		bool IsFileLoaded();
 		void FileClose();
@@ -112,7 +104,6 @@ namespace YorkTrail
 		void SetEndPosition(double pos);
 		void SetVolume(float vol);
 		float GetVolume();
-		void SetStemVolumes(float vocals, float drums, float bass, float piano, float other);
 		void SetRatio(float ratio);
 		float GetRatio();
 		void SetPitch(float pitch);
@@ -145,10 +136,6 @@ namespace YorkTrail
 		StretchMethod GetStretchMethod();
 		void SetStretchMethod(StretchMethod value);
 		void SetSoundTouchParam(int seq, int window, int overlap);
-		bool SeparateStem(String^ destFolder);
-		double GetProgress();
-		bool SwitchDecoderToSource();
-		bool SwitchDecoderToStems();
 		void miniaudioStartCallback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
 
 		delegate void NotifyTimeChangedEventHandler();
@@ -159,12 +146,6 @@ namespace YorkTrail
 		HANDLE hBpm;
 		RubberBand::RubberBandStretcher* pRubberBand;
 		ma_decoder* pDecoder;
-		ma_decoder* pDecoderVocals;
-		ma_decoder* pDecoderDrums;
-		ma_decoder* pDecoderBass;
-		ma_decoder* pDecoderPiano;
-		ma_decoder* pDecoderOther;
-		ma_decoder* pCurrentDecoder;
 		ma_device* pDevice;
 		ma_lpf* pLpf;
 		ma_hpf* pHpf;
@@ -186,11 +167,6 @@ namespace YorkTrail
 		float playbackRatio = 1.0f;
 		float playbackPitch = 1.0f;
 		int playbackDevice = 0;
-		float volumeVocals = 1.0f;
-		float volumeDrums = 1.0f;
-		float volumeBass = 1.0f;
-		float volumePiano = 1.0f;
-		float volumeOther = 1.0f;
 		float rmsL = -100.0f;
 		float rmsR = -100.0f;
 		float lpfFreq = 22000.0f;
@@ -205,7 +181,6 @@ namespace YorkTrail
 		// 画面更新の頻度 (値xレイテンシ)
 		ma_uint32 displayUpdateCycle = 2;
 		StretchMethod stretchMethod;
-		double progress = 0;
 
 		ma_uint64 posToFrame(double pos);
 		ma_uint64 frameToMillisecs(uint64_t frames);
@@ -215,14 +190,12 @@ namespace YorkTrail
 		float lerp(float v1, float v2, float t);
 		void toDeinterleaved(std::vector<float>& input, float* const* output, int channels, int frameCount);
 		void toInterleaved(const float* const* input, std::vector<float> &output, int channels, int frameCount);
-		FLAC__int32 toInt32(const float input);
 		float clip(const float input);
 		void calcVolume(float vol, std::vector<float> &input);
 		void calcRMS(std::vector<float>& input, int frameCount, int channels, float& outputL, float& outputR);
 		void throwError(String^ loc, String^ msg);
 		int decoderInit(ma_decoder* %pDecoder, String^ filePath, ma_uint32 outputChannels, ma_uint32 outputSampleRate);
 		ma_uint64 getTotalPCMFrames(ma_decoder* pDecoder);
-		bool switchDecoder(ma_decoder* pDecoder);
 	};
 
 

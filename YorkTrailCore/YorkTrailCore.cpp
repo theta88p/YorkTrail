@@ -42,7 +42,6 @@ YorkTrail::YorkTrailCore::!YorkTrailCore()
     if (pDecoder != nullptr)
     {
         ma_decoder_uninit(pDecoder);
-        StemFilesClose();
     }
 
     if (hBpm != nullptr)
@@ -67,7 +66,7 @@ void YorkTrail::YorkTrailCore::throwError(String^ loc, String^ msg)
 
 uint64_t YorkTrail::YorkTrailCore::posToFrame(double pos)
 {
-    if (pCurrentDecoder != nullptr)
+    if (pDecoder != nullptr)
     {
         return totalPCMFrames * pos;
     }
@@ -86,9 +85,9 @@ uint64_t YorkTrail::YorkTrailCore::posToFrame(double pos)
 
 uint64_t YorkTrail::YorkTrailCore::frameToMillisecs(uint64_t frame)
 {
-    if (pCurrentDecoder != nullptr && pCurrentDecoder->outputSampleRate > 0)
+    if (pDecoder != nullptr && pDecoder->outputSampleRate > 0)
     {
-        return frame * 1000 / pCurrentDecoder->outputSampleRate;
+        return frame * 1000 / pDecoder->outputSampleRate;
     }
     else
     {
@@ -130,13 +129,13 @@ void YorkTrail::YorkTrailCore::SetPlaybackDevice(int index)
     {
         if (pDevice != nullptr)
         {
-            if (pCurrentDecoder != nullptr)
+            if (pDecoder != nullptr)
             {
                 Stop();
             }
             DeviceClose();
             playbackDevice = index;
-            DeviceOpen(pCurrentDecoder);
+            DeviceOpen(pDecoder);
         }
         else
         {
@@ -175,94 +174,6 @@ int YorkTrail::YorkTrailCore::decoderInit(ma_decoder* %dec, String^ p, ma_uint32
     return true;
 }
 
-bool YorkTrail::YorkTrailCore::StemFilesOpen(String^ folder)
-{
-    if (!decoderInit(pDecoderVocals, Path::Combine(folder, "vocals.flac"), NULL, NULL))
-    {
-        return false;
-    }
-    if (!decoderInit(pDecoderDrums, Path::Combine(folder, "drums.flac"), NULL, NULL))
-    {
-        return false;
-    }
-    if (!decoderInit(pDecoderBass, Path::Combine(folder, "bass.flac"), NULL, NULL))
-    {
-        return false;
-    }
-    if (!decoderInit(pDecoderPiano, Path::Combine(folder, "piano.flac"), NULL, NULL))
-    {
-        return false;
-    }
-    if (!decoderInit(pDecoderOther, Path::Combine(folder, "other.flac"), NULL, NULL))
-    {
-        return false;
-    }
-    return true;
-}
-
-void YorkTrail::YorkTrailCore::StemFilesClose()
-{
-    if (pDecoderVocals != nullptr)
-    {
-        ma_decoder_uninit(pDecoderVocals);
-        ma_decoder_uninit(pDecoderDrums);
-        ma_decoder_uninit(pDecoderBass);
-        ma_decoder_uninit(pDecoderPiano);
-        ma_decoder_uninit(pDecoderOther);
-    }
-}
-
-bool YorkTrail::YorkTrailCore::SwitchDecoderToSource()
-{
-    return switchDecoder(pDecoder);
-}
-
-bool YorkTrail::YorkTrailCore::SwitchDecoderToStems()
-{
-    return switchDecoder(pDecoderVocals);
-}
-
-bool YorkTrail::YorkTrailCore::switchDecoder(ma_decoder* dec)
-{
-    if (dec == nullptr)
-    {
-        throwError("SwitchDecoder", "デコーダがnullです");
-        return false;
-    }
-
-    if (state == State::Playing)
-    {
-        Stop();
-        while (state != State::Stopped)
-        {
-            Sleep(10);
-        }
-    }
-
-    if (!DeviceOpen(dec))
-    {
-        return false;
-    }
-
-    ma_uint32 channels = dec->outputChannels;
-    ma_uint32 sampleRate = dec->outputSampleRate;
-    totalPCMFrames = getTotalPCMFrames(dec);
-    pCurrentDecoder = dec;
-
-    soundtouch_setChannels(hSoundTouch, channels);
-    soundtouch_setSampleRate(hSoundTouch, sampleRate);
-
-    if (pRubberBand != nullptr)
-    {
-        pRubberBand->~RubberBandStretcher();
-    }
-
-    pRubberBand = new RubberBand::RubberBandStretcher((size_t)sampleRate, (size_t)channels
-        , RubberBand::RubberBandStretcher::OptionProcessRealTime | RubberBand::RubberBandStretcher::OptionPitchHighQuality);
-
-    return true;
-}
-
 ma_uint64 YorkTrail::YorkTrailCore::getTotalPCMFrames(ma_decoder* dec)
 {
     ma_uint64* pFrames = new ma_uint64();
@@ -286,8 +197,7 @@ bool YorkTrail::YorkTrailCore::FileOpen(String^ p, FileType t)
     {
         return false;
     }
-    pCurrentDecoder = pDecoder;
-    totalPCMFrames = getTotalPCMFrames(pCurrentDecoder);
+    totalPCMFrames = getTotalPCMFrames(pDecoder);
     endFrame = totalPCMFrames;
     Debug::WriteLine(totalPCMFrames);
  
@@ -480,138 +390,6 @@ List<float>^ YorkTrail::YorkTrailCore::GetVolumeList(int start, int count, int s
     return res;
 }
 
-// 重い処理なので別スレッドで実行する
-bool YorkTrail::YorkTrailCore::SeparateStem(String^ destFolder)
-{
-    progress = 0;
-    auto stemSeparator = StemSeparator();
-    std::error_code err = stemSeparator.Init();
-    if (err)
-    {
-        throwError("spleeter", "spleeterの初期化時にエラーが発生しました");
-        return false;
-    }
-
-    auto dest = Utils::Cli2Native(destFolder);
-    auto encode = FlacEncode();
-    if (encode.Init(dest))
-    {
-        throwError("FLAC", "FLACの初期化時にエラーが発生しました");
-        return false;
-    }
-
-    ma_uint32 targetSampleRate = 44100;
-    ma_uint32 targetChannels = 2;
-    ma_uint64 currentFrame = 0;
-    ma_uint64 processFrames = targetSampleRate * 10;
-    ma_uint64 preloadFrames = targetSampleRate;
-    ma_uint64 overlapFrames = targetSampleRate / 10;
-    
-    ma_decoder* tempDecoder = new ma_decoder();
-    decoderInit(tempDecoder, filePath, targetChannels, targetSampleRate);
-
-    std::vector<float> decoded((processFrames + preloadFrames + overlapFrames) * targetChannels);
-    std::vector<std::vector<float>> outputs(5, std::vector<float>((processFrames + preloadFrames + overlapFrames) * targetChannels));
-    std::vector<std::vector<FLAC__int32>> outputs_int32(5, std::vector<FLAC__int32>(processFrames * targetChannels));
-    std::vector<std::vector<float>> overlap(5, std::vector<float>(overlapFrames * targetChannels));
-
-    ma_uint64 tempTotalPCMFrames = getTotalPCMFrames(tempDecoder);
-
-    while (currentFrame < tempTotalPCMFrames)
-    {
-        ma_uint64 readFrames;
-        ma_uint64 requireFrames;
-        ma_uint64 requirePreloadFrames;
-
-        if (currentFrame > 0 && currentFrame > preloadFrames)
-        {
-            requireFrames = processFrames + preloadFrames + overlapFrames;
-            requirePreloadFrames = preloadFrames;
-        }
-        else
-        {
-            requireFrames = processFrames + overlapFrames;
-            requirePreloadFrames = 0;
-        }
-
-        ma_decoder_seek_to_pcm_frame(tempDecoder, currentFrame);
-        if (ma_decoder_read_pcm_frames(tempDecoder, decoded.data(), requireFrames, &readFrames) != MA_SUCCESS)
-        {
-            //throwError("ma_decoder", "デコード中にエラーが発生しました");
-        }
-
-        if (stemSeparator.Process(decoded, outputs, readFrames))
-        {
-            throwError("StemSeparator", "Stem分離時にエラーが発生しました");
-            return false;
-        }
-        ma_uint64 outputFrames = readFrames - requirePreloadFrames;
-
-        for (int i = 0; i < 5; i++)
-        {
-            float volumeFactor = (currentFrame > 0) ? 0.0f : 1.0f;
-
-            for (int j = 0; j < outputFrames * 2; j++)
-            {
-                if (currentFrame > 0 && j < overlapFrames * 2)
-                {
-                    outputs_int32[i][j] = toInt32(outputs[i][j + requirePreloadFrames * 2] * volumeFactor + overlap[i][j]);
-
-                    if (j % 2 > 0)
-                    {
-                        volumeFactor = min(volumeFactor + 1.0f / overlapFrames * 2, 1.0f);
-                    }
-                }
-                else if (currentFrame < totalPCMFrames - outputFrames && j >= (outputFrames - overlapFrames) * 2)
-                {
-                    overlap[i][j - (outputFrames - overlapFrames) * 2] = outputs[i][j + requirePreloadFrames * 2] * volumeFactor;
-
-                    if (j % 2 > 0)
-                    {
-                        volumeFactor = max(volumeFactor - 1.0f / overlapFrames * 2, 0.0f);
-                    }
-                }
-                else
-                {
-                    outputs_int32[i][j] = toInt32(outputs[i][j + requirePreloadFrames * 2]);
-                }
-            }
-        }
-
-        if (encode.Process(outputs_int32, outputFrames - overlapFrames))
-        {
-            throwError("FLAC", "FLACエンコード時にエラーが発生しました");
-            return false;
-        }
-        
-        if (processFrames + overlapFrames > readFrames)
-        {
-            break;
-        }
-        else if (currentFrame > 0)
-        {
-            currentFrame += outputFrames - overlapFrames;
-        }
-        else
-        {
-            currentFrame += outputFrames - preloadFrames - overlapFrames;
-        }
-
-        progress = (double)currentFrame / tempTotalPCMFrames;
-    }
-
-    encode.Uninit();
-    ma_decoder_uninit(tempDecoder);
-    stemSeparator.Uninit();
-
-    return true;
-}
-
-double YorkTrail::YorkTrailCore::GetProgress()
-{
-    return progress;
-}
-
 bool YorkTrail::YorkTrailCore::IsFileLoaded()
 {
     return pDecoder != nullptr && pDevice != nullptr;
@@ -629,7 +407,6 @@ void YorkTrail::YorkTrailCore::FileClose()
         }
         ma_decoder_uninit(pDecoder);
         pDecoder = nullptr;
-        StemFilesClose();
         totalPCMFrames = 0;
         curFrame = 0;
         startFrame = 0;
@@ -694,25 +471,9 @@ void YorkTrail::YorkTrailCore::Seek(int64_t frame)
 
         ma_mutex_lock(pMutex);
 
-        if (pCurrentDecoder == pDecoder)
+        if (ma_decoder_seek_to_pcm_frame(pDecoder, frame) != MA_SUCCESS)
         {
-            if (ma_decoder_seek_to_pcm_frame(pDecoder, frame) != MA_SUCCESS)
-            {
-                throwError("ma_decoder", "シーク時にエラーが発生しました");
-            }
-        }
-        else
-        {
-            int res = 0;
-            res += ma_decoder_seek_to_pcm_frame(pDecoderVocals, frame);
-            res += ma_decoder_seek_to_pcm_frame(pDecoderDrums, frame);
-            res += ma_decoder_seek_to_pcm_frame(pDecoderBass, frame);
-            res += ma_decoder_seek_to_pcm_frame(pDecoderPiano, frame);
-            res += ma_decoder_seek_to_pcm_frame(pDecoderOther, frame);
-            if (res != MA_SUCCESS)
-            {
-                throwError("ma_decoder", "シーク時にエラーが発生しました");
-            }
+            throwError("ma_decoder", "シーク時にエラーが発生しました");
         }
 
         curFrame = (uint64_t)frame;
@@ -800,16 +561,6 @@ void YorkTrail::YorkTrailCore::SetVolume(float vol)
     volume = vol;
 }
 
-void YorkTrail::YorkTrailCore::SetStemVolumes(float vocals, float drums, float bass, float piano, float other)
-{
-    volumeVocals = vocals;
-    volumeDrums = drums;
-    volumeBass = bass;
-    volumePiano = piano;
-    volumeOther = other;
-}
-
-
 float YorkTrail::YorkTrailCore::GetVolume()
 {
     float vol = volume;
@@ -874,7 +625,7 @@ void YorkTrail::YorkTrailCore::SetLpfFreq(float value)
     if (pDecoder != nullptr)
     {
         ma_mutex_lock(pMutex);
-        ma_lpf_config config = ma_lpf_config_init(ma_format_f32, pCurrentDecoder->outputChannels, pCurrentDecoder->outputSampleRate, value, MA_MAX_FILTER_ORDER);
+        ma_lpf_config config = ma_lpf_config_init(ma_format_f32, pDecoder->outputChannels, pDecoder->outputSampleRate, value, MA_MAX_FILTER_ORDER);
         if (ma_lpf_init(&config, NULL, pLpf) != MA_SUCCESS)
         {
             throwError("ma_lpf_init", "LPFの初期化時にエラーが発生しました");
@@ -889,7 +640,7 @@ void YorkTrail::YorkTrailCore::SetHpfFreq(float value)
     if (pDecoder != nullptr)
     {
         ma_mutex_lock(pMutex);
-        ma_hpf_config config = ma_hpf_config_init(ma_format_f32, pCurrentDecoder->outputChannels, pCurrentDecoder->outputSampleRate, value, MA_MAX_FILTER_ORDER);
+        ma_hpf_config config = ma_hpf_config_init(ma_format_f32, pDecoder->outputChannels, pDecoder->outputSampleRate, value, MA_MAX_FILTER_ORDER);
         if (ma_hpf_init(&config, NULL, pHpf) != MA_SUCCESS)
         {
             throwError("ma_hpf_init", "HPFの初期化時にエラーが発生しました");
@@ -904,7 +655,7 @@ void YorkTrail::YorkTrailCore::SetBpfFreq(float value)
     if (pDecoder != nullptr)
     {
         ma_mutex_lock(pMutex);
-        ma_bpf_config config = ma_bpf_config_init(ma_format_f32, pCurrentDecoder->outputChannels, pCurrentDecoder->outputSampleRate, value, 2);
+        ma_bpf_config config = ma_bpf_config_init(ma_format_f32, pDecoder->outputChannels, pDecoder->outputSampleRate, value, 2);
         if (ma_bpf_init(&config, NULL, pBpf) != MA_SUCCESS)
         {
             throwError("ma_bpf_init", "BPFの初期化時にエラーが発生しました");
@@ -1252,15 +1003,6 @@ float YorkTrail::YorkTrailCore::clip(const float input)
 
 }
 
-FLAC__int32 YorkTrail::YorkTrailCore::toInt32(const float input)
-{
-    float x = input;
-    x = clip(x);
-    x = x * 32767.0f;                           /* -1..1 to -32767..32767 */
-
-    return (FLAC__int32)x;
-}
-
 void YorkTrail::YorkTrailCore::calcVolume(float vol, std::vector<float> &input)
 {
     for (int i = 0; i < input.size(); i++)
@@ -1305,8 +1047,8 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
 {
     ma_mutex_lock(pMutex);
 
-    ma_uint32 outputChannels = pCurrentDecoder->outputChannels;
-    ma_uint32 outputSampleRate = pCurrentDecoder->outputSampleRate;
+    ma_uint32 outputChannels = pDecoder->outputChannels;
+    ma_uint32 outputSampleRate = pDecoder->outputSampleRate;
     ma_uint32 bufferSize = frameCount * outputChannels;
     std::vector<float> decodedFrames(bufferSize * playbackRatio * 2, 0.0f);
     std::vector<float> processedFrames(bufferSize * 2, 0.0f);
@@ -1314,47 +1056,7 @@ void YorkTrail::YorkTrailCore::miniaudioStartCallback(ma_device* pDevice, void* 
     ma_uint64 frameProcessed;
     ma_uint64 requireFrames = (isBypass) ? frameCount : frameCount * playbackRatio;
 
-    // Stem再生
-    if (pCurrentDecoder != pDecoder)
-    {
-        std::vector<std::vector<float>> df(5, std::vector<float>(bufferSize * playbackRatio * 2, 0.0f));
-        std::vector<ma_uint64> fr(5);
-        std::vector<ma_result> res(5);
-        res[0] = ma_decoder_read_pcm_frames(pDecoderVocals, df[0].data(), requireFrames, &fr[0]);
-        res[1] = ma_decoder_read_pcm_frames(pDecoderDrums, df[1].data(), requireFrames, &fr[1]);
-        res[2] = ma_decoder_read_pcm_frames(pDecoderBass, df[2].data(), requireFrames, &fr[2]);
-        res[3] = ma_decoder_read_pcm_frames(pDecoderPiano, df[3].data(), requireFrames, &fr[3]);
-        res[4] = ma_decoder_read_pcm_frames(pDecoderOther, df[4].data(), requireFrames, &fr[4]);
-        /*
-        for (int i = 0; i < 5; i++)
-        {
-            if (res[i] != MA_SUCCESS)
-            {
-                return;
-            }
-        }
-        */
-
-        if (fr[0] == fr[1] && fr[0] == fr[2] && fr[0] == fr[3] && fr[0] == fr[4])
-        {
-            frameRead = fr[0];
-
-            for (ma_uint32 i = 0; i < fr[0] * 2; i++)
-            {
-                float x = 0;
-                x += df[0][i] * volumeVocals;
-                x += df[1][i] * volumeDrums;
-                x += df[2][i] * volumeBass;
-                x += df[3][i] * volumePiano;
-                x += df[4][i] * volumeOther;
-                decodedFrames[i] = clip(x);
-            }
-        }
-    }
-    else
-    {
-        ma_decoder_read_pcm_frames(pDecoder, decodedFrames.data(), requireFrames, &frameRead);
-    }
+    ma_decoder_read_pcm_frames(pDecoder, decodedFrames.data(), requireFrames, &frameRead);
 
     if (frameRead < requireFrames) {
         // Reached the end.
