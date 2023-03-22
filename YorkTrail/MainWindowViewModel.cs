@@ -189,7 +189,7 @@ namespace YorkTrail
                     Settings.DeviceIndex = value;
                     Settings.DeviceName = DeviceList[value];
                 }
-                Core.SetPlaybackDevice(value);
+                SetPlaybackDevice(value);
                 RaisePropertyChanged(nameof(PlaybackDevice));
             }
         }
@@ -647,6 +647,11 @@ namespace YorkTrail
         public StemSeparateCommand StemSeparateCommand { get; private set; } = (StemSeparateCommand)CommandCollection.Get(nameof(StemSeparateCommand));
         public DeleteStemFilesCommand DeleteStemFilesCommand { get; private set; } = (DeleteStemFilesCommand)CommandCollection.Get(nameof(DeleteStemFilesCommand));
         public CancelStemSeparateCommand CancelStemSeparateCommand { get; private set; } = (CancelStemSeparateCommand)CommandCollection.Get(nameof(CancelStemSeparateCommand));
+
+        public async void SetPlaybackDevice(int index)
+        {
+            await Task.Run(() => { Core.SetPlaybackDevice(index); });
+        }
 
         public void DisplayUpdate()
         {
