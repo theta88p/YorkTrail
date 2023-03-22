@@ -85,10 +85,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\lib\miniaudio;..\lib\soundtouch;..\lib\rubberband;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\soundtouch;..\..\rubberband;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>..\lib\soundtouch\out\build\x86-Debug\SoundTouchDLL.lib;..\lib\rubberband\otherbuilds\Win32\Debug\rubberband-library.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\soundtouch\source\SoundTouchDLL\Win32\Debug\SoundTouchDLLD.lib;..\..\rubberband\otherbuilds\Win32\Debug\rubberband-library.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
@@ -103,17 +103,17 @@
     <Link>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <AdditionalDependencies>..\..\soundtouch\lib\SoundTouchDLLD.lib;..\..\rubberband\otherbuilds\x64\Debug\rubberband-library.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\soundtouch\source\SoundTouchDLL\x64\Debug\SoundTouchDLLD.lib;..\..\rubberband\otherbuilds\x64\Debug\rubberband-library.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\lib\miniaudio;..\lib\soundtouch;..\lib\rubberband;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\soundtouch;..\..\rubberband;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>..\lib\soundtouch\out\build\x86-Release\SoundTouchDLL.lib;..\lib\rubberband\otherbuilds\Win32\Release\rubberband-library.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\soundtouch\source\SoundTouchDLL\Win32\Release\SoundTouchDLL.lib;..\..\rubberband\otherbuilds\Win32\Release\rubberband-library.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
@@ -125,7 +125,7 @@
       <AdditionalIncludeDirectories>..\..\soundtouch;..\..\rubberband;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>..\..\soundtouch\lib\SoundTouchDLL.lib;..\..\rubberband\otherbuilds\x64\Release\rubberband-library.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\soundtouch\source\SoundTouchDLL\x64\Release\SoundTouchDLL.lib;..\..\rubberband\otherbuilds\x64\Release\rubberband-library.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
@@ -134,6 +134,8 @@
     <ClCompile Include="lib\miniaudio.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
     </ClCompile>
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="YorkTrailCore.cpp" />
