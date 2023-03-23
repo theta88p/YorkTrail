@@ -592,7 +592,17 @@
                                 <MenuItem Header="閉じる(_C)" Style="{StaticResource CompositeMenuItem}" Command="{Binding FileCloseCommand}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToStringConverter}, ConverterParameter=FileClose}"/>
                                 <Separator/>
                                 <MenuItem Header="終了(_X)" Style="{StaticResource CompositeMenuItem}" Command="{Binding ExitCommand}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToStringConverter}, ConverterParameter=Exit}"/>
-                                <Separator/>
+                                <Separator>
+                                    <Separator.Style>
+                                        <Style TargetType="Separator">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Settings.RecentFiles.Count}" Value="0">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Separator.Style>
+                                </Separator>
                                 <CollectionContainer Collection="{Binding Source={StaticResource recentFiles}}"/>
                             </CompositeCollection>
                         </MenuItem.ItemsSource>
