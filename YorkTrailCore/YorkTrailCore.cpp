@@ -655,7 +655,7 @@ void YorkTrail::YorkTrailCore::FileClose()
         curFrame = 0;
         startFrame = 0;
         endFrame = 0;
-        filePath = nullptr;
+        delete filePath;
         soundtouch_clear(hSoundTouch);
         if (hBpm != nullptr)
         {
