@@ -608,6 +608,7 @@
                             <Style TargetType="{x:Type MenuItem}">
                                 <Setter Property="Command" Value="{x:Static local:StaticCommands.OpenRecentFile}"/>
                                 <Setter Property="CommandParameter" Value="{Binding}"/>
+                                <Setter Property="Header" Value="{Binding Converter={StaticResource PathShortenConverter}}"/>
                             </Style>
                         </MenuItem.ItemContainerStyle>
                     </MenuItem>
