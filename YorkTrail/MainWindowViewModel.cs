@@ -552,11 +552,11 @@ namespace YorkTrail
                 {
                     if (value)
                     {
-                        Core.SwitchDecoderToStems();
+                        SwitchDecoderToStems();
                     }
                     else
                     {
-                        Core.SwitchDecoderToSource();
+                        SwitchDecoderToSource();
                     }
                 }
                 _isStemPlaying = value;
@@ -1181,6 +1181,16 @@ namespace YorkTrail
             Core.SetStemVolumes(vo, dr, bs, pn, other);
         }
 
+        public async void SwitchDecoderToSource()
+        {
+            await Task.Run(Core.SwitchDecoderToSource);
+        }
+
+        public async void SwitchDecoderToStems()
+        {
+            await Task.Run(Core.SwitchDecoderToStems);
+        }
+        
         internal void RangeSlider_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (IsFileLoaded)
