@@ -609,11 +609,6 @@
                         <MenuItem.CommandBindings>
                             <CommandBinding Command="{x:Static local:StaticCommands.OpenRecentFile}" Executed="RecentFile_Clicked"/>
                         </MenuItem.CommandBindings>
-                        <MenuItem.ItemTemplate>
-                            <DataTemplate>
-                                <ContentPresenter Content="{Binding Converter={StaticResource PathShortenConverter}}"/>
-                            </DataTemplate>
-                        </MenuItem.ItemTemplate>
                         <MenuItem.ItemContainerStyle>
                             <Style TargetType="{x:Type MenuItem}">
                                 <Setter Property="Command" Value="{x:Static local:StaticCommands.OpenRecentFile}"/>
