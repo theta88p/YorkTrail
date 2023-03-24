@@ -874,7 +874,12 @@ namespace YorkTrail
                     }
                 }
 
-                Stop();
+                if (IsStemSeparated)
+                {
+                    IsStemSeparated = false;
+                    Core.StemFilesClose();
+                }
+
                 await FileClose();
 
                 if (!Core.FileOpen(path, type))
