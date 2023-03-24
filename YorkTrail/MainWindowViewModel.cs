@@ -548,17 +548,6 @@ namespace YorkTrail
             get { return _isStemPlaying; }
             set
             {
-                if (_isStemPlaying != value)
-                {
-                    if (value)
-                    {
-                        SwitchDecoderToStems();
-                    }
-                    else
-                    {
-                        SwitchDecoderToSource();
-                    }
-                }
                 _isStemPlaying = value;
                 RaisePropertyChanged(nameof(IsStemPlaying));
             }
@@ -647,6 +636,8 @@ namespace YorkTrail
         public StemSeparateCommand StemSeparateCommand { get; private set; } = (StemSeparateCommand)CommandCollection.Get(nameof(StemSeparateCommand));
         public DeleteStemFilesCommand DeleteStemFilesCommand { get; private set; } = (DeleteStemFilesCommand)CommandCollection.Get(nameof(DeleteStemFilesCommand));
         public CancelStemSeparateCommand CancelStemSeparateCommand { get; private set; } = (CancelStemSeparateCommand)CommandCollection.Get(nameof(CancelStemSeparateCommand));
+        public SwitchDecoderToSourceCommand SwitchDecoderToSourceCommand { get; private set; } = (SwitchDecoderToSourceCommand)CommandCollection.Get(nameof(SwitchDecoderToSourceCommand));
+        public SwitchDecoderToStemsCommand SwitchDecoderToStemsCommand { get; private set; } = (SwitchDecoderToStemsCommand)CommandCollection.Get(nameof(SwitchDecoderToStemsCommand));
 
         public async void SetPlaybackDevice(int index)
         {
@@ -763,6 +754,8 @@ namespace YorkTrail
                     ZoomMultiplier = Settings.ZoomMultiplier;
                     StaticMethods.ShallowCopy(Settings.MarkerList, MarkerList);
                     IsStemPlaying = Settings.IsStemPlaying;
+                    if (IsStemPlaying)
+                        await SwitchDecoderToStems();
                     VocalsVolume = Settings.VocalsVolume;
                     DrumsVolume = Settings.DrumsVolume;
                     BassVolume = Settings.BassVolume;
@@ -905,18 +898,10 @@ namespace YorkTrail
                     VolumeList.Clear();
                 }
 
-                if (IsStemSeparated)
-                {
-                    IsStemSeparated = false;
-                    IsStemPlaying = false;
-                    Core.StemFilesClose();
-                }
-
                 var dir = GetStemDir(path);
                 if (FindStemFiles(dir))
                 {
                     IsStemSeparated = true;
-                    IsStemPlaying = false;
                     Core.StemFilesOpen(dir);
                 }
                 return true;
@@ -970,6 +955,7 @@ namespace YorkTrail
                 Stop();
                 IsStemSeparated = false;
                 IsStemPlaying = false;
+                await SwitchDecoderToSource();
                 Position = 0;
                 FilePath = "";
                 SelectionResetCommand.Execute(null);
@@ -1091,13 +1077,14 @@ namespace YorkTrail
             return true;
         }
 
-        public void DeleteStemFiles()
+        public async void DeleteStemFiles()
         {
             var mbres = MessageBox.Show("Stemファイルを削除します。よろしいですか？", "ファイルの削除", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (mbres == MessageBoxResult.Yes)
             {
                 IsStemSeparated = false;
                 IsStemPlaying = false;
+                await SwitchDecoderToSource();
                 Core.StemFilesClose();
 
                 var dir = GetStemDir(FilePath);
@@ -1133,6 +1120,7 @@ namespace YorkTrail
                         Core.StemFilesOpen(dir);
                         IsStemSeparated = true;
                         IsStemPlaying = true;
+                        SwitchDecoderToStems();
                     }
                     else
                     {
@@ -1186,12 +1174,12 @@ namespace YorkTrail
             Core.SetStemVolumes(vo, dr, bs, pn, other);
         }
 
-        public async void SwitchDecoderToSource()
+        public async Task SwitchDecoderToSource()
         {
             await Task.Run(Core.SwitchDecoderToSource);
         }
 
-        public async void SwitchDecoderToStems()
+        public async Task SwitchDecoderToStems()
         {
             await Task.Run(Core.SwitchDecoderToStems);
         }

@@ -1035,8 +1035,12 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <Grid>
-                            <RadioButton x:Name="SwitchSource" GroupName="SourceSwitch" Content="Source" ToolTip="音源をソースに切り替える" IsChecked="{Binding IsStemPlaying, Converter={StaticResource BooleanNegativeConverter}}" Width="60" Margin="10,0,0,0" HorizontalAlignment="Left"/>
-                            <RadioButton x:Name="SwitchStems" GroupName="SourceSwitch" Content="Stems" ToolTip="音源をStemに切り替える" IsChecked="{Binding IsStemPlaying}" Width="60" Margin="80,0,0,0" HorizontalAlignment="Left"/>
+                            <RadioButton x:Name="SwitchSource" GroupName="SourceSwitch" Content="Source" ToolTip="音源をソースに切り替える"
+                                         IsChecked="{Binding IsStemPlaying, Converter={StaticResource BooleanNegativeConverter}}" Width="60" Margin="10,0,0,0"
+                                         HorizontalAlignment="Left" Command="{Binding SwitchDecoderToSourceCommand}" CommandParameter="{Binding IsStemPlaying}"/>
+                            <RadioButton x:Name="SwitchStems" GroupName="SourceSwitch" Content="Stems" ToolTip="音源をStemに切り替える"
+                                         IsChecked="{Binding IsStemPlaying}" Width="60" Margin="80,0,0,0"
+                                         HorizontalAlignment="Left" Command="{Binding SwitchDecoderToStemsCommand}" CommandParameter="{Binding IsStemPlaying}"/>
                             <Button Content="Del" ToolTip="Stemファイル削除" Command="{Binding DeleteStemFilesCommand}" Width="30" Margin="0,0,10,0" HorizontalAlignment="Right"/>
                         </Grid>
                         <UniformGrid IsEnabled="{Binding IsChecked, ElementName=SwitchStems}" Rows="1" Grid.Row="1" Margin="2 10 2 0">

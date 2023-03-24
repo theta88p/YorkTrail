@@ -72,6 +72,8 @@ namespace YorkTrail
             { nameof(StemSeparateCommand), new StemSeparateCommand() },
             { nameof(DeleteStemFilesCommand), new DeleteStemFilesCommand() },
             { nameof(CancelStemSeparateCommand), new CancelStemSeparateCommand() },
+            { nameof(SwitchDecoderToSourceCommand), new SwitchDecoderToSourceCommand() },
+            { nameof(SwitchDecoderToStemsCommand), new SwitchDecoderToStemsCommand() },
         });
 
         public static CommandBase Get(string cmd)
@@ -692,6 +694,28 @@ namespace YorkTrail
         public override void Execute(object? parameter)
         {
             ViewModel?.Core.CancelStemSeparate();
+        }
+    }
+
+    public class SwitchDecoderToSourceCommand : CommandBase
+    {
+        public override async void Execute(object? parameter)
+        {
+            if (ViewModel != null)
+            {
+                await ViewModel.SwitchDecoderToSource();
+            }
+        }
+    }
+
+    public class SwitchDecoderToStemsCommand : CommandBase
+    {
+        public override async void Execute(object? parameter)
+        {
+            if (ViewModel != null)
+            {
+                await ViewModel.SwitchDecoderToStems();
+            }
         }
     }
 }
