@@ -179,22 +179,27 @@ bool YorkTrail::YorkTrailCore::StemFilesOpen(String^ folder)
 {
     if (!decoderInit(pDecoderVocals, Path::Combine(folder, "vocals.flac"), NULL, NULL))
     {
+        StemFilesClose();
         return false;
     }
     if (!decoderInit(pDecoderDrums, Path::Combine(folder, "drums.flac"), NULL, NULL))
     {
+        StemFilesClose();
         return false;
     }
     if (!decoderInit(pDecoderBass, Path::Combine(folder, "bass.flac"), NULL, NULL))
     {
+        StemFilesClose();
         return false;
     }
     if (!decoderInit(pDecoderPiano, Path::Combine(folder, "piano.flac"), NULL, NULL))
     {
+        StemFilesClose();
         return false;
     }
     if (!decoderInit(pDecoderOther, Path::Combine(folder, "other.flac"), NULL, NULL))
     {
+        StemFilesClose();
         return false;
     }
     return true;
@@ -206,12 +211,24 @@ void YorkTrail::YorkTrailCore::StemFilesClose()
     {
         ma_decoder_uninit(pDecoderVocals);
         pDecoderVocals = nullptr;
+    }
+    if (pDecoderDrums != nullptr)
+    {
         ma_decoder_uninit(pDecoderDrums);
         pDecoderDrums = nullptr;
+    }
+    if (pDecoderBass != nullptr)
+    {
         ma_decoder_uninit(pDecoderBass);
         pDecoderBass = nullptr;
+    }
+    if (pDecoderPiano != nullptr)
+    {
         ma_decoder_uninit(pDecoderPiano);
         pDecoderPiano = nullptr;
+    }
+    if (pDecoderOther != nullptr)
+    {
         ma_decoder_uninit(pDecoderOther);
         pDecoderOther = nullptr;
     }
