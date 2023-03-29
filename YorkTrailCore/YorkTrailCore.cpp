@@ -19,6 +19,14 @@
 
 YorkTrail::YorkTrailCore::YorkTrailCore()
 {
+    pDevice = nullptr;
+    pDecoder = nullptr;
+    pDecoderVocals = nullptr;
+    pDecoderDrums = nullptr;
+    pDecoderBass = nullptr;
+    pDecoderPiano = nullptr;
+    pDecoderOther = nullptr;
+
     pMutex = new ma_mutex();
     ma_mutex_init(pMutex);
     hSoundTouch = soundtouch_createInstance();
@@ -179,26 +187,31 @@ bool YorkTrail::YorkTrailCore::StemFilesOpen(String^ folder)
 {
     if (!decoderInit(pDecoderVocals, Path::Combine(folder, "vocals.flac"), NULL, NULL))
     {
+        pDecoderVocals = nullptr;
         StemFilesClose();
         return false;
     }
     if (!decoderInit(pDecoderDrums, Path::Combine(folder, "drums.flac"), NULL, NULL))
     {
+        pDecoderDrums = nullptr;
         StemFilesClose();
         return false;
     }
     if (!decoderInit(pDecoderBass, Path::Combine(folder, "bass.flac"), NULL, NULL))
     {
+        pDecoderBass = nullptr;
         StemFilesClose();
         return false;
     }
     if (!decoderInit(pDecoderPiano, Path::Combine(folder, "piano.flac"), NULL, NULL))
     {
+        pDecoderPiano = nullptr;
         StemFilesClose();
         return false;
     }
     if (!decoderInit(pDecoderOther, Path::Combine(folder, "other.flac"), NULL, NULL))
     {
+        pDecoderOther = nullptr;
         StemFilesClose();
         return false;
     }
