@@ -591,17 +591,25 @@ bool YorkTrail::YorkTrailCore::SeparateStem(String^ destFolder)
             }
         }
 
-        if (encode.Process(outputs_int32, outputFrames - overlapFrames))
-        {
-            throwError("FLAC", "FLACエンコード時にエラーが発生しました");
-            return false;
-        }
-        
         if (processFrames + overlapFrames > readFrames)
         {
+            if (encode.Process(outputs_int32, outputFrames))
+            {
+                throwError("FLAC", "FLACエンコード時にエラーが発生しました");
+                return false;
+            }
             break;
         }
-        else if (currentFrame > 0)
+        else
+        {
+            if (encode.Process(outputs_int32, outputFrames - overlapFrames))
+            {
+                throwError("FLAC", "FLACエンコード時にエラーが発生しました");
+                return false;
+            }
+        }
+        
+        if (currentFrame > 0)
         {
             currentFrame += outputFrames - overlapFrames;
         }
