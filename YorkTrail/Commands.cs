@@ -685,7 +685,11 @@ namespace YorkTrail
 
         public override void Execute(object? parameter)
         {
-            ViewModel?.DeleteStemFiles();
+            var mbres = MessageBox.Show("Stemファイルを削除します。よろしいですか？", "ファイルの削除", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (mbres == MessageBoxResult.Yes)
+            {
+                ViewModel?.DeleteStemFiles();
+            }
         }
     }
 

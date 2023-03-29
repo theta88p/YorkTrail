@@ -903,7 +903,7 @@ namespace YorkTrail
                 {
                     if (Core.StemFilesOpen(dir))
                     {
-                    IsStemSeparated = true;
+                        IsStemSeparated = true;
                     }
                     else
                     {
@@ -1089,18 +1089,21 @@ namespace YorkTrail
 
         public async void DeleteStemFiles()
         {
-            var mbres = MessageBox.Show("Stemファイルを削除します。よろしいですか？", "ファイルの削除", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (mbres == MessageBoxResult.Yes)
-            {
-                IsStemSeparated = false;
-                IsStemPlaying = false;
-                await SwitchDecoderToSource();
-                Core.StemFilesClose();
+            IsStemSeparated = false;
+            IsStemPlaying = false;
+            await SwitchDecoderToSource();
+            Core.StemFilesClose();
 
-                var dir = GetStemDir(FilePath);
-                if (FindStemFiles(dir))
+            var dir = GetStemDir(FilePath);
+            if (FindStemFiles(dir))
+            {
+                try
                 {
                     Directory.Delete(dir, true);
+                }
+                catch (IOException e)
+                {
+                    MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
