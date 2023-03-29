@@ -901,8 +901,18 @@ namespace YorkTrail
                 var dir = GetStemDir(path);
                 if (FindStemFiles(dir))
                 {
+                    if (Core.StemFilesOpen(dir))
+                    {
                     IsStemSeparated = true;
-                    Core.StemFilesOpen(dir);
+                    }
+                    else
+                    {
+                        var mbres = MessageBox.Show("不完全なStemファイルが見つかりました。削除しますか？", "Error", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (mbres == MessageBoxResult.Yes)
+                        {
+                            DeleteStemFiles();
+                        }
+                    }
                 }
                 return true;
             }
