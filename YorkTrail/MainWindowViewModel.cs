@@ -910,7 +910,7 @@ namespace YorkTrail
                         var mbres = MessageBox.Show("不完全なStemファイルが見つかりました。削除しますか？", "Error", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                         if (mbres == MessageBoxResult.Yes)
                         {
-                            DeleteStemFiles();
+                            await DeleteStemFiles();
                         }
                     }
                 }
@@ -1087,7 +1087,7 @@ namespace YorkTrail
             return true;
         }
 
-        public async void DeleteStemFiles()
+        public async Task DeleteStemFiles()
         {
             IsStemSeparated = false;
             IsStemPlaying = false;
