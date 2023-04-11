@@ -1097,7 +1097,6 @@ void YorkTrail::YorkTrailCore::Start()
     if (filePath == nullptr)
         return;
 
-    state = State::Playing;
     ma_result result;
 
     if (ma_device_start(pDevice) != MA_SUCCESS)
@@ -1105,6 +1104,8 @@ void YorkTrail::YorkTrailCore::Start()
         throwError("ma_device_start", "デバイスをスタートできません");
         return;
     }
+
+    state = State::Playing;
 
     while (state == State::Playing)
     {
