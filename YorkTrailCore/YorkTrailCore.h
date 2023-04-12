@@ -149,7 +149,9 @@ namespace YorkTrail
 		double GetProgress();
 		bool SwitchDecoderToSource();
 		bool SwitchDecoderToStems();
-		void CancelStemSeparate();
+		void CancelProcessing();
+		bool NullOutputToFlac(String^ output);
+		bool TranscodeToFlac(String^ input, String^ output);
 		void miniaudioStartCallback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
 
 		delegate void NotifyTimeChangedEventHandler();
@@ -207,7 +209,7 @@ namespace YorkTrail
 		ma_uint32 displayUpdateCycle = 2;
 		StretchMethod stretchMethod;
 		double progress = 0;
-		bool stemSeparateIsCancelled = false;
+		bool processIsCancelled = false;
 
 		ma_uint64 posToFrame(double pos);
 		ma_uint64 frameToMillisecs(uint64_t frames);

@@ -590,6 +590,7 @@
                             <CompositeCollection>
                                 <MenuItem Header="開く(_O)" Style="{StaticResource CompositeMenuItem}" Command="{Binding FileOpenCommand}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToStringConverter}, ConverterParameter=FileOpen}"/>
                                 <MenuItem Header="閉じる(_C)" Style="{StaticResource CompositeMenuItem}" Command="{Binding FileCloseCommand}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToStringConverter}, ConverterParameter=FileClose}"/>
+                                <MenuItem Header="Stemをインポート(_S)" Style="{StaticResource CompositeMenuItem}" Command="{Binding ImportStemsCommand}"/>
                                 <Separator/>
                                 <MenuItem Header="終了(_X)" Style="{StaticResource CompositeMenuItem}" Command="{Binding ExitCommand}" InputGestureText="{Binding Settings.KeyBinds, Converter={StaticResource KeyBindsToStringConverter}, ConverterParameter=Exit}"/>
                                 <Separator>
@@ -1026,7 +1027,7 @@
                 </Button>
             </StackPanel>
         </Grid>
-        <Expander x:Name="StemWindowExpander" Grid.Column="2" Grid.Row="1" Grid.RowSpan="5" ExpandDirection="Right" d:IsExpanded="True">
+        <Expander x:Name="StemWindowExpander" Grid.Column="2" Grid.Row="1" Grid.RowSpan="5" ExpandDirection="Right" d:IsExpanded="True" Drop="StemFilesDrop">
             <GroupBox Header="Stem Control" Width="240">
                 <Grid>
                     <Grid IsEnabled="{Binding IsStemSeparated}" Margin="0 6 0 0">
@@ -1093,7 +1094,7 @@
                         <Grid>
                             <Label Content="Separating..." HorizontalAlignment="Center"/>
                             <ProgressBar Value="{Binding SeparateProgress}" Maximum="1" Width="180" Height="10" VerticalAlignment="Top" Margin="0,28,0,0"/>
-                            <Button Content="Cancel" Command="{Binding CancelStemSeparateCommand}" Width="60" Height="24" VerticalAlignment="Bottom" Margin="0,0,0,8"/>
+                            <Button Content="Cancel" Command="{Binding CancelProcessingCommand}" Width="60" Height="24" VerticalAlignment="Bottom" Margin="0,0,0,8"/>
                         </Grid>
                     </Border>
                 </Grid>

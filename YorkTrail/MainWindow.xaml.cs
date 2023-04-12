@@ -49,6 +49,10 @@ namespace YorkTrail
         {
             ((MainWindowViewModel)this.DataContext).FileDrop(sender, e);
         }
+        private void StemFilesDrop(object sender, DragEventArgs e)
+        {
+            ((MainWindowViewModel)this.DataContext).StemFilesDrop(sender, e);
+        }
         private void RangeSlider_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             ((MainWindowViewModel)this.DataContext).RangeSlider_MouseLeftButtonUp(sender, e);

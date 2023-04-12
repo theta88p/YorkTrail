@@ -178,6 +178,7 @@ int YorkTrail::YorkTrailCore::decoderInit(ma_decoder* %dec, String^ p, ma_uint32
     if (ma_decoder_init_file(path, &config, dec) != MA_SUCCESS)
     {
         throwError("ma_decoder", "デコーダの初期化時にエラーが発生しました");
+        dec = nullptr;
         return false;
     }
     return true;
@@ -187,31 +188,26 @@ bool YorkTrail::YorkTrailCore::StemFilesOpen(String^ folder)
 {
     if (!decoderInit(pDecoderVocals, Path::Combine(folder, "vocals.flac"), NULL, NULL))
     {
-        pDecoderVocals = nullptr;
         StemFilesClose();
         return false;
     }
     if (!decoderInit(pDecoderDrums, Path::Combine(folder, "drums.flac"), NULL, NULL))
     {
-        pDecoderDrums = nullptr;
         StemFilesClose();
         return false;
     }
     if (!decoderInit(pDecoderBass, Path::Combine(folder, "bass.flac"), NULL, NULL))
     {
-        pDecoderBass = nullptr;
         StemFilesClose();
         return false;
     }
     if (!decoderInit(pDecoderPiano, Path::Combine(folder, "piano.flac"), NULL, NULL))
     {
-        pDecoderPiano = nullptr;
         StemFilesClose();
         return false;
     }
     if (!decoderInit(pDecoderOther, Path::Combine(folder, "other.flac"), NULL, NULL))
     {
-        pDecoderOther = nullptr;
         StemFilesClose();
         return false;
     }
@@ -518,9 +514,111 @@ List<float>^ YorkTrail::YorkTrailCore::GetVolumeList(int start, int count, int s
     return res;
 }
 
-void YorkTrail::YorkTrailCore::CancelStemSeparate()
+void YorkTrail::YorkTrailCore::CancelProcessing()
 {
-    stemSeparateIsCancelled = true;
+    processIsCancelled = true;
+}
+
+// 重い処理なので別スレッドで実行する
+bool YorkTrail::YorkTrailCore::NullOutputToFlac(String^ output)
+{
+    progress = 0;
+    auto dest = Utils::Cli2Native(output);
+    auto encode = FlacEncode();
+    if (encode.InitOne(dest))
+    {
+        throwError("FLAC", "FLACの初期化時にエラーが発生しました");
+        return false;
+    }
+
+    ma_uint64 currentFrame = 0;
+    ma_uint64 requireFrames = 1024;
+    ma_uint64 readFrames = 0;
+    std::vector<FLAC__int32> outputs_int32(requireFrames * 2, 0);
+
+    while (currentFrame < totalPCMFrames && !processIsCancelled)
+    {
+        readFrames = min(requireFrames, totalPCMFrames - currentFrame);
+        if (encode.ProcessOne(outputs_int32, readFrames))
+        {
+            throwError("FLAC", "FLACエンコード時にエラーが発生しました");
+            return false;
+        }
+
+        currentFrame += readFrames;
+        progress = (double)currentFrame / totalPCMFrames;
+    }
+
+    encode.UninitOne();
+
+    if (processIsCancelled)
+    {
+        processIsCancelled = false;
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+// 重い処理なので別スレッドで実行する
+bool YorkTrail::YorkTrailCore::TranscodeToFlac(String^ input, String^ output)
+{
+    progress = 0;
+    auto dest = Utils::Cli2Native(output);
+    auto encode = FlacEncode();
+    if (encode.InitOne(dest))
+    {
+        throwError("FLAC", "FLACの初期化時にエラーが発生しました");
+        return false;
+    }
+
+    ma_uint32 targetSampleRate = 44100;
+    ma_uint32 targetChannels = 2;
+    ma_uint64 currentFrame = 0;
+    ma_uint64 requireFrames = 1024;
+    ma_uint64 readFrames = 0;
+    ma_decoder* tempDecoder = new ma_decoder();
+    decoderInit(tempDecoder, input, targetChannels, targetSampleRate);
+
+    std::vector<float> decoded(requireFrames * targetChannels);
+    std::vector<FLAC__int32> outputs_int32(requireFrames * targetChannels);
+    ma_uint64 tempTotalPCMFrames = getTotalPCMFrames(tempDecoder);
+
+    while (currentFrame < tempTotalPCMFrames && !processIsCancelled)
+    {
+        if (ma_decoder_read_pcm_frames(tempDecoder, decoded.data(), requireFrames, &readFrames) != MA_SUCCESS)
+        {
+            //throwError("ma_decoder", "デコード中にエラーが発生しました");
+        }
+
+        for (int i = 0; i < readFrames * targetChannels; i++)
+        {
+            outputs_int32[i] = toInt32(decoded[i]);
+        }
+
+        if (encode.ProcessOne(outputs_int32, readFrames))
+        {
+            throwError("FLAC", "FLACエンコード時にエラーが発生しました");
+            return false;
+        }
+
+        currentFrame += readFrames;
+        progress = (double)currentFrame / tempTotalPCMFrames;
+    }
+
+    encode.UninitOne();
+
+    if (processIsCancelled)
+    {
+        processIsCancelled = false;
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 // 重い処理なので別スレッドで実行する
@@ -560,7 +658,7 @@ bool YorkTrail::YorkTrailCore::SeparateStem(String^ destFolder)
 
     ma_uint64 tempTotalPCMFrames = getTotalPCMFrames(tempDecoder);
 
-    while (currentFrame < tempTotalPCMFrames && !stemSeparateIsCancelled)
+    while (currentFrame < tempTotalPCMFrames && !processIsCancelled)
     {
         ma_uint64 readFrames;
         ma_uint64 requireFrames;
@@ -655,9 +753,9 @@ bool YorkTrail::YorkTrailCore::SeparateStem(String^ destFolder)
     ma_decoder_uninit(tempDecoder);
     stemSeparator.Uninit();
 
-    if (stemSeparateIsCancelled)
+    if (processIsCancelled)
     {
-        stemSeparateIsCancelled = false;
+        processIsCancelled = false;
         return false;
     }
     else

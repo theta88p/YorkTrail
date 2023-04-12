@@ -635,9 +635,10 @@ namespace YorkTrail
         public ClearMarkerCommand ClearMarkerCommand { get; private set; } = (ClearMarkerCommand)CommandCollection.Get(nameof(ClearMarkerCommand));
         public StemSeparateCommand StemSeparateCommand { get; private set; } = (StemSeparateCommand)CommandCollection.Get(nameof(StemSeparateCommand));
         public DeleteStemFilesCommand DeleteStemFilesCommand { get; private set; } = (DeleteStemFilesCommand)CommandCollection.Get(nameof(DeleteStemFilesCommand));
-        public CancelStemSeparateCommand CancelStemSeparateCommand { get; private set; } = (CancelStemSeparateCommand)CommandCollection.Get(nameof(CancelStemSeparateCommand));
+        public CancelProcessingCommand CancelProcessingCommand { get; private set; } = (CancelProcessingCommand)CommandCollection.Get(nameof(CancelProcessingCommand));
         public SwitchDecoderToSourceCommand SwitchDecoderToSourceCommand { get; private set; } = (SwitchDecoderToSourceCommand)CommandCollection.Get(nameof(SwitchDecoderToSourceCommand));
         public SwitchDecoderToStemsCommand SwitchDecoderToStemsCommand { get; private set; } = (SwitchDecoderToStemsCommand)CommandCollection.Get(nameof(SwitchDecoderToStemsCommand));
+        public ImportStemsCommand ImportStemsCommand { get; private set; } = (ImportStemsCommand)CommandCollection.Get(nameof(ImportStemsCommand));
 
         public async void SetPlaybackDevice(int index)
         {
@@ -989,6 +990,43 @@ namespace YorkTrail
             e.Handled = true;
         }
 
+        public void StemFilesDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                if (FilePath == "")
+                {
+                    MessageBox.Show("先にファイルを読み込んでください", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                
+                string dir = "";
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                if (files[0] != null)
+                {
+                    if (File.GetAttributes(files[0]).HasFlag(FileAttributes.Directory))
+                    {
+                        dir = files[0];
+                    }
+                    else
+                    {
+                        var d = Path.GetDirectoryName(files[0]);
+                        if (d != null)
+                        {
+                            dir = d;
+                        }
+                    }
+                }
+
+                if (dir != "")
+                {
+                    ImportStems(dir);
+                }
+            }
+            e.Handled = true;
+        }
+
         public void Play()
         {
             if (IsFileLoaded)
@@ -1197,6 +1235,82 @@ namespace YorkTrail
             await Task.Run(Core.SwitchDecoderToStems);
         }
         
+        public async void ImportStems(string inputDir)
+        {
+            if (inputDir == null)
+            {
+                return;
+            }
+            if (!File.Exists(Path.Combine(inputDir, "vocals.wav")))
+            {
+                MessageBox.Show("Stemファイルが見つかりません", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (IsStemSeparated)
+            {
+                var res = MessageBox.Show("Stemファイルが存在します。上書きしてもよろしいですか？", "確認", MessageBoxButton.OKCancel, MessageBoxImage.Question);
+                if (res == MessageBoxResult.Cancel)
+                {
+                    return;
+                }
+                await DeleteStemFiles();
+            }
+
+            var outputDir = GetStemDir(FilePath);
+            if (!Directory.Exists(outputDir))
+            {
+                Directory.CreateDirectory(outputDir);
+            }
+
+            var processTask = Task.Run(() =>
+            {
+                IsStemSeparating = true;
+                var tasks = new List<Task<bool>>();
+                var names = new[] { "vocals", "drums", "bass", "piano", "other" };
+                foreach (var name in names)
+                {
+                    var inputFileName = Path.Combine(inputDir, name + ".wav");
+                    var outputFileName = Path.Combine(outputDir, name + ".flac");
+                    if (File.Exists(inputFileName))
+                    {
+                        var t = Task.Run(() => Core.TranscodeToFlac(inputFileName, outputFileName));
+                        tasks.Add(t);
+                    }
+                    else
+                    {
+                        var t = Task.Run(() => Core.NullOutputToFlac(outputFileName));
+                        tasks.Add(t);
+                    }
+                }
+                Task.WaitAll(tasks.ToArray());
+                if (tasks.All(x => x.Result))
+                {
+                    Core.StemFilesOpen(outputDir);
+                    IsStemSeparating = false;
+                    IsStemSeparated = true;
+                    IsStemPlaying = true;
+                    SwitchDecoderToStems();
+                }
+                else
+                {
+                    IsStemSeparating = false;
+                    DeleteStemFiles();
+                }
+            });
+
+            var progressTask = Task.Run(() =>
+            {
+                while (!processTask.IsCompleted)
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        SeparateProgress = Core.GetProgress();
+                    }));
+                    Thread.Sleep(100);
+                }
+            });
+        }
+
         internal void RangeSlider_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (IsFileLoaded)

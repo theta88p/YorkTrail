@@ -24,6 +24,8 @@ using System.Windows.Controls;
 using System.Windows;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace YorkTrail
 {
@@ -71,9 +73,10 @@ namespace YorkTrail
             { nameof(LinkSlidersCommand), new LinkSlidersCommand() },
             { nameof(StemSeparateCommand), new StemSeparateCommand() },
             { nameof(DeleteStemFilesCommand), new DeleteStemFilesCommand() },
-            { nameof(CancelStemSeparateCommand), new CancelStemSeparateCommand() },
+            { nameof(CancelProcessingCommand), new CancelProcessingCommand() },
             { nameof(SwitchDecoderToSourceCommand), new SwitchDecoderToSourceCommand() },
             { nameof(SwitchDecoderToStemsCommand), new SwitchDecoderToStemsCommand() },
+            { nameof(ImportStemsCommand), new ImportStemsCommand() },
         });
 
         public static CommandBase Get(string cmd)
@@ -693,11 +696,11 @@ namespace YorkTrail
         }
     }
 
-    public class CancelStemSeparateCommand : CommandBase
+    public class CancelProcessingCommand : CommandBase
     {
         public override void Execute(object? parameter)
         {
-            ViewModel?.Core.CancelStemSeparate();
+            ViewModel?.Core.CancelProcessing();
         }
     }
 
@@ -719,6 +722,30 @@ namespace YorkTrail
             if (ViewModel != null)
             {
                 await ViewModel.SwitchDecoderToStems();
+            }
+        }
+    }
+
+    public class ImportStemsCommand : CommandBase
+    {
+        public override void Execute(object? parameter)
+        {
+            if (ViewModel != null)
+            {
+                if (ViewModel.FilePath == "")
+                {
+                    MessageBox.Show("先にファイルを読み込んでください", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var ofd = new Microsoft.Win32.OpenFileDialog();
+                ofd.FileName = "SelectFolder";
+                ofd.Filter = "Folder|.";
+                ofd.CheckFileExists = false;
+                if (ofd.ShowDialog() == true)
+                {
+                    ViewModel.ImportStems(Path.GetDirectoryName(ofd.FileName));
+                }
             }
         }
     }
