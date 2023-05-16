@@ -715,8 +715,8 @@ namespace YorkTrail
                 Settings.Tempo = Tempo;
                 Settings.MeasureOffset = MeasureOffset;
                 Settings.TimeSignature = TimeSignature;
-                Settings.SeekBarMinimum = Window?.SeekBar.Minimum ?? 0;
-                Settings.SeekBarMaximum = Window?.SeekBar.Maximum ?? 1;
+                Settings.SeekBarMinimum = SeekbarMinimum;
+                Settings.SeekBarMaximum = SeekbarMaximum;
                 Settings.ZoomMultiplier = ZoomMultiplier;
                 Settings.MarkerList = MarkerList;
                 Settings.IsStemPlaying = IsStemPlaying;
@@ -750,8 +750,8 @@ namespace YorkTrail
                     Tempo = Settings.Tempo;
                     MeasureOffset = Settings.MeasureOffset;
                     TimeSignature = (Settings.TimeSignature == 0) ? 4 : Settings.TimeSignature;
-                    Window.SeekBar.Minimum = Settings.SeekBarMinimum;
-                    Window.SeekBar.Maximum = Settings.SeekBarMaximum;
+                    SeekbarMinimum = Settings.SeekBarMinimum;
+                    SeekbarMaximum = Settings.SeekBarMaximum;
                     ZoomMultiplier = Settings.ZoomMultiplier;
                     StaticMethods.ShallowCopy(Settings.MarkerList, MarkerList);
                     IsStemPlaying = Settings.IsStemPlaying;
