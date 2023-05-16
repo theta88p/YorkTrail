@@ -173,9 +173,9 @@ namespace YorkTrail
         [DataMember]
         public int TimeSignature { get; set; }
         [DataMember]
-        public double SeekBarMinimum { get; set; }
+        public double SeekbarMinimum { get; set; }
         [DataMember]
-        public double SeekBarMaximum { get; set; }
+        public double SeekbarMaximum { get; set; }
         [DataMember]
         public int ZoomMultiplier { get; set; }
         [DataMember]
