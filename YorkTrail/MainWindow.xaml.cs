@@ -30,6 +30,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Controls.Primitives;
+using System.IO;
+using Path = System.IO.Path;
 
 namespace YorkTrail
 {
@@ -40,6 +42,16 @@ namespace YorkTrail
     {
         public MainWindow()
         {
+            string path = System.Reflection.Assembly.GetExecutingAssembly().Location ?? "";
+            string dir = Path.GetDirectoryName(path) ?? "";
+            if (dir != "")
+            {
+                if (!File.Exists(Path.Combine(dir, "tensorflow.dll")))
+                {
+                    MessageBox.Show("tensorflow.dllが見つかりません。\nYorkTrail.exeと同じフォルダに置いてください。", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Environment.Exit(0);
+                }
+            }
             InitializeComponent();
             var vm = (MainWindowViewModel)this.DataContext;
             vm.Window = this;
