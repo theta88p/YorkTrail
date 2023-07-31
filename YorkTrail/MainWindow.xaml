@@ -1170,7 +1170,7 @@
             <ProgressBar x:Name="ProgressBar" HorizontalAlignment="Stretch" Height="30" VerticalAlignment="Bottom" Width="430" Value="{Binding Position}" Minimum="{Binding ElementName=SeekBar, Path=Minimum}" Maximum="{Binding ElementName=SeekBar, Path=Maximum}" Foreground="#FF066AB0"/>
             <local:RangeSlider x:Name="SeekBar" Width="430" Height="54" VerticalAlignment="Bottom"
                                LowerValue="{Binding StartPosition, Mode=TwoWay}" UpperValue="{Binding EndPosition, Mode=TwoWay}"
-                               Minimum="{Binding SeekbarMinimum}" Maximum="{Binding SeekbarMaximum}"
+                               Minimum="{Binding SeekbarMinimum, Mode=TwoWay}" Maximum="{Binding SeekbarMaximum, Mode=TwoWay}"
                                LowerValueChanged="RangeSlider_LowerValueChanged" MouseLeftButtonUp="RangeSlider_MouseLeftButtonUp"
                                LowerSliderDragCompleted="RangeSlider_LowerSliderDragCompleted"
                                DisplayValueTickBarMouseLeftButtonUp="SeekBar_DisplayValueTickBarMouseLeftButtonUp"
